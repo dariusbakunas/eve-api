@@ -1,0 +1,28 @@
+sudo: false
+language: node_js
+node_js:
+  - "10"
+cache: npm
+services:
+  - docker
+env:
+  global:
+    - NODE_ENV=CI
+stages:
+  - install
+  - test
+  - build
+jobs:
+  include:
+    - stage: install
+      script:
+        - npm ci
+    - stage: test
+      script:
+        - npm run coveralls
+    - stage: build
+      script:
+        - npm run build
+        - npm prune --production && npm install --production
+        - docker build -t travis-ci-build-stage -f Dockerfile.ci .
+      if: "(branch = dev OR branch = master) AND type = push"

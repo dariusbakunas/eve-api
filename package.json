@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "build": "tsc && cp -r ./src/schema/*.graphql ./build/schema",
+    "start": "node build/index.js"
   },
   "repository": {
     "type": "git",
