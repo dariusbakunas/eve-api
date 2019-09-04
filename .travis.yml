@@ -1,28 +1,32 @@
 sudo: false
 language: node_js
 node_js:
-  - "10"
+- '10'
 cache: npm
 services:
-  - docker
+- docker
 env:
   global:
-    - NODE_ENV=CI
+  - NODE_ENV=CI
 stages:
-  - install
-  - test
-  - build
+- install
+- test
+- build
 jobs:
   include:
-    - stage: install
-      script:
-        - npm ci
-    - stage: test
-      script:
-        - npm run coveralls
-    - stage: build
-      script:
-        - npm run build
-        - npm prune --production && npm install --production
-        - docker build -t travis-ci-build-stage -f Dockerfile.ci .
-      if: "(branch = dev OR branch = master) AND type = push"
+  - stage: install
+    script:
+    - npm ci
+  - stage: test
+    script:
+    - npm run coveralls
+  - stage: build
+    script:
+      - npm run build
+      - npm prune --production && npm install --production
+      - docker build -t travis-ci-build-stage -f Dockerfile.ci .
+      - docker tag travis-ci-build-stage gcr.io/$GC_PROJECT_ID/eve-api:$TRAVIS_BUILD_NUMBER
+      - openssl aes-256-cbc -K $encrypted_571ea1114113_key -iv $encrypted_571ea1114113_iv -in gce.json.enc -out gce.json -d
+      - cat gce.json | docker login -u _json_key --password-stdin https://gcr.io
+      - docker push gcr.io/$GC_PROJECT_ID/eve-api:$TRAVIS_BUILD_NUMBER
+    if: "(branch = dev OR branch = master) AND type = push"
