@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "target": "es2016",
+    "lib": ["es2017", "esnext.asynciterable"],
+    "module": "commonjs"
+  },
+  "include": ["./src/**/*.ts"]
+}
