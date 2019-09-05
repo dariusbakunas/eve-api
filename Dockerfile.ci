@@ -8,5 +8,5 @@ COPY package.json .
 COPY build ./build
 COPY node_modules ./node_modules
 
-EXPOSE 8080
+EXPOSE 4000
 CMD [ "npm", "start" ]
