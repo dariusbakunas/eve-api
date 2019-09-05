@@ -19,6 +19,11 @@ const server = new ApolloServer({
   schema,
 });
 
+app.get('/health-check', (req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Status: OK!');
+});
+
 server.applyMiddleware({ app });
 
 app.listen({ port: 4000 }, () =>
