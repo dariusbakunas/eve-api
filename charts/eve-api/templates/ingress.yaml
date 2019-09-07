@@ -18,7 +18,7 @@ spec:
       {{- range .hosts }}
         - {{ . | quote }}
       {{- end }}
-      secretName: {{ .secretName }}
+      secretName: {{ $fullName }}-crt
   {{- end }}
 {{- end }}
   rules:
