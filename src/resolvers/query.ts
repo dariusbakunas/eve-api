@@ -2,8 +2,8 @@ import { IResolvers } from "graphql-tools";
 
 const resolverMap: IResolvers = {
   Query: {
-    test: () => {
-      return "test";
+    currentUser: (_, args, { user }) => {
+      return user;
     }
   }
 }

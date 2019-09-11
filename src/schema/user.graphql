@@ -1,0 +1,7 @@
+type User {
+  name: String!
+  nickname: String!
+  email: String!
+  email_verified: Boolean!
+  picture: String!
+}

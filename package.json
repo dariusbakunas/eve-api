@@ -24,10 +24,13 @@
     "apollo-server-express": "^2.9.3",
     "compression": "^1.7.4",
     "express": "^4.17.1",
+    "express-jwt": "^5.3.1",
     "graphql": "^14.5.4",
     "graphql-tools": "^4.0.5",
+    "jwks-rsa": "^1.6.0",
     "lodash.merge": "^4.6.2",
     "morgan": "^1.9.1",
+    "node-fetch": "^2.6.0",
     "sequelize": "^5.18.1",
     "winston": "^3.2.1"
   },
