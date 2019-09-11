@@ -57,15 +57,15 @@ const server = new ApolloServer({
   context: async ({ req }: { req: Request & { user?: { sub: string } } }) => {
     const token = req.headers.authorization;
 
-    const sub = req.user ? req.user.sub : null;
+    if (!req.user) {
+      return;
+    }
+
+    const { sub } = req.user;
 
     let user: IUserProfile = cache.get(sub);
 
-    if (user) {
-      return {
-        user,
-      }
-    } else {
+    if (!user) {
       // get user information
       user = await request(`https://${process.env.AUTH0_DOMAIN}/userinfo`, {
         headers: {
@@ -74,10 +74,10 @@ const server = new ApolloServer({
       });
 
       cache.set(sub, user);
+    }
 
-      return {
-        user,
-      }
+    return {
+      user,
     }
   },
   schema,
