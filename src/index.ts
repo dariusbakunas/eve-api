@@ -1,10 +1,13 @@
-import express from 'express';
+import express, { Request } from 'express';
 import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
 import { loadSchema } from "./schema/loadSchema";
 import resolvers from "./resolvers";
 import jwt from "express-jwt";
 import jwks from "jwks-rsa";
 import request from "./utils/request";
+import Cache from "node-cache";
+
+const cache = new Cache({ stdTTL: 100, checkperiod: 120, useClones: true, deleteOnExpire: true });
 
 interface IUserProfile {
  sub: string,
@@ -51,18 +54,30 @@ const schema = makeExecutableSchema({
 });
 
 const server = new ApolloServer({
-  context: async ({ req }) => {
+  context: async ({ req }: { req: Request & { user?: { sub: string } } }) => {
     const token = req.headers.authorization;
 
-    // get user information
-    const user: IUserProfile = await request(`https://${process.env.AUTH0_DOMAIN}/userinfo`, {
-      headers: {
-        Authorization: token,
-      }
-    });
+    const sub = req.user ? req.user.sub : null;
 
-    return {
-      user,
+    let user: IUserProfile = cache.get(sub);
+
+    if (user) {
+      return {
+        user,
+      }
+    } else {
+      // get user information
+      user = await request(`https://${process.env.AUTH0_DOMAIN}/userinfo`, {
+        headers: {
+          Authorization: token,
+        }
+      });
+
+      cache.set(sub, user);
+
+      return {
+        user,
+      }
     }
   },
   schema,
