@@ -28,11 +28,13 @@
     "graphql": "^14.5.4",
     "graphql-tools": "^4.0.5",
     "jwks-rsa": "^1.6.0",
+    "knex": "^0.19.4",
     "lodash.merge": "^4.6.2",
     "morgan": "^1.9.1",
+    "mysql2": "^1.7.0",
     "node-cache": "^4.2.1",
     "node-fetch": "^2.6.0",
-    "sequelize": "^5.18.1",
+    "objection": "^1.6.9",
     "winston": "^3.2.1"
   },
   "devDependencies": {
