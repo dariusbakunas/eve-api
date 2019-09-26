@@ -2,10 +2,10 @@ import express, { Request } from 'express';
 import { ApolloServer, makeExecutableSchema } from "apollo-server-express";
 import { loadSchema } from "./schema/loadSchema";
 import resolvers from "./resolvers";
-import jwt from "express-jwt";
-import jwks from "jwks-rsa";
 import request from "./utils/request";
 import Cache from "node-cache";
+import db from "./db/index";
+import jwtMiddleware from "./auth/jwtMiddleware";
 
 const cache = new Cache({ stdTTL: 100, checkperiod: 120, useClones: true, deleteOnExpire: true });
 
@@ -27,21 +27,11 @@ if (!process.env.AUTH0_DOMAIN) {
   throw new Error("process.env.AUTH0_DOMAIN is required");
 }
 
-const jwtCheck = jwt({
-  secret: jwks.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
-  }),
-  audience: process.env.AUTH0_AUDIENCE,
-  issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-  algorithms: ['RS256']
-});
-
 const app = express();
 
-app.use(jwtCheck);
+if (process.env.NODE_ENV !== "development" && process.env.USE_TEST_USER !== "true") {
+  app.use(jwtMiddleware);
+}
 
 const typeDefs = loadSchema();
 
@@ -55,6 +45,13 @@ const schema = makeExecutableSchema({
 
 const server = new ApolloServer({
   context: async ({ req }: { req: Request & { user?: { sub: string } } }) => {
+    if (process.env.USE_TEST_USER === "true") {
+      const user = require("./auth/userMock");
+      return {
+        user
+      };
+    }
+
     const token = req.headers.authorization;
 
     if (!req.user) {
@@ -79,6 +76,11 @@ const server = new ApolloServer({
     return {
       user,
     }
+  },
+  dataSources: () => {
+    return {
+      db,
+    };
   },
   schema,
 });

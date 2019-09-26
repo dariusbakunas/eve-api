@@ -1,0 +1,4 @@
+type Scope {
+  id: ID!
+  name: String!
+}
