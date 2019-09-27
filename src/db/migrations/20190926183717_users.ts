@@ -1,12 +1,16 @@
 import * as Knex from "knex";
 
 export async function up(knex: Knex): Promise<any> {
-  return knex.schema.createTable("users", (t) => {
-    t.increments("id").unsigned().primary();
-    t.string("email").notNullable();
+  return knex.schema.createTable("users", t => {
+    t.increments("id")
+      .unsigned()
+      .primary();
+    t.string("email")
+      .notNullable()
+      .unique();
   });
 }
 
 export async function down(knex: Knex): Promise<any> {
-  return knex.schema.dropTable('users');
+  return knex.schema.dropTable("users");
 }
