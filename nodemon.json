@@ -1,5 +1,5 @@
 {
-  "watch": ["src"],
+  "watch": ["src/*"],
   "ext": "ts,graphql",
   "ignore": ["src/public"],
   "exec": "cross-env NODE_ENV=development ts-node -r dotenv/config src/index.ts"
