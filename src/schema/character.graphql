@@ -1,0 +1,7 @@
+type Character {
+  id: ID!
+}
+
+input CharacterInput {
+  code: String!
+}

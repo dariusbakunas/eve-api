@@ -107,10 +107,12 @@ const server = new ApolloServer({
         dbUser = await db.User.query().insert({ email });
       }
 
-      cache.set(sub, {
-        id: dbUser.id,
-        ...user
-      });
+      user = {
+        ...user,
+        id: dbUser.id
+      };
+
+      cache.set(sub, user);
     }
 
     return {
