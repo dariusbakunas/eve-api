@@ -1,4 +1,4 @@
-const config = {
+module.exports = {
   bracketSpacing: true,
   htmlWhitespaceSensitivity: "css",
   jsxBracketSameLine: false,
@@ -7,8 +7,6 @@ const config = {
   semi: true,
   trailingComma: "all",
   singleQuote: true,
-  printWidth: 150,
-  tabWidth: 4
+  printWidth: 80,
+  tabWidth: 2
 };
-
-export default config;
