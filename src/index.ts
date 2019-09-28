@@ -4,7 +4,7 @@ import { loadSchema } from "./schema/loadSchema";
 import resolvers from "./resolvers";
 import request from "./utils/request";
 import Cache from "node-cache";
-import db from "./db/index";
+import db from "./dataSources/db/index";
 import jwtMiddleware from "./auth/jwtMiddleware";
 import logger from "./utils/logger";
 
