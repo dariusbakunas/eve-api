@@ -4,9 +4,9 @@ import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
 import request from './utils/request';
 import Cache from 'node-cache';
+import logger from './utils/logger';
 import db from './services/db/index';
 import jwtMiddleware from './auth/jwtMiddleware';
-import logger from './utils/logger';
 import EsiAPI from './services/esi';
 import Crypt from './services/crypt';
 

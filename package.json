@@ -6,8 +6,8 @@
   "scripts": {
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "dev": "nodemon",
-    "build": "tsc && cp -r ./src/schema/*.graphql ./build/schema",
-    "start": "node build/index.js",
+    "build": "tsc && cp -r ./src/schema/*.graphql ./build/src/schema",
+    "start": "NODE_ENV=production node build/src/index.js",
     "test": "jest",
     "db:migrate": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest --env development",
     "db:rollback": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:rollback --env development",
