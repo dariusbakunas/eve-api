@@ -24,6 +24,7 @@ export class Character extends Model {
         name: { type: 'string' },
         accessToken: { type: 'string' },
         refreshToken: { type: 'string' },
+        scopes: { type: 'string' },
       },
     };
   }
@@ -33,4 +34,5 @@ export class Character extends Model {
   accessToken!: string;
   refreshToken!: string;
   expiresAt!: number;
+  scopes!: string;
 }

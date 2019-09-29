@@ -21,7 +21,7 @@ class EsiAPI extends RESTDataSource {
           Authorization: `Basic ${authBuffer.toString('base64')}`,
           'Content-Type': 'application/json',
         },
-      },
+      }
     );
   }
 

@@ -10,9 +10,11 @@ export async function up(knex: Knex): Promise<any> {
       .notNullable()
       .unique();
 
-    t.string('accessToken').notNullable();
+    t.string('scopes', 4096).notNullable();
 
-    t.string('refreshToken').notNullable();
+    t.string('accessToken', 2048).notNullable();
+
+    t.string('refreshToken', 2048).notNullable();
 
     t.bigInteger('expiresAt').notNullable();
 

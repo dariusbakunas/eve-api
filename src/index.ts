@@ -4,10 +4,11 @@ import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
 import request from './utils/request';
 import Cache from 'node-cache';
-import db from './dataSources/db/index';
+import db from './services/db/index';
 import jwtMiddleware from './auth/jwtMiddleware';
 import logger from './utils/logger';
-import EsiAPI from './dataSources/esi';
+import EsiAPI from './services/esi';
+import Crypt from './services/crypt';
 
 const cache = new Cache({
   stdTTL: 100,
@@ -64,6 +65,7 @@ const schema = makeExecutableSchema({
 const dataSources: () => IDataSources = () => ({
   db,
   esi: new EsiAPI(process.env.EVE_LOGIN_URL),
+  crypt: new Crypt(process.env.TOKEN_SECRET),
 });
 
 const server = new ApolloServer({
