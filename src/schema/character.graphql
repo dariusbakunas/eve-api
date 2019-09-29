@@ -1,5 +1,7 @@
 type Character {
   id: ID!
+  name: String!
+  scopes: [String!]
 }
 
 input CharacterInput {

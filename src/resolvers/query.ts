@@ -1,4 +1,4 @@
-import { IResolvers } from "graphql-tools";
+import { IResolvers } from 'graphql-tools';
 
 const resolverMap: IResolvers = {
   Query: {
@@ -6,9 +6,9 @@ const resolverMap: IResolvers = {
       return dataSources.db.Scope.query();
     },
     characters: (_, args, { dataSources, user: { id } }) => {
-      return dataSources.db.Character.query().where("ownerId", id);
-    }
-  }
+      return dataSources.db.Character.query().where('ownerId', id);
+    },
+  },
 };
 
 export default resolverMap;
