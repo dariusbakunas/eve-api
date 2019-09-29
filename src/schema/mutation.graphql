@@ -1,3 +1,4 @@
 type Mutation {
   addCharacter(input: CharacterInput!): Character!
+  removeCharacter(id: ID!): ID!
 }

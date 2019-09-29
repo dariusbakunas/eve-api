@@ -47,6 +47,10 @@ const resolverMap: IResolvers = {
         throw new Error(e.message);
       }
     },
+    removeCharacter: async (_, { id }, { dataSources: { db }, user: { id: userId } }) => {
+      await db.Character.query().deleteById(id);
+      return id;
+    },
   },
 };
 
