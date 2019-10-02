@@ -6,10 +6,10 @@ const resolverMap: IResolvers = {
     addCharacter: async (
       _,
       { input: { code } },
-      { dataSources: { esi, db, crypt }, user: { id: userId } }
+      { dataSources: { esiAuth, db, crypt, esiApi }, user: { id: userId } }
     ) => {
       try {
-        const tokens = await esi.getCharacterTokens(
+        const tokens = await esiAuth.getCharacterTokens(
           process.env.EVE_CLIENT_ID,
           process.env.EVE_CLIENT_SECRET,
           code
@@ -23,9 +23,11 @@ const resolverMap: IResolvers = {
 
         const expiresAt = expiresIn * 1000 + new Date().getTime();
 
-        const { CharacterID, CharacterName, Scopes } = await esi.verifyToken(
-          accessToken
-        );
+        const {
+          CharacterID,
+          CharacterName,
+          Scopes,
+        } = await esiAuth.verifyToken(accessToken);
 
         const user = await db.User.query().findById(userId);
 
@@ -47,7 +49,11 @@ const resolverMap: IResolvers = {
         throw new Error(e.message);
       }
     },
-    removeCharacter: async (_, { id }, { dataSources: { db }, user: { id: userId } }) => {
+    removeCharacter: async (
+      _,
+      { id },
+      { dataSources: { db }, user: { id: userId } }
+    ) => {
       await db.Character.query().deleteById(id);
       return id;
     },

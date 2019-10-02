@@ -13,21 +13,6 @@ export class Character extends Model {
       },
     },
   };
-  static get jsonSchema() {
-    return {
-      type: 'object',
-      required: ['id', 'name', 'accessToken', 'refreshToken', 'expiresAt'],
-      properties: {
-        id: { type: 'integer' },
-        ownerId: { type: 'integer' },
-        expiresAt: { type: 'integer' },
-        name: { type: 'string' },
-        accessToken: { type: 'string' },
-        refreshToken: { type: 'string' },
-        scopes: { type: 'string' },
-      },
-    };
-  }
 
   readonly id!: number;
   name!: string;

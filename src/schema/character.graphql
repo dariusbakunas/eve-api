@@ -1,7 +1,11 @@
 type Character {
   id: ID!
+  corporation: Corporation!
   name: String!
+  gender: String!
   scopes: [String!]
+  birthday: DateTime!
+  securityStatus: Float!
 }
 
 input CharacterInput {
