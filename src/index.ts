@@ -1,5 +1,6 @@
 import express, { Request } from 'express';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
+import { RedisCache } from 'apollo-server-cache-redis';
 import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
 import request from './utils/request';
@@ -7,7 +8,8 @@ import Cache from 'node-cache';
 import logger from './utils/logger';
 import db from './services/db/index';
 import jwtMiddleware from './auth/jwtMiddleware';
-import EsiAPI from './services/esi';
+import EsiAPI from './services/esi/api';
+import EsiAuth from './services/esi/auth';
 import Crypt from './services/crypt';
 
 const cache = new Cache({
@@ -64,7 +66,8 @@ const schema = makeExecutableSchema({
 
 const dataSources: () => IDataSources = () => ({
   db,
-  esi: new EsiAPI(process.env.EVE_LOGIN_URL),
+  esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL),
+  esiApi: new EsiAPI(process.env.EVE_ESI_URL),
   crypt: new Crypt(process.env.TOKEN_SECRET),
 });
 
@@ -123,6 +126,10 @@ const server = new ApolloServer({
       user,
     };
   },
+  cache: new RedisCache({
+    host: process.env.REDIS_HOST,
+    password: process.env.REDIS_PASSWORD,
+  }),
   dataSources,
   schema,
 });
@@ -135,5 +142,5 @@ app.get('/health-check', (req, res) => {
 server.applyMiddleware({ app });
 
 app.listen({ port: 4000 }, () =>
-  logger.info(`🚀 Server ready at http://localhost:4000/graphql`),
+  logger.info(`🚀 Server ready at http://localhost:4000/graphql`)
 );

@@ -1,9 +1,10 @@
 import { RESTDataSource } from 'apollo-datasource-rest';
 
-class EsiAPI extends RESTDataSource {
-  constructor(eveBaseUrl) {
+
+class EsiAuth extends RESTDataSource {
+  constructor(baseUrl) {
     super();
-    this.baseURL = eveBaseUrl;
+    this.baseURL = baseUrl;
   }
 
   async getCharacterTokens(clientId, clientSecret, code) {
@@ -35,4 +36,4 @@ class EsiAPI extends RESTDataSource {
   }
 }
 
-export default EsiAPI;
+export default EsiAuth;
