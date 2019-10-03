@@ -6,6 +6,7 @@ type Character {
   scopes: [String!]
   birthday: DateTime!
   securityStatus: Float!
+  totalSp: Int
 }
 
 input CharacterInput {

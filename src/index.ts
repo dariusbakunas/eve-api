@@ -11,6 +11,14 @@ import jwtMiddleware from './auth/jwtMiddleware';
 import EsiAPI from './services/esi/api';
 import EsiAuth from './services/esi/auth';
 import Crypt from './services/crypt';
+import { Character } from './services/db/models/character';
+import { User } from './services/db/models/user';
+import { Scope } from './services/db/models/scope';
+
+const redisCache = new RedisCache({
+  host: process.env.REDIS_HOST,
+  password: process.env.REDIS_PASSWORD,
+});
 
 const cache = new Cache({
   stdTTL: 100,
@@ -31,6 +39,14 @@ interface IUserProfile {
 }
 
 export interface IDataSources {
+  db: {
+    Character: typeof Character;
+    User: typeof User;
+    Scope: typeof Scope;
+  };
+  esiAuth: EsiAuth;
+  esiApi: EsiAPI;
+  crypt: Crypt;
   [key: string]: object;
 }
 
@@ -67,7 +83,7 @@ const schema = makeExecutableSchema({
 const dataSources: () => IDataSources = () => ({
   db,
   esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL),
-  esiApi: new EsiAPI(process.env.EVE_ESI_URL),
+  esiApi: new EsiAPI(process.env.EVE_ESI_URL, redisCache),
   crypt: new Crypt(process.env.TOKEN_SECRET),
 });
 
