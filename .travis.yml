@@ -16,14 +16,15 @@ jobs:
   include:
   - stage: install
     script:
-    - npm ci
+    - yarn install
   - stage: test
     script:
-    - npm run coveralls
+    - yarn run coveralls
   - stage: build
     script:
-      - npm run build
-      - npm prune --production && npm install --production
+      - yarn build
+      - rm -rf node_modules
+      - yarn install --production
       - docker build -t travis-ci-build-stage -f Dockerfile.ci .
       - docker tag travis-ci-build-stage gcr.io/$GC_PROJECT_ID/eve-api:$TRAVIS_BUILD_NUMBER
       - openssl aes-256-cbc -K $encrypted_571ea1114113_key -iv $encrypted_571ea1114113_iv -in gce.json.enc -out gce.json -d
