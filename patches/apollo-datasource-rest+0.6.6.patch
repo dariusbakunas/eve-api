@@ -1,0 +1,12 @@
+diff --git a/node_modules/apollo-datasource-rest/src/HTTPCache.ts b/node_modules/apollo-datasource-rest/src/HTTPCache.ts
+index c9d3a21..4bd9948 100644
+--- a/node_modules/apollo-datasource-rest/src/HTTPCache.ts
++++ b/node_modules/apollo-datasource-rest/src/HTTPCache.ts
+@@ -111,6 +111,7 @@ export class HTTPCache {
+       cacheOptions = cacheOptions(response, request);
+     }
+ 
++    //@ts-ignore
+     let ttlOverride = cacheOptions && cacheOptions.ttl;
+ 
+     if (
