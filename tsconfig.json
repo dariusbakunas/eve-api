@@ -5,8 +5,18 @@
     "target": "es2016",
     "lib": ["es2017", "esnext.asynciterable"],
     "module": "commonjs",
+    "declaration": true,
+    "declarationMap": true,
+//    "noImplicitAny": true,
+//    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "strict": false,
     "moduleResolution": "node",
     "types": ["node", "jest"]
   },
-  "include": ["./src/**/*.ts", "knexfile.ts"]
+  "exclude": [
+    "node_modules",
+    "node_modules/apollo-datasource-rest"
+  ],
+  "include": ["src/**/*.ts", "knexfile.ts"]
 }
