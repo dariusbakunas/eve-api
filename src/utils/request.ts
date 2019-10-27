@@ -1,24 +1,25 @@
-import fetch from "node-fetch";
+import fetch from 'node-fetch';
 
 export class FetchError extends Error {
   private httpStatusCode: string;
   constructor(message, httpStatusCode) {
     super(message);
-    this.name = "FetchError";
+    this.name = 'FetchError';
     this.httpStatusCode = httpStatusCode;
   }
 }
 
-const checkStatus = (res) => {
-  if (res.ok) { // res.status >= 200 && res.status < 300
+const checkStatus = res => {
+  if (res.ok) {
+    // res.status >= 200 && res.status < 300
     return res;
   } else {
     throw new FetchError(res.statusText, res.status);
   }
-}
+};
 
-const parseJSON = (response) => {
-  return response.text().then((text) => {
+const parseJSON = response => {
+  return response.text().then(text => {
     let returnJson = {};
     if (text) {
       try {
@@ -29,7 +30,7 @@ const parseJSON = (response) => {
     }
     return returnJson;
   });
-}
+};
 
 export default function request(url, options) {
   const httpOptions = options || { method: 'GET' };

@@ -1,10 +1,20 @@
 import { Model, RelationMappings } from 'objection';
 import { Character } from './character';
+import { Maybe } from '../../../types';
+
+export enum UserStatus {
+  Active = 'ACTIVE',
+  Inactive = 'INACTIVE',
+}
 
 export class User extends Model {
   static tableName = 'users';
 
   readonly id!: number;
+  username!: string;
+  firstName?: Maybe<string>;
+  lastName?: Maybe<string>;
+  status!: UserStatus;
   email!: string;
 
   static relationMappings: RelationMappings = {
