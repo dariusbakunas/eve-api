@@ -1,14 +1,22 @@
-import { IResolvers } from 'graphql-tools';
 import logger from '../utils/logger';
 import { IDataSources } from '../index';
+import { Resolver, ResolversTypes } from '../__generated__/types';
+import { IResolverContext, Maybe } from '../types';
+import { Character } from '../services/db/models/character';
 
-const getCharacterInfo = async ({ id }, args, { dataSources }, { fieldName }) => {
-  const info = await dataSources.esiApi.getCharacterInfo(id);
+const getCharacterInfo = async (id: number, esiApi: IDataSources['esiApi'], fieldName: string) => {
+  const info = await esiApi.getCharacterInfo(id);
   return info[fieldName === 'securityStatus' ? 'security_status' : fieldName];
 };
 
-const getAccessToken = async (characterId, dataSources, accessToken, refreshToken, expiresAt) => {
-  const { db, crypt, esiApi, esiAuth } = dataSources;
+const getAccessToken = async (
+  characterId: number,
+  dataSources: IDataSources,
+  accessToken: string,
+  refreshToken: string,
+  expiresAt: number
+) => {
+  const { db, crypt, esiAuth } = dataSources;
 
   if (new Date().getTime() < expiresAt - 1000 * 60) {
     return crypt.decrypt(accessToken);
@@ -17,8 +25,8 @@ const getAccessToken = async (characterId, dataSources, accessToken, refreshToke
 
     // get new tokens
     const tokens = await esiAuth.getAccessToken(
-      process.env.EVE_CLIENT_ID,
-      process.env.EVE_CLIENT_SECRET,
+      process.env.EVE_CLIENT_ID!,
+      process.env.EVE_CLIENT_SECRET!,
       crypt.decrypt(refreshToken)
     );
 
@@ -34,12 +42,29 @@ const getAccessToken = async (characterId, dataSources, accessToken, refreshToke
   }
 };
 
-const resolverMap: IResolvers = {
+interface IResolvers<Context> {
+  Query: {
+    characters: Resolver<Array<Character>, any, Context>;
+  };
   Character: {
-    scopes: parent => {
-      return parent.scopes.split(' ');
+    birthday: Resolver<ResolversTypes['DateTime'], Character, Context>;
+    corporation: Resolver<ResolversTypes['Corporation'], Character, Context>;
+    gender: Resolver<ResolversTypes['String'], Character, Context>;
+    totalSp: Resolver<Maybe<ResolversTypes['Int']>, Character, Context>;
+    securityStatus: Resolver<ResolversTypes['Float'], Character, Context>;
+  };
+}
+
+const resolverMap: IResolvers<IResolverContext> = {
+  Query: {
+    characters: async (_, args, { dataSources, user: { id } }) => {
+      return dataSources.db.Character.query().where('ownerId', id);
     },
-    birthday: getCharacterInfo,
+  },
+  Character: {
+    birthday: ({ id }, args, { dataSources }, { fieldName }) => {
+      return getCharacterInfo(id, dataSources.esiApi, fieldName);
+    },
     corporation: async ({ id }, args, { dataSources }) => {
       const { corporation_id: corporationId } = await dataSources.esiApi.getCharacterInfo(id);
       const corporationInfo = await dataSources.esiApi.getCorporationInfo(corporationId);
@@ -49,7 +74,9 @@ const resolverMap: IResolvers = {
         ...corporationInfo,
       };
     },
-    gender: getCharacterInfo,
+    gender: ({ id }, args, { dataSources }, { fieldName }) => {
+      return getCharacterInfo(id!, dataSources.esiApi, fieldName);
+    },
     totalSp: async (
       { id, accessToken, refreshToken, expiresAt, scopes },
       args,
@@ -64,7 +91,9 @@ const resolverMap: IResolvers = {
       const { total_sp: totalSp } = await dataSources.esiApi.getCharacterSkills(id, token);
       return totalSp;
     },
-    securityStatus: getCharacterInfo,
+    securityStatus: ({ id }, args, { dataSources }, { fieldName }) => {
+      return getCharacterInfo(id!, dataSources.esiApi, fieldName);
+    },
   },
 };
 

@@ -1,44 +1,42 @@
-import fetch from 'node-fetch';
+import fetch, { RequestInit, Response } from 'node-fetch';
 
 export class FetchError extends Error {
-  private httpStatusCode: string;
-  constructor(message, httpStatusCode) {
+  private httpStatusCode: number;
+  constructor(message: string, httpStatusCode: number) {
     super(message);
     this.name = 'FetchError';
     this.httpStatusCode = httpStatusCode;
   }
 }
 
-const checkStatus = res => {
-  if (res.ok) {
+const checkStatus = (response: Response) => {
+  if (response.ok) {
     // res.status >= 200 && res.status < 300
-    return res;
+    return response;
   } else {
-    throw new FetchError(res.statusText, res.status);
+    throw new FetchError(response.statusText, response.status);
   }
 };
 
-const parseJSON = response => {
-  return response.text().then(text => {
-    let returnJson = {};
-    if (text) {
-      try {
-        returnJson = JSON.parse(text);
-      } catch (e) {
-        returnJson = text;
-      }
+const parseJSON = async (response: Response) => {
+  const text = await response.text();
+
+  let returnJson;
+
+  if (text) {
+    try {
+      returnJson = JSON.parse(text);
+    } catch (e) {
+      returnJson = text;
     }
-    return returnJson;
-  });
+  }
+  return returnJson;
 };
 
-export default function request(url, options) {
-  const httpOptions = options || { method: 'GET' };
-  httpOptions.headers = httpOptions.headers || {};
-  httpOptions.headers['Content-Type'] = 'application/json';
-  httpOptions.credentials = 'same-origin';
+const request = async <T>(url: string, options?: RequestInit): Promise<T> => {
+  let response = await fetch(url, options);
+  response = checkStatus(response);
+  return parseJSON(response);
+};
 
-  return fetch(url, httpOptions)
-    .then(checkStatus)
-    .then(parseJSON);
-}
+export default request;

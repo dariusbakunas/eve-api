@@ -69,6 +69,12 @@ export type Query = {
    __typename?: 'Query',
   scopes: Array<Scope>,
   characters: Array<Character>,
+  userByEmail?: Maybe<User>,
+};
+
+
+export type QueryUserByEmailArgs = {
+  email: Scalars['String']
 };
 
 export type Scope = {
@@ -165,12 +171,12 @@ export type ResolversTypes = {
   DateTime: ResolverTypeWrapper<Partial<Scalars['DateTime']>>,
   Int: ResolverTypeWrapper<Partial<Scalars['Int']>>,
   Float: ResolverTypeWrapper<Partial<Scalars['Float']>>,
+  User: ResolverTypeWrapper<Partial<User>>,
   Mutation: ResolverTypeWrapper<{}>,
   CharacterInput: ResolverTypeWrapper<Partial<CharacterInput>>,
   Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   Date: ResolverTypeWrapper<Partial<Scalars['Date']>>,
   Time: ResolverTypeWrapper<Partial<Scalars['Time']>>,
-  User: ResolverTypeWrapper<Partial<User>>,
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -185,12 +191,12 @@ export type ResolversParentTypes = {
   DateTime: Partial<Scalars['DateTime']>,
   Int: Partial<Scalars['Int']>,
   Float: Partial<Scalars['Float']>,
+  User: Partial<User>,
   Mutation: {},
   CharacterInput: Partial<CharacterInput>,
   Boolean: Partial<Scalars['Boolean']>,
   Date: Partial<Scalars['Date']>,
   Time: Partial<Scalars['Time']>,
-  User: Partial<User>,
 };
 
 export type AllianceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Alliance'] = ResolversParentTypes['Alliance']> = {
@@ -236,6 +242,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
+  userByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>,
 };
 
 export type ScopeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Scope'] = ResolversParentTypes['Scope']> = {

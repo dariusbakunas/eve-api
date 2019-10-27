@@ -27,7 +27,7 @@ const cache = new Cache({
   deleteOnExpire: true,
 });
 
-interface IUserProfile {
+export interface IUserProfile {
   id: number;
   sub: string;
   nickname: string;
@@ -50,20 +50,27 @@ export interface IDataSources {
   [key: string]: object;
 }
 
-if (!process.env.AUTH0_AUDIENCE) {
-  throw new Error('process.env.AUTH0_AUDIENCE is required');
-}
+const requiredEnv = [
+  'AUTH0_AUDIENCE',
+  'AUTH0_DOMAIN',
+  'EVE_LOGIN_URL',
+  'EVE_ESI_URL',
+  'TOKEN_SECRET',
+  'EVE_CLIENT_ID',
+  'EVE_CLIENT_SECRET',
+];
 
-if (!process.env.AUTH0_DOMAIN) {
-  throw new Error('process.env.AUTH0_DOMAIN is required');
-}
+requiredEnv.forEach(env => {
+  if (!process.env[env]) {
+    throw new Error(`process.env.${env} is required`);
+  }
+});
 
 const app = express();
 
 if (
   process.env.NODE_ENV === 'production' ||
-  (process.env.NODE_ENV === 'development' &&
-    process.env.USE_TEST_USER !== 'true')
+  (process.env.NODE_ENV === 'development' && process.env.USE_TEST_USER !== 'true')
 ) {
   app.use(jwtMiddleware);
 } else {
@@ -82,9 +89,9 @@ const schema = makeExecutableSchema({
 
 const dataSources: () => IDataSources = () => ({
   db,
-  esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL),
-  esiApi: new EsiAPI(process.env.EVE_ESI_URL, redisCache),
-  crypt: new Crypt(process.env.TOKEN_SECRET),
+  esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL!),
+  esiApi: new EsiAPI(process.env.EVE_ESI_URL!, redisCache),
+  crypt: new Crypt(process.env.TOKEN_SECRET!),
 });
 
 const server = new ApolloServer({
@@ -107,13 +114,20 @@ const server = new ApolloServer({
 
     let user = cache.get<IUserProfile>(sub);
 
+    const reqOptions = token
+      ? {
+          headers: {
+            Authorization: token,
+          },
+        }
+      : {};
+
     if (!user) {
       // get user information
-      user = await request(`https://${process.env.AUTH0_DOMAIN}/userinfo`, {
-        headers: {
-          Authorization: token,
-        },
-      });
+      user = await request<IUserProfile>(
+        `https://${process.env.AUTH0_DOMAIN}/userinfo`,
+        reqOptions
+      );
 
       const { email, email_verified: emailVerified } = user;
 
@@ -157,6 +171,4 @@ app.get('/health-check', (req, res) => {
 
 server.applyMiddleware({ app });
 
-app.listen({ port: 4000 }, () =>
-  logger.info(`🚀 Server ready at http://localhost:4000/graphql`)
-);
+app.listen({ port: 4000 }, () => logger.info(`🚀 Server ready at http://localhost:4000/graphql`));

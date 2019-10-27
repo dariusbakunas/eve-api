@@ -1,6 +1,6 @@
 import Crypt from './crypt';
 
-let crypt;
+let crypt: Crypt;
 const SECRET = 'xJV^M&ivGDfpGOZ@Jdt3*s#Hk!$8h%H';
 
 describe('Crypt tests', () => {

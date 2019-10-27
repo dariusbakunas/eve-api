@@ -1,7 +1,18 @@
-import { IResolvers } from 'graphql-tools';
 import property from 'lodash.property';
+import { Maybe, Resolver, ResolversTypes } from '../__generated__/types';
+import { IResolverContext } from '../types';
 
-const resolverMap: IResolvers = {
+//TODO: add esiApi type definitions
+interface IResolvers<Context> {
+  Corporation: {
+    alliance: Resolver<Maybe<ResolversTypes['Alliance']>, { alliance_id: number }, Context>;
+    memberCount: Resolver<ResolversTypes['Int'], { member_count: number }, Context>;
+    dateFounded: Resolver<Maybe<ResolversTypes['DateTime']>, { date_founded: Date }, Context>;
+    taxRate: Resolver<ResolversTypes['Float'], { tax_rate: number }, Context>;
+  };
+}
+
+const resolverMap: IResolvers<IResolverContext> = {
   Corporation: {
     alliance: async ({ alliance_id: allianceId }, args, { dataSources }) => {
       if (!allianceId) {

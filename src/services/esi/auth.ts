@@ -1,13 +1,13 @@
 import { RESTDataSource } from 'apollo-datasource-rest';
 
 class EsiAuth extends RESTDataSource {
-  constructor(baseUrl) {
+  constructor(baseUrl: string) {
     super();
     this.baseURL = baseUrl;
   }
 
   // TODO: move clientId and secret to constructor
-  async getCharacterTokens(clientId, clientSecret, code) {
+  async getCharacterTokens(clientId: string, clientSecret: string, code: string) {
     const authBuffer = new Buffer(`${clientId}:${clientSecret}`);
 
     return this.post(
@@ -26,7 +26,7 @@ class EsiAuth extends RESTDataSource {
     );
   }
 
-  async getAccessToken(clientId, clientSecret, refreshToken) {
+  async getAccessToken(clientId: string, clientSecret: string, refreshToken: string) {
     const authBuffer = new Buffer(`${clientId}:${clientSecret}`);
 
     return this.post(
@@ -46,7 +46,7 @@ class EsiAuth extends RESTDataSource {
     );
   }
 
-  async verifyToken(accessToken) {
+  async verifyToken(accessToken: string) {
     return this.get('/oauth/verify', undefined, {
       headers: {
         Authorization: `Bearer ${accessToken}`,

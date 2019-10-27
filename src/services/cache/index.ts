@@ -4,7 +4,7 @@ import * as IORedis from 'ioredis';
 
 class Cache {
   private client: IORedis.Redis;
-  constructor(url, password) {
+  constructor(url: string, password: string) {
     logger.info(`Connecting to redis: ${url}`);
     this.client = new Redis({
       host: '127.0.0.1',
@@ -32,13 +32,13 @@ class Cache {
   async setMulti(values: { [key: string]: string }) {
     const pipeline = this.client.multi();
 
-    Object.keys(values).forEach((key) => {
+    Object.keys(values).forEach(key => {
       pipeline.set(key, values[key]);
     });
 
     return pipeline.exec();
   }
-  async get(key: string): Promise<string> {
+  async get(key: string): Promise<string | null> {
     return this.client.get(key);
   }
 }

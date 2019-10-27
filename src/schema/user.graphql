@@ -2,3 +2,7 @@ type User {
   id: ID!
   email: String!
 }
+
+extend type Query {
+  userByEmail(email: String!): User
+}

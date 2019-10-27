@@ -58,7 +58,7 @@ class EsiAPI extends RESTDataSource {
 
       if (!value) {
         logger.warning(`Could not get cache entry for ${cacheKey} for 304 response`);
-        return null;
+        throw new Error(`Could not get cache entry for ${cacheKey} for 304 response`);
       }
 
       const { data } = JSON.parse(value);

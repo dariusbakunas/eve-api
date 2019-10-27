@@ -7,16 +7,13 @@
     "module": "commonjs",
     "declaration": true,
     "declarationMap": true,
-//    "noImplicitAny": true,
-//    "noImplicitReturns": true,
+    //    "noImplicitAny": true,
+    //    "noImplicitReturns": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "moduleResolution": "node",
     "types": ["node", "jest"]
   },
-  "exclude": [
-    "node_modules",
-    "node_modules/apollo-datasource-rest"
-  ],
-  "include": ["src/**/*.ts", "knexfile.ts"]
+  "exclude": ["node_modules"],
+  "include": ["./src/**/*.ts", "knexfile.ts"]
 }
