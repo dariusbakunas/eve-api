@@ -1,0 +1,10 @@
+overwrite: true
+schema: './src/schema/*.graphql'
+documents: null
+generates:
+  src/__generated__/types.ts:
+    config:
+      defaultMapper: Partial<{T}>
+    plugins:
+      - 'typescript'
+      - 'typescript-resolvers'
