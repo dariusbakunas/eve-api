@@ -3,6 +3,18 @@ type User {
   email: String!
 }
 
+input RegistrationInput {
+  firstName: String
+  lastName: String
+  username: String!
+  email: String!
+  code: String!
+}
+
 extend type Query {
   userByEmail(email: String!): User
+}
+
+extend type Mutation {
+  register(input: RegistrationInput!): User
 }

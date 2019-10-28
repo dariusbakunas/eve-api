@@ -53,6 +53,7 @@ export type Mutation = {
    __typename?: 'Mutation',
   addCharacter: Character,
   removeCharacter: Scalars['ID'],
+  register?: Maybe<User>,
 };
 
 
@@ -65,6 +66,11 @@ export type MutationRemoveCharacterArgs = {
   id: Scalars['ID']
 };
 
+
+export type MutationRegisterArgs = {
+  input: RegistrationInput
+};
+
 export type Query = {
    __typename?: 'Query',
   scopes: Array<Scope>,
@@ -75,6 +81,14 @@ export type Query = {
 
 export type QueryUserByEmailArgs = {
   email: Scalars['String']
+};
+
+export type RegistrationInput = {
+  firstName?: Maybe<Scalars['String']>,
+  lastName?: Maybe<Scalars['String']>,
+  username: Scalars['String'],
+  email: Scalars['String'],
+  code: Scalars['String'],
 };
 
 export type Scope = {
@@ -174,6 +188,7 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<Partial<User>>,
   Mutation: ResolverTypeWrapper<{}>,
   CharacterInput: ResolverTypeWrapper<Partial<CharacterInput>>,
+  RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
   Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   Date: ResolverTypeWrapper<Partial<Scalars['Date']>>,
   Time: ResolverTypeWrapper<Partial<Scalars['Time']>>,
@@ -194,6 +209,7 @@ export type ResolversParentTypes = {
   User: Partial<User>,
   Mutation: {},
   CharacterInput: Partial<CharacterInput>,
+  RegistrationInput: Partial<RegistrationInput>,
   Boolean: Partial<Scalars['Boolean']>,
   Date: Partial<Scalars['Date']>,
   Time: Partial<Scalars['Time']>,
@@ -237,6 +253,7 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'input'>>,
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
+  register?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
