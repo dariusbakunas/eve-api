@@ -14,6 +14,7 @@ import Crypt from './services/crypt';
 import { Character } from './services/db/models/character';
 import { User } from './services/db/models/user';
 import { Scope } from './services/db/models/scope';
+import apolloContext from './auth/apolloContext';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -95,67 +96,7 @@ const dataSources: () => IDataSources = () => ({
 });
 
 const server = new ApolloServer({
-  context: async ({ req }: { req: Request & { user?: { sub: string } } }) => {
-    if (process.env.USE_TEST_USER === 'true') {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const user = require('./auth/userMock');
-      return {
-        user,
-      };
-    }
-
-    const token = req.headers.authorization;
-
-    if (!req.user) {
-      return;
-    }
-
-    const { sub } = req.user;
-
-    let user = cache.get<IUserProfile>(sub);
-
-    const reqOptions = token
-      ? {
-          headers: {
-            Authorization: token,
-          },
-        }
-      : {};
-
-    if (!user) {
-      // get user information
-      user = await request<IUserProfile>(
-        `https://${process.env.AUTH0_DOMAIN}/userinfo`,
-        reqOptions
-      );
-
-      const { email, email_verified: emailVerified } = user;
-
-      if (!emailVerified) {
-        return;
-      }
-
-      let dbUser = await db.User.query().findOne({
-        email,
-      });
-
-      if (!dbUser) {
-        // create new user
-        dbUser = await db.User.query().insert({ email });
-      }
-
-      user = {
-        ...user,
-        id: dbUser.id,
-      };
-
-      cache.set(sub, user);
-    }
-
-    return {
-      user,
-    };
-  },
+  context: apolloContext,
   cache: new RedisCache({
     host: process.env.REDIS_HOST,
     password: process.env.REDIS_PASSWORD,

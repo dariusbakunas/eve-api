@@ -53,7 +53,7 @@ export type Mutation = {
    __typename?: 'Mutation',
   addCharacter: Character,
   removeCharacter: Scalars['ID'],
-  register?: Maybe<User>,
+  register: User,
 };
 
 
@@ -101,8 +101,17 @@ export type Scope = {
 export type User = {
    __typename?: 'User',
   id: Scalars['ID'],
+  username: Scalars['String'],
+  firstName?: Maybe<Scalars['String']>,
+  lastName?: Maybe<Scalars['String']>,
   email: Scalars['String'],
+  status: UserStatus,
 };
+
+export enum UserStatus {
+  Active = 'ACTIVE',
+  Inactive = 'INACTIVE'
+}
 
 
 
@@ -186,6 +195,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Partial<Scalars['Int']>>,
   Float: ResolverTypeWrapper<Partial<Scalars['Float']>>,
   User: ResolverTypeWrapper<Partial<User>>,
+  UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
   Mutation: ResolverTypeWrapper<{}>,
   CharacterInput: ResolverTypeWrapper<Partial<CharacterInput>>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
@@ -207,6 +217,7 @@ export type ResolversParentTypes = {
   Int: Partial<Scalars['Int']>,
   Float: Partial<Scalars['Float']>,
   User: Partial<User>,
+  UserStatus: Partial<UserStatus>,
   Mutation: {},
   CharacterInput: Partial<CharacterInput>,
   RegistrationInput: Partial<RegistrationInput>,
@@ -253,7 +264,7 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'input'>>,
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
-  register?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
+  register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -273,7 +284,11 @@ export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  status?: Resolver<ResolversTypes['UserStatus'], ParentType, ContextType>,
 };
 
 export type Resolvers<ContextType = any> = {

@@ -7,8 +7,6 @@
     "module": "commonjs",
     "declaration": true,
     "declarationMap": true,
-    //    "noImplicitAny": true,
-    //    "noImplicitReturns": true,
     "skipLibCheck": true,
     "strict": true,
     "moduleResolution": "node",
