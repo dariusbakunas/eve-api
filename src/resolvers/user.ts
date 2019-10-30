@@ -20,13 +20,8 @@ const resolvers: Resolvers = {
     },
   },
   Mutation: {
-    register: async (_source, { input }, { dataSources, user }) => {
+    register: async (_source, { input }, { dataSources }) => {
       const { email, firstName, lastName, username, code } = input;
-
-      if (!user || input.email !== user.email) {
-        // can only register your own user
-        throw new AuthenticationError('Registration email mismatch');
-      }
 
       const exists = await dataSources.db.User.query()
         .select('username')

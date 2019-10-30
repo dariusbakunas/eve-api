@@ -39,6 +39,8 @@
     "express-jwt": "^5.3.1",
     "graphql": "^14.5.4",
     "graphql-iso-date": "^3.6.1",
+    "graphql-middleware": "^4.0.1",
+    "graphql-shield": "^7.0.0",
     "graphql-tools": "^4.0.5",
     "ioredis": "^4.14.1",
     "jwks-rsa": "^1.6.0",

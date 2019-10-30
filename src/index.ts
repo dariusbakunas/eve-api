@@ -1,5 +1,6 @@
 import express, { Request } from 'express';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
+import { applyMiddleware } from 'graphql-middleware';
 import { RedisCache } from 'apollo-server-cache-redis';
 import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
@@ -15,6 +16,7 @@ import { Character } from './services/db/models/character';
 import { User } from './services/db/models/user';
 import { Scope } from './services/db/models/scope';
 import apolloContext from './auth/apolloContext';
+import shieldMiddleware from './auth/shieldMiddleware';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -102,7 +104,7 @@ const server = new ApolloServer({
     password: process.env.REDIS_PASSWORD,
   }),
   dataSources,
-  schema,
+  schema: applyMiddleware(schema, shieldMiddleware),
 });
 
 app.get('/health-check', (req, res) => {
