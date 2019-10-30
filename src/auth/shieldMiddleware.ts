@@ -1,9 +1,28 @@
 import { rule, shield, and, or } from 'graphql-shield';
 import { ApolloContext } from '../types';
 import { MutationRegisterArgs } from '../__generated__/types';
+import { IDataSources } from '../index';
 
 const allow = rule()(() => true);
 const deny = rule()(() => false);
+
+const isCharacterOwner = rule()(
+  async (parent, { id }, { user, dataSources }: ApolloContext & { dataSources: IDataSources }) => {
+    const result = await dataSources.db.Character.query()
+      .where('id', '=', id)
+      .andWhere('ownerId', '=', user!.id)
+      .count('*')
+      .pluck('count(*)')
+      .first();
+
+    const count = (result as unknown) as number;
+    return count === 1;
+  }
+);
+
+const isActiveUser = rule({ cache: 'contextual' })(
+  (parent, args, { user }: ApolloContext) => !!user && user.status === 'ACTIVE'
+);
 
 // current user email should match the one requested
 const hasSameEmail = rule()(
@@ -23,10 +42,14 @@ const shieldMiddleware = shield(
   {
     Query: {
       '*': deny,
+      characters: isActiveUser,
+      scopes: isActiveUser,
       userByEmail: hasSameEmail,
     },
     Mutation: {
       '*': deny,
+      addCharacter: isActiveUser,
+      removeCharacter: and(isActiveUser, isCharacterOwner),
       register: and(isGuest, canRegister),
     },
   },
