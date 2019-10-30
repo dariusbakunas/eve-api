@@ -51,6 +51,7 @@ interface IResolvers<Context> {
     corporation: Resolver<ResolversTypes['Corporation'], Character, Context>;
     gender: Resolver<ResolversTypes['String'], Character, Context>;
     totalSp: Resolver<Maybe<ResolversTypes['Int']>, Character, Context>;
+    scopes: Resolver<Maybe<Array<ResolversTypes['String']>>, Character, Context>;
     securityStatus: Resolver<ResolversTypes['Float'], Character, Context>;
   };
 }
@@ -73,6 +74,9 @@ const resolverMap: IResolvers<IResolverContext> = {
         id: corporationId,
         ...corporationInfo,
       };
+    },
+    scopes: ({ scopes }) => {
+      return scopes.split(' ');
     },
     gender: ({ id }, args, { dataSources }, { fieldName }) => {
       return getCharacterInfo(id!, dataSources.esiApi, fieldName);
