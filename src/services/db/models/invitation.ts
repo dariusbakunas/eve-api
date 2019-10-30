@@ -1,6 +1,6 @@
-import { Model } from 'objection';
+import BaseModel from './base';
 
-export class Invitation extends Model {
+export class Invitation extends BaseModel {
   static tableName = 'invitations';
 
   readonly id!: number;

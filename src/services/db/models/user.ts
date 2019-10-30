@@ -1,13 +1,14 @@
 import { Model, RelationMappings } from 'objection';
 import { Character } from './character';
 import { Maybe } from '../../../types';
+import BaseModel from './base';
 
 export enum UserStatus {
   Active = 'ACTIVE',
   Inactive = 'INACTIVE',
 }
 
-export class User extends Model {
+export class User extends BaseModel {
   static tableName = 'users';
 
   readonly id!: number;

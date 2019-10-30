@@ -1,7 +1,8 @@
 import { Model } from 'objection';
 import { User } from './user';
+import BaseModel from './base';
 
-export class Character extends Model {
+export class Character extends BaseModel {
   static tableName = 'characters';
   static relationMappings = {
     owner: {
