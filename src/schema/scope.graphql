@@ -2,3 +2,7 @@ type Scope {
   id: ID!
   name: String!
 }
+
+extend type Query {
+  scopes: [Scope!]!
+}

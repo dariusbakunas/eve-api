@@ -1,6 +1,11 @@
 import logger from '../utils/logger';
 import { IDataSources } from '../index';
-import { Resolver, ResolversTypes } from '../__generated__/types';
+import {
+  MutationRemoveCharacterArgs,
+  RequireFields,
+  Resolver,
+  ResolversTypes,
+} from '../__generated__/types';
 import { IResolverContext, Maybe } from '../types';
 import { Character } from '../services/db/models/character';
 
@@ -46,6 +51,14 @@ interface IResolvers<Context> {
   Query: {
     characters: Resolver<Array<Character>, any, Context>;
   };
+  Mutation: {
+    removeCharacter: Resolver<
+      ResolversTypes['ID'],
+      any,
+      Context,
+      RequireFields<MutationRemoveCharacterArgs, 'id'>
+    >;
+  };
   Character: {
     birthday: Resolver<ResolversTypes['DateTime'], Character, Context>;
     corporation: Resolver<ResolversTypes['Corporation'], Character, Context>;
@@ -60,6 +73,12 @@ const resolverMap: IResolvers<IResolverContext> = {
   Query: {
     characters: async (_, args, { dataSources, user: { id } }) => {
       return dataSources.db.Character.query().where('ownerId', id);
+    },
+  },
+  Mutation: {
+    removeCharacter: async (_, { id }, { dataSources: { db }, user: { id: userId } }) => {
+      await db.Character.query().deleteById(id);
+      return id;
     },
   },
   Character: {

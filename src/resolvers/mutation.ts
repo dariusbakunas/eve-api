@@ -23,11 +23,7 @@ const resolverMap: IResolvers = {
 
         const expiresAt = expiresIn * 1000 + new Date().getTime();
 
-        const {
-          CharacterID,
-          CharacterName,
-          Scopes,
-        } = await esiAuth.verifyToken(accessToken);
+        const { CharacterID, CharacterName, Scopes } = await esiAuth.verifyToken(accessToken);
 
         const user = await db.User.query().findById(userId);
 
@@ -48,14 +44,6 @@ const resolverMap: IResolvers = {
         }
         throw new Error(e.message);
       }
-    },
-    removeCharacter: async (
-      _,
-      { id },
-      { dataSources: { db }, user: { id: userId } }
-    ) => {
-      await db.Character.query().deleteById(id);
-      return id;
     },
   },
 };

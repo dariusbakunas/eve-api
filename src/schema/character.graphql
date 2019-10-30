@@ -12,3 +12,12 @@ type Character {
 input CharacterInput {
   code: String!
 }
+
+extend type Query {
+  characters: [Character!]!
+}
+
+extend type Mutation {
+  addCharacter(input: CharacterInput!): Character!
+  removeCharacter(id: ID!): ID!
+}
