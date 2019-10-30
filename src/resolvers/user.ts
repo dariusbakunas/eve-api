@@ -63,7 +63,7 @@ const resolvers: Resolvers = {
         status: UserStatus.Active,
       };
 
-      const [dbUser]: User[] = await dataSources.db.User.query().insertAndFetch(newUser);
+      const dbUser: User = await dataSources.db.User.query().insertAndFetch(newUser);
 
       await dataSources.db.Invitation.query().deleteById(invitation.id);
       return {
