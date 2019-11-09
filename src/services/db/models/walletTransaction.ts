@@ -4,6 +4,7 @@ export class WalletTransaction extends BaseModel {
   static tableName = 'walletTransactions';
 
   readonly id!: number;
+  characterId!: number;
   clientId!: number;
   isBuy!: boolean;
   isPersonal!: boolean;

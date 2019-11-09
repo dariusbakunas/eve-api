@@ -18,17 +18,11 @@ import apolloContext from './auth/apolloContext';
 import shieldMiddleware from './auth/shieldMiddleware';
 import { Invitation } from './services/db/models/invitation';
 import { WalletTransaction } from './services/db/models/walletTransaction';
+import { JournalEntry } from './services/db/models/journalEntry';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
   password: process.env.REDIS_PASSWORD,
-});
-
-const cache = new Cache({
-  stdTTL: 100,
-  checkperiod: 120,
-  useClones: true,
-  deleteOnExpire: true,
 });
 
 export interface IUserProfile {
@@ -45,6 +39,7 @@ export interface IUserProfile {
 export interface IDataSources {
   db: {
     Character: typeof Character;
+    JournalEntry: typeof JournalEntry;
     User: typeof User;
     Scope: typeof Scope;
     Invitation: typeof Invitation;

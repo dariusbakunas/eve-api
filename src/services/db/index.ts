@@ -9,6 +9,7 @@ import { Invitation } from './models/invitation';
 import config from '../../../knexfile';
 import { WalletTransaction } from './models/walletTransaction';
 import { IDataSources } from '../../index';
+import { JournalEntry } from './models/journalEntry';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
@@ -17,6 +18,7 @@ Model.knex(knex);
 
 const db: IDataSources['db'] = {
   Character,
+  JournalEntry,
   User,
   Scope,
   Invitation,

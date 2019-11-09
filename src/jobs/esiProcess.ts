@@ -8,6 +8,8 @@ import logger from '../utils/logger';
 import { transaction } from 'objection';
 import { WalletTransaction } from '../services/db/models/walletTransaction';
 import { InMemoryLRUCache } from 'apollo-server-caching';
+import { processWalletTransactions } from './processWalletTransactions';
+import { processJournalEntries } from './processJournalEntries';
 
 const initDataSources = () => {
   const dataSources = {
@@ -29,7 +31,7 @@ export const processData = async () => {
 
   for (let i = 0; i < characters.length; i++) {
     const character: Character = characters[i];
-    const { id, accessToken, refreshToken, expiresAt, scopes, name } = character;
+    const { id, accessToken, refreshToken, expiresAt, scopes } = character;
 
     const token = await getAccessToken(
       id,
@@ -42,47 +44,8 @@ export const processData = async () => {
     );
 
     if (scopes.includes('esi-wallet.read_character_wallet.v1')) {
-      logger.info(`Getting transactions for character: ${name}`);
-      const transactions = await esiApi.getWalletTransactions(id, token);
-
-      const knex = WalletTransaction.knex();
-      let inserted = 0;
-
-      await transaction(knex, async trx => {
-        for (let t = 0; t < transactions.length; t++) {
-          const walletTransaction = transactions[t];
-
-          const exists = await db.WalletTransaction.query(trx)
-            .select('id')
-            .where({
-              id: walletTransaction.transactionId,
-            });
-
-          if (!exists.length) {
-            await db.WalletTransaction.query(trx).insert({
-              id: walletTransaction.transactionId,
-              characterId: character.id,
-              clientId: walletTransaction.clientId,
-              isBuy: walletTransaction.isBuy,
-              isPersonal: walletTransaction.isPersonal,
-              quantity: walletTransaction.quantity,
-              typeId: walletTransaction.typeId,
-              locationId: walletTransaction.locationId,
-              journalRefId: walletTransaction.journalRefId,
-              unitPrice: walletTransaction.unitPrice,
-              date: walletTransaction.date,
-            });
-
-            inserted++;
-          }
-        }
-      });
-
-      if (inserted > 0) {
-        logger.info(`${inserted} new transactions for ${character.name}`);
-      } else {
-        logger.info(`No new transactions for ${character.name}`);
-      }
+      await processWalletTransactions(character, token, db, esiApi);
+      await processJournalEntries(character, token, db, esiApi);
     }
   }
 };

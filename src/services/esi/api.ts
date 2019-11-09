@@ -1,34 +1,39 @@
 import { Request, Response, RESTDataSource } from 'apollo-datasource-rest';
-import { RedisCache } from 'apollo-server-cache-redis';
 import { RequestOptions } from 'apollo-datasource-rest/src/RESTDataSource';
 import logger from '../../utils/logger';
 import moment from 'moment';
 import { KeyValueCache } from 'apollo-server-caching';
-
-interface IEsiWalletTransaction {
-  client_id: number;
-  date: string;
-  is_buy: boolean;
-  is_personal: boolean;
-  journal_ref_id: number;
-  location_id: number;
-  quantity: number;
-  transaction_id: number;
-  type_id: number;
-  unit_price: number;
-}
+import { IEsiJournalEntry, IEsiWalletTransaction } from './esiTypes';
 
 interface IWalletTransaction {
+  id: number;
   clientId: number;
+  characterId: number;
   date: Date;
   isBuy: boolean;
   isPersonal: boolean;
   journalRefId: number;
   locationId: number;
   quantity: 3;
-  transactionId: number;
   typeId: number;
   unitPrice: number;
+}
+
+interface IJournalEntry {
+  amount?: number;
+  balance?: number;
+  characterId: number;
+  contextId?: number;
+  contextIdType?: number;
+  date: Date;
+  description: string;
+  firstPartyId?: number;
+  id: number;
+  reason?: string;
+  refType: string;
+  secondPartyId?: string;
+  tax?: number;
+  taxReceiverId?: number;
 }
 
 class EsiAPI extends RESTDataSource {
@@ -119,15 +124,42 @@ class EsiAPI extends RESTDataSource {
 
     return transactions.map((t: IEsiWalletTransaction) => ({
       clientId: t.client_id,
+      characterId: characterId,
       date: moment(t.date).toDate(),
       isBuy: t.is_buy,
       isPersonal: t.is_personal,
       journalRefId: t.journal_ref_id,
       locationId: t.location_id,
       quantity: t.quantity,
-      transactionId: t.transaction_id,
+      id: t.transaction_id,
       typeId: t.type_id,
       unitPrice: t.unit_price,
+    }));
+  }
+
+  async getJournalEntries(characterId: number, token: string): Promise<IJournalEntry[]> {
+    const entries = await this.get(`/characters/${characterId}/wallet/journal`, undefined, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return entries.map((entry: IEsiJournalEntry) => ({
+      id: entry.id,
+      amount: entry.amount,
+      balance: entry.balance,
+      characterId: characterId,
+      contextId: entry.context_id,
+      contextIdType: entry.context_id_type,
+      date: moment(entry.date).toDate(),
+      description: entry.description,
+      firstPartyId: entry.first_party_id,
+      reason: entry.reason,
+      refType: entry.ref_type,
+      secondPartyId: entry.second_party_id,
+      tax: entry.tax,
+      taxReceiverId: entry.tax_receiver_id,
     }));
   }
 
