@@ -13,7 +13,8 @@
     "db:rollback": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:rollback --env development",
     "db:seed": "node -r dotenv/config ./node_modules/knex/bin/cli.js seed:run --env development",
     "postinstall": "patch-package",
-    "gen:types": "graphql-codegen --config codegen.yml"
+    "gen:types": "graphql-codegen --config codegen.yml",
+    "start:processor": "ts-node -r dotenv/config ./src/jobs/manual.ts"
   },
   "husky": {
     "hooks": {
@@ -76,6 +77,7 @@
     "eslint-plugin-prettier": "^3.1.1",
     "husky": "^3.0.9",
     "jest": "^24.9.0",
+    "moment": "^2.24.0",
     "nodemon": "^1.19.2",
     "patch-package": "^6.2.0",
     "prettier": "^1.18.2",

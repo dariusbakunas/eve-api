@@ -73,8 +73,8 @@ export type MutationRegisterArgs = {
 
 export type Query = {
    __typename?: 'Query',
-  scopes: Array<Scope>,
   characters: Array<Character>,
+  scopes: Array<Scope>,
   userByEmail?: Maybe<User>,
 };
 
@@ -185,15 +185,15 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>,
-  Scope: ResolverTypeWrapper<Partial<Scope>>,
-  ID: ResolverTypeWrapper<Partial<Scalars['ID']>>,
-  String: ResolverTypeWrapper<Partial<Scalars['String']>>,
   Character: ResolverTypeWrapper<Partial<Character>>,
+  ID: ResolverTypeWrapper<Partial<Scalars['ID']>>,
   Corporation: ResolverTypeWrapper<Partial<Corporation>>,
   Alliance: ResolverTypeWrapper<Partial<Alliance>>,
+  String: ResolverTypeWrapper<Partial<Scalars['String']>>,
   DateTime: ResolverTypeWrapper<Partial<Scalars['DateTime']>>,
   Int: ResolverTypeWrapper<Partial<Scalars['Int']>>,
   Float: ResolverTypeWrapper<Partial<Scalars['Float']>>,
+  Scope: ResolverTypeWrapper<Partial<Scope>>,
   User: ResolverTypeWrapper<Partial<User>>,
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
   Mutation: ResolverTypeWrapper<{}>,
@@ -207,15 +207,15 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Query: {},
-  Scope: Partial<Scope>,
-  ID: Partial<Scalars['ID']>,
-  String: Partial<Scalars['String']>,
   Character: Partial<Character>,
+  ID: Partial<Scalars['ID']>,
   Corporation: Partial<Corporation>,
   Alliance: Partial<Alliance>,
+  String: Partial<Scalars['String']>,
   DateTime: Partial<Scalars['DateTime']>,
   Int: Partial<Scalars['Int']>,
   Float: Partial<Scalars['Float']>,
+  Scope: Partial<Scope>,
   User: Partial<User>,
   UserStatus: Partial<UserStatus>,
   Mutation: {},
@@ -268,8 +268,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
+  scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
   userByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>,
 };
 
