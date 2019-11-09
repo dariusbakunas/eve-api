@@ -8,7 +8,7 @@ class EsiAuth extends RESTDataSource {
 
   // TODO: move clientId and secret to constructor
   async getCharacterTokens(clientId: string, clientSecret: string, code: string) {
-    const authBuffer = new Buffer(`${clientId}:${clientSecret}`);
+    const authBuffer = Buffer.from(`${clientId}:${clientSecret}`);
 
     return this.post(
       '/oauth/token',

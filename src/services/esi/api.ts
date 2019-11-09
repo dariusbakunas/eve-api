@@ -2,11 +2,39 @@ import { Request, Response, RESTDataSource } from 'apollo-datasource-rest';
 import { RedisCache } from 'apollo-server-cache-redis';
 import { RequestOptions } from 'apollo-datasource-rest/src/RESTDataSource';
 import logger from '../../utils/logger';
+import moment from 'moment';
+import { KeyValueCache } from 'apollo-server-caching';
+
+interface IEsiWalletTransaction {
+  client_id: number;
+  date: string;
+  is_buy: boolean;
+  is_personal: boolean;
+  journal_ref_id: number;
+  location_id: number;
+  quantity: number;
+  transaction_id: number;
+  type_id: number;
+  unit_price: number;
+}
+
+interface IWalletTransaction {
+  clientId: number;
+  date: Date;
+  isBuy: boolean;
+  isPersonal: boolean;
+  journalRefId: number;
+  locationId: number;
+  quantity: 3;
+  transactionId: number;
+  typeId: number;
+  unitPrice: number;
+}
 
 class EsiAPI extends RESTDataSource {
-  private cache: RedisCache;
+  private cache: KeyValueCache;
 
-  constructor(baseUrl: string, cache: RedisCache) {
+  constructor(baseUrl: string, cache: KeyValueCache) {
     super();
     this.baseURL = baseUrl;
     this.cache = cache;
@@ -75,6 +103,32 @@ class EsiAPI extends RESTDataSource {
         'Content-Type': 'application/json',
       },
     });
+  }
+
+  async getWalletTransactions(characterId: number, token: string): Promise<IWalletTransaction[]> {
+    const transactions = await this.get(
+      `/characters/${characterId}/wallet/transactions/`,
+      undefined,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return transactions.map((t: IEsiWalletTransaction) => ({
+      clientId: t.client_id,
+      date: moment(t.date).toDate(),
+      isBuy: t.is_buy,
+      isPersonal: t.is_personal,
+      journalRefId: t.journal_ref_id,
+      locationId: t.location_id,
+      quantity: t.quantity,
+      transactionId: t.transaction_id,
+      typeId: t.type_id,
+      unitPrice: t.unit_price,
+    }));
   }
 
   async getCorporationInfo(corporationId: number) {

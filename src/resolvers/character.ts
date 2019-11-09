@@ -1,4 +1,3 @@
-import logger from '../utils/logger';
 import { IDataSources } from '../index';
 import {
   MutationRemoveCharacterArgs,
@@ -8,43 +7,11 @@ import {
 } from '../__generated__/types';
 import { IResolverContext, Maybe } from '../types';
 import { Character } from '../services/db/models/character';
+import { getAccessToken } from './common';
 
 const getCharacterInfo = async (id: number, esiApi: IDataSources['esiApi'], fieldName: string) => {
   const info = await esiApi.getCharacterInfo(id);
   return info[fieldName === 'securityStatus' ? 'security_status' : fieldName];
-};
-
-const getAccessToken = async (
-  characterId: number,
-  dataSources: IDataSources,
-  accessToken: string,
-  refreshToken: string,
-  expiresAt: number
-) => {
-  const { db, crypt, esiAuth } = dataSources;
-
-  if (new Date().getTime() < expiresAt - 1000 * 60) {
-    return crypt.decrypt(accessToken);
-  } else {
-    logger.info(`Getting new access token for character: ${characterId}`);
-
-    // get new tokens
-    const tokens = await esiAuth.getAccessToken(
-      process.env.EVE_CLIENT_ID!,
-      process.env.EVE_CLIENT_SECRET!,
-      crypt.decrypt(refreshToken)
-    );
-
-    await db.Character.query()
-      .findById(characterId)
-      .patch({
-        accessToken: crypt.encrypt(tokens.access_token),
-        refreshToken: crypt.encrypt(tokens.refresh_token),
-        expiresAt: tokens.expires_in * 1000 + new Date().getTime(),
-      });
-
-    return tokens.access_token;
-  }
 };
 
 interface IResolvers<Context> {
@@ -109,7 +76,15 @@ const resolverMap: IResolvers<IResolverContext> = {
         return null;
       }
 
-      const token = await getAccessToken(id, dataSources, accessToken, refreshToken, expiresAt);
+      const token = await getAccessToken(
+        id,
+        accessToken,
+        refreshToken,
+        expiresAt,
+        dataSources.db,
+        dataSources.crypt,
+        dataSources.esiAuth
+      );
 
       const { total_sp: totalSp } = await dataSources.esiApi.getCharacterSkills(id, token);
       return totalSp;

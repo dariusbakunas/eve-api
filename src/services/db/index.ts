@@ -7,17 +7,20 @@ import { Invitation } from './models/invitation';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import config from '../../../knexfile';
+import { WalletTransaction } from './models/walletTransaction';
+import { IDataSources } from '../../index';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
 //knex.migrate.latest();
 Model.knex(knex);
 
-const db = {
+const db: IDataSources['db'] = {
   Character,
   User,
   Scope,
   Invitation,
+  WalletTransaction,
 };
 
 export default db;

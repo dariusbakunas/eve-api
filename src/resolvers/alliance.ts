@@ -1,6 +1,6 @@
-import { IResolvers } from 'graphql-tools';
+import { Resolvers } from '../__generated__/types';
 
-const resolverMap: IResolvers = {
+const resolverMap: Resolvers = {
   Alliance: {},
 };
 

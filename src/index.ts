@@ -4,7 +4,6 @@ import { applyMiddleware } from 'graphql-middleware';
 import { RedisCache } from 'apollo-server-cache-redis';
 import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
-import request from './utils/request';
 import Cache from 'node-cache';
 import logger from './utils/logger';
 import db from './services/db/index';
@@ -17,6 +16,8 @@ import { User } from './services/db/models/user';
 import { Scope } from './services/db/models/scope';
 import apolloContext from './auth/apolloContext';
 import shieldMiddleware from './auth/shieldMiddleware';
+import { Invitation } from './services/db/models/invitation';
+import { WalletTransaction } from './services/db/models/walletTransaction';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -46,6 +47,8 @@ export interface IDataSources {
     Character: typeof Character;
     User: typeof User;
     Scope: typeof Scope;
+    Invitation: typeof Invitation;
+    WalletTransaction: typeof WalletTransaction;
   };
   esiAuth: EsiAuth;
   esiApi: EsiAPI;
