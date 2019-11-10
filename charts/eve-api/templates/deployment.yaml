@@ -58,6 +58,10 @@ spec:
               value: {{ .Values.dbName }}
             - name: PD_DB_HOST
               value: {{ .Values.dbHost }}
+            - name: EVE_LOGIN_URL
+              value: {{ .Values.eveLoginURL }}
+            - name: EVE_ESI_URL
+              value: {{ .Values.eveEsiURL }}
             - name: EVE_CLIENT_ID
               value: {{ .Values.eveClientId }}
             - name: EVE_CLIENT_SECRET
