@@ -73,7 +73,7 @@ if (
   process.env.NODE_ENV === 'production' ||
   (process.env.NODE_ENV === 'development' && process.env.USE_TEST_USER !== 'true')
 ) {
-  app.use(jwtMiddleware);
+  app.use('/graphql*', jwtMiddleware);
 } else {
   logger.warn('Token authentication is disabled!!!');
 }

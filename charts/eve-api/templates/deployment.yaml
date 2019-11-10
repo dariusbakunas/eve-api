@@ -30,11 +30,11 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /health-check
+              path: /.well-known/apollo/server-health
               port: http
           readinessProbe:
             httpGet:
-              path: /health-check
+              path: /.well-known/apollo/server-health
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
