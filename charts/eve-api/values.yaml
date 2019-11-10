@@ -52,9 +52,10 @@ affinity: {}
 
 auth0Domain: eve-app.auth0.com
 auth0Audience: http://eve-api:4000
+eveClientId: 889dde8bdb8c42c6b6a2c13734ef3707
 dbUsername: eve_gql_pd_rw
 dbHost: mysql.local.geekspace.us
-dbName: eve-gql
+dbName: eve_gql_pd
 nodeEnv: production
 redisHost: redis.local.geekspace.us
 

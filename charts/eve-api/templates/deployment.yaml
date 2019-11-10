@@ -58,6 +58,13 @@ spec:
               value: {{ .Values.dbName }}
             - name: PD_DB_HOST
               value: {{ .Values.dbHost }}
+            - name: EVE_CLIENT_ID
+              value: {{ .Values.eveClientId }}
+            - name: EVE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "eve-api.name" . }}-secret
+                  key: eve-client-secret
             - name: SENTRY_ENVIRONMENT
               value: {{ .Values.sentryEnvironment }}
             - name: LOG_LEVEL
