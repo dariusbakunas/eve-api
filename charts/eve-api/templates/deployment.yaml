@@ -38,6 +38,40 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: REDIS_HOST
+              value: {{ .Values.redisHost }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "eve-api.name" . }}-secret
+                  key: redis-psw
+            - name: NODE_ENV
+              value: {{ .Values.nodeEnv }}'
+            - name: AUTH0_DOMAIN
+              value: {{ .Values.auth0Domain }}
+            - name: AUTH0_AUDIENCE
+              value: {{ .Values.auth0Audience }}
+            - name: PD_DB_USERNAME
+              value: {{ .Values.dbUsername }}
+            - name: PD_DB_DATABASE
+              value: {{ .Values.dbName }}
+            - name: PD_DB_HOST
+              value: {{ .Values.dbHost }}
+            - name: SENTRY_ENVIRONMENT
+              value: {{ .Values.sentryEnvironment }}
+            - name: LOG_LEVEL
+              value: info
+            - name: PD_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "eve-api.name" . }}-secret
+                  key: db-psw
+            - name: TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "eve-api.name" . }}-secret
+                  key: token-secret
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
