@@ -27,7 +27,7 @@ class EsiAuth extends RESTDataSource {
   }
 
   async getAccessToken(clientId: string, clientSecret: string, refreshToken: string) {
-    const authBuffer = new Buffer(`${clientId}:${clientSecret}`);
+    const authBuffer = Buffer.from(`${clientId}:${clientSecret}`);
 
     return this.post(
       '/oauth/token',
