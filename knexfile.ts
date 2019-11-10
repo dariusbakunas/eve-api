@@ -2,6 +2,7 @@ module.exports = {
   development: {
     client: 'mysql2',
     connection: {
+      host: process.env.DEV_DB_HOST,
       database: process.env.DEV_DB_DATABASE,
       user: process.env.DEV_DB_USERNAME,
       password: process.env.DEV_DB_PASSWORD,
@@ -17,6 +18,7 @@ module.exports = {
   production: {
     client: 'mysql2',
     connection: {
+      host: process.env.PD_DB_HOST,
       database: process.env.PD_DB_DATABASE,
       user: process.env.PD_DB_USERNAME,
       password: process.env.PD_DB_PASSWORD,
