@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: gcr.io/personal-248114/eve-api
-  tag: 6
+  tag: 33
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
