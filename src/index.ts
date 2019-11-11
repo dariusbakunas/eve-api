@@ -1,4 +1,4 @@
-import express, { Request } from 'express';
+import express, { Request, Response } from 'express';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import { applyMiddleware } from 'graphql-middleware';
 import { RedisCache } from 'apollo-server-cache-redis';
@@ -16,9 +16,17 @@ import { User } from './services/db/models/user';
 import { Scope } from './services/db/models/scope';
 import apolloContext from './auth/apolloContext';
 import shieldMiddleware from './auth/shieldMiddleware';
+import * as Sentry from '@sentry/node';
 import { Invitation } from './services/db/models/invitation';
 import { WalletTransaction } from './services/db/models/walletTransaction';
 import { JournalEntry } from './services/db/models/journalEntry';
+import pJson from '../package.json';
+import morgan from 'morgan';
+
+Sentry.init({
+  dsn: 'https://3df90faaa98c4caf84cd615965e4aa42@sentry.io/1816282',
+  release: `${pJson.name}@${pJson.version}`,
+});
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -68,6 +76,37 @@ requiredEnv.forEach(env => {
 });
 
 const app = express();
+app.use(Sentry.Handlers.requestHandler());
+
+app.use(
+  morgan('dev', {
+    skip: (req: Request, res: Response) => {
+      return (
+        req.url === '/.well-known/apollo/server-health' ||
+        req.url === '/favicon.ico' ||
+        req.originalUrl === '/.well-known/apollo/server-health' ||
+        req.originalUrl === '/favicon.ico' ||
+        res.statusCode < 400
+      );
+    },
+    stream: process.stderr,
+  })
+);
+
+app.use(
+  morgan('dev', {
+    skip: (req: Request, res: Response) => {
+      return (
+        req.url === '/.well-known/apollo/server-health' ||
+        req.url === '/favicon.ico' ||
+        req.originalUrl === '/.well-known/apollo/server-health' ||
+        req.originalUrl === '/favicon.ico' ||
+        res.statusCode >= 400
+      );
+    },
+    stream: process.stdout,
+  })
+);
 
 if (
   process.env.NODE_ENV === 'production' ||
@@ -111,5 +150,7 @@ app.get('/health-check', (req, res) => {
 });
 
 server.applyMiddleware({ app });
+
+app.use(Sentry.Handlers.errorHandler());
 
 app.listen({ port: 4000 }, () => logger.info(`🚀 Server ready at http://localhost:4000/graphql`));

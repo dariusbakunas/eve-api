@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/dariusbakunas/eve-api#readme",
   "dependencies": {
+    "@sentry/node": "5.7.1",
     "apollo-datasource-rest": "0.6.6",
     "apollo-server-cache-redis": "^1.1.4",
     "apollo-server-express": "^2.9.3",
@@ -69,6 +70,7 @@
     "@types/jest": "^24.0.18",
     "@types/lodash.merge": "^4.6.6",
     "@types/lodash.property": "^4.4.6",
+    "@types/morgan": "^1.7.37",
     "@types/node-fetch": "^2.5.2",
     "@typescript-eslint/eslint-plugin": "^2.3.1",
     "@typescript-eslint/parser": "^2.3.1",

@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "strict": true,
     "moduleResolution": "node",
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules"],
   "include": ["./src/**/*.ts", "knexfile.ts"]
