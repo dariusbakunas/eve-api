@@ -5,8 +5,6 @@ import { getAccessToken } from '../resolvers/common';
 import Crypt from '../services/crypt';
 import EsiAuth from '../services/esi/auth';
 import logger from '../utils/logger';
-import { transaction } from 'objection';
-import { WalletTransaction } from '../services/db/models/walletTransaction';
 import { InMemoryLRUCache } from 'apollo-server-caching';
 import { processWalletTransactions } from './processWalletTransactions';
 import { processJournalEntries } from './processJournalEntries';
@@ -33,19 +31,23 @@ export const processData = async () => {
     const character: Character = characters[i];
     const { id, accessToken, refreshToken, expiresAt, scopes } = character;
 
-    const token = await getAccessToken(
-      id,
-      accessToken,
-      refreshToken,
-      expiresAt,
-      db,
-      crypt,
-      esiAuth
-    );
+    try {
+      const token = await getAccessToken(
+        id,
+        accessToken,
+        refreshToken,
+        expiresAt,
+        db,
+        crypt,
+        esiAuth
+      );
 
-    if (scopes.includes('esi-wallet.read_character_wallet.v1')) {
-      await processWalletTransactions(character, token, db, esiApi);
-      await processJournalEntries(character, token, db, esiApi);
+      if (scopes.includes('esi-wallet.read_character_wallet.v1')) {
+        await processWalletTransactions(character, token, db, esiApi);
+        await processJournalEntries(character, token, db, esiApi);
+      }
+    } catch (e) {
+      logger.error(e);
     }
   }
 };
