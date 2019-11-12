@@ -54,7 +54,7 @@ auth0Domain: eve-app.auth0.com
 auth0Audience: http://eve-api:4000
 eveClientId: 6824e828c9f64b61abecdcb5c13496c5
 eveLoginURL: https://login.eveonline.com
-eveEsiURL: https://login.eveonline.com
+eveEsiURL: https://esi.evetech.net/latest
 dbUsername: eve_gql_pd_rw
 dbHost: 172.22.0.18
 dbName: eve_gql_pd
