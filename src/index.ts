@@ -4,7 +4,6 @@ import { applyMiddleware } from 'graphql-middleware';
 import { RedisCache } from 'apollo-server-cache-redis';
 import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
-import Cache from 'node-cache';
 import logger from './utils/logger';
 import db from './services/db/index';
 import jwtMiddleware from './auth/jwtMiddleware';
@@ -22,6 +21,7 @@ import { WalletTransaction } from './services/db/models/walletTransaction';
 import { JournalEntry } from './services/db/models/journalEntry';
 import pJson from '../package.json';
 import morgan from 'morgan';
+import helmet from 'helmet';
 
 Sentry.init({
   dsn: 'https://3df90faaa98c4caf84cd615965e4aa42@sentry.io/1816282',
@@ -76,10 +76,11 @@ requiredEnv.forEach(env => {
 });
 
 const app = express();
+app.use(helmet());
 app.use(Sentry.Handlers.requestHandler());
 
 app.use(
-  morgan('dev', {
+  morgan('short', {
     skip: (req: Request, res: Response) => {
       return (
         req.url === '/.well-known/apollo/server-health' ||
@@ -94,7 +95,7 @@ app.use(
 );
 
 app.use(
-  morgan('dev', {
+  morgan('short', {
     skip: (req: Request, res: Response) => {
       return (
         req.url === '/.well-known/apollo/server-health' ||
