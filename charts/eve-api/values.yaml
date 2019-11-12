@@ -56,9 +56,9 @@ eveClientId: 889dde8bdb8c42c6b6a2c13734ef3707
 eveLoginURL: https://login.eveonline.com
 eveEsiURL: https://login.eveonline.com
 dbUsername: eve_gql_pd_rw
-dbHost: mysql.local.geekspace.us
+dbHost: 172.22.0.18
 dbName: eve_gql_pd
 nodeEnv: production
-redisHost: redis.local.geekspace.us
+redisHost: 172.22.0.19
 
 sentryEnvironment: production
