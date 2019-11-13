@@ -1,7 +1,7 @@
-import { IDataSources } from '../index';
 import logger from '../utils/logger';
 import { PartialUpdate } from 'objection';
 import { Character } from '../services/db/models/character';
+import { IDataSources } from '../services';
 
 export const getAccessToken = async (
   characterId: number,

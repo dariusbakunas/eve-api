@@ -1,8 +1,8 @@
-import { IDataSources } from '../index';
 import logger from '../utils/logger';
 import { Character } from '../services/db/models/character';
 import { WalletTransaction } from '../services/db/models/walletTransaction';
 import { transaction } from 'objection';
+import { IDataSources } from '../services';
 
 export const processWalletTransactions = async (
   character: Character,

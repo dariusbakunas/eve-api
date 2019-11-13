@@ -1,4 +1,3 @@
-import { IDataSources } from '../index';
 import {
   MutationRemoveCharacterArgs,
   RequireFields,
@@ -8,6 +7,7 @@ import {
 import { IResolverContext, Maybe } from '../types';
 import { Character } from '../services/db/models/character';
 import { getAccessToken } from './common';
+import { IDataSources } from '../services';
 
 const getCharacterInfo = async (id: number, esiApi: IDataSources['esiApi'], fieldName: string) => {
   const info = await esiApi.getCharacterInfo(id);

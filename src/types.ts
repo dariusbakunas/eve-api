@@ -1,4 +1,5 @@
-import { IDataSources, IUserProfile } from './index';
+import { IUserProfile } from './index';
+import { IDataSources } from './services';
 
 export type Maybe<T> = T | null;
 

@@ -5,33 +5,21 @@ import { RedisCache } from 'apollo-server-cache-redis';
 import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
 import logger from './utils/logger';
-import db from './services/db/index';
 import jwtMiddleware from './auth/jwtMiddleware';
-import EsiAPI from './services/esi/api';
-import EsiAuth from './services/esi/auth';
-import Crypt from './services/crypt';
-import { Character } from './services/db/models/character';
-import { User } from './services/db/models/user';
-import { Scope } from './services/db/models/scope';
 import apolloContext from './auth/apolloContext';
 import shieldMiddleware from './auth/shieldMiddleware';
 import * as Sentry from '@sentry/node';
-import { Invitation } from './services/db/models/invitation';
-import { WalletTransaction } from './services/db/models/walletTransaction';
-import { JournalEntry } from './services/db/models/journalEntry';
 import pJson from '../package.json';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import { dataSources } from './services';
 
-Sentry.init({
-  dsn: 'https://3df90faaa98c4caf84cd615965e4aa42@sentry.io/1816282',
-  release: `${pJson.name}@${pJson.version}`,
-});
-
-const redisCache = new RedisCache({
-  host: process.env.REDIS_HOST,
-  password: process.env.REDIS_PASSWORD,
-});
+if (process.env.NODE_ENV === 'production') {
+  Sentry.init({
+    dsn: 'https://3df90faaa98c4caf84cd615965e4aa42@sentry.io/1816282',
+    release: `${pJson.name}@${pJson.version}`,
+  });
+}
 
 export interface IUserProfile {
   id: number;
@@ -42,21 +30,6 @@ export interface IUserProfile {
   updated_at: string;
   email: string;
   email_verified: boolean;
-}
-
-export interface IDataSources {
-  db: {
-    Character: typeof Character;
-    JournalEntry: typeof JournalEntry;
-    User: typeof User;
-    Scope: typeof Scope;
-    Invitation: typeof Invitation;
-    WalletTransaction: typeof WalletTransaction;
-  };
-  esiAuth: EsiAuth;
-  esiApi: EsiAPI;
-  crypt: Crypt;
-  [key: string]: object;
 }
 
 const requiredEnv = [
@@ -126,13 +99,6 @@ const schema = makeExecutableSchema({
   resolverValidationOptions: {
     requireResolversForResolveType: true,
   },
-});
-
-const dataSources: () => IDataSources = () => ({
-  db,
-  esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL!),
-  esiApi: new EsiAPI(process.env.EVE_ESI_URL!, redisCache),
-  crypt: new Crypt(process.env.TOKEN_SECRET!),
 });
 
 const server = new ApolloServer({
