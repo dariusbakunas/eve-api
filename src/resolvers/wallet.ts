@@ -21,6 +21,7 @@ interface IResolvers<Context> {
   WalletTransaction: {
     item: Resolver<Maybe<ResolversTypes['InventoryItem']>, WalletTransaction, Context>;
     character: Resolver<Maybe<ResolversTypes['Character']>, WalletTransaction, Context>;
+    location: Resolver<Maybe<ResolversTypes['Location']>, WalletTransaction, Context>;
   };
 }
 
@@ -78,6 +79,26 @@ const resolverMap: IResolvers<IResolverContext> = {
       }
 
       return null;
+    },
+    location: async (parent, args, { dataSources }) => {
+      const { loaders } = dataSources;
+      if (parent.locationId.toString().length === 8) {
+        // all staStation ids have 8 digits, otherwise it is a citadel
+        const station = await loaders.stationLoader.load(parent.locationId);
+
+        if (station) {
+          return {
+            id: `${station.stationID}`,
+            name: station.stationName,
+          };
+        }
+      }
+
+      // TODO: add api call for citadels
+      return {
+        id: `${parent.locationId}`,
+        name: 'Unknown Citadel',
+      };
     },
   },
 };

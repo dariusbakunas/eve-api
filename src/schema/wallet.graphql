@@ -4,12 +4,18 @@ type InventoryItem {
   description: String
 }
 
+type Location {
+  id: ID!
+  name: String!
+}
+
 type WalletTransaction {
   id: ID!
   character: Character
   date: DateTime!
   isBuy: Boolean!
   item: InventoryItem
+  location: Location!
   quantity: Int!
   unitPrice: Float!
 }

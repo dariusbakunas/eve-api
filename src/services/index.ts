@@ -9,6 +9,7 @@ import { Invitation } from './db/models/invitation';
 import { WalletTransaction } from './db/models/walletTransaction';
 import { JournalEntry } from './db/models/journalEntry';
 import { InventoryItem } from './db/models/InventoryItem';
+import { Station } from './db/models/station';
 import db from './db';
 import { RedisCache } from 'apollo-server-cache-redis';
 
@@ -25,6 +26,7 @@ export interface IDataSources {
     Scope: typeof Scope;
     Invitation: typeof Invitation;
     InventoryItem: typeof InventoryItem;
+    Station: typeof Station;
     WalletTransaction: typeof WalletTransaction;
   };
   loaders: Loaders;

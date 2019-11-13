@@ -56,6 +56,12 @@ export type InventoryItem = {
   description?: Maybe<Scalars['String']>,
 };
 
+export type Location = {
+   __typename?: 'Location',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+};
+
 export type Mutation = {
    __typename?: 'Mutation',
   addCharacter: Character,
@@ -138,6 +144,7 @@ export type WalletTransaction = {
   date: Scalars['DateTime'],
   isBuy: Scalars['Boolean'],
   item?: Maybe<InventoryItem>,
+  location: Location,
   quantity: Scalars['Int'],
   unitPrice: Scalars['Float'],
 };
@@ -236,6 +243,7 @@ export type ResolversTypes = {
   WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>,
   Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   InventoryItem: ResolverTypeWrapper<Partial<InventoryItem>>,
+  Location: ResolverTypeWrapper<Partial<Location>>,
   Mutation: ResolverTypeWrapper<{}>,
   CharacterInput: ResolverTypeWrapper<Partial<CharacterInput>>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
@@ -262,6 +270,7 @@ export type ResolversParentTypes = {
   WalletTransaction: Partial<WalletTransaction>,
   Boolean: Partial<Scalars['Boolean']>,
   InventoryItem: Partial<InventoryItem>,
+  Location: Partial<Location>,
   Mutation: {},
   CharacterInput: Partial<CharacterInput>,
   RegistrationInput: Partial<RegistrationInput>,
@@ -310,6 +319,11 @@ export type InventoryItemResolvers<ContextType = any, ParentType extends Resolve
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 };
 
+export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'input'>>,
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
@@ -347,6 +361,7 @@ export type WalletTransactionResolvers<ContextType = any, ParentType extends Res
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
   isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
   item?: Resolver<Maybe<ResolversTypes['InventoryItem']>, ParentType, ContextType>,
+  location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>,
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   unitPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
 };
@@ -363,6 +378,7 @@ export type Resolvers<ContextType = any> = {
   Date?: GraphQLScalarType,
   DateTime?: GraphQLScalarType,
   InventoryItem?: InventoryItemResolvers<ContextType>,
+  Location?: LocationResolvers<ContextType>,
   Mutation?: MutationResolvers<ContextType>,
   Query?: QueryResolvers<ContextType>,
   Scope?: ScopeResolvers<ContextType>,

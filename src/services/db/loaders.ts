@@ -4,16 +4,19 @@ import { InventoryItem } from './models/InventoryItem';
 import logger from '../../utils/logger';
 import { Character } from './models/character';
 import { Maybe } from '../../types';
+import { Station } from './models/station';
 
 export class Loaders {
   private db: IDataSources['db'];
   public invItemLoader: DataLoader<number, Maybe<InventoryItem>>;
   public characterLoader: DataLoader<number, Maybe<Character>>;
+  public stationLoader: DataLoader<number, Maybe<Station>>;
 
   constructor(db: IDataSources['db']) {
     this.db = db;
     this.invItemLoader = new DataLoader(ids => this.loadInvItems(ids));
     this.characterLoader = new DataLoader(ids => this.loadCharacters(ids));
+    this.stationLoader = new DataLoader(ids => this.loadStations(ids));
   }
 
   private mapItems<T>(ids: number[], items: T[], idGetter: (item: T) => number) {
@@ -26,6 +29,11 @@ export class Loaders {
       const item = idMap[id];
       return item || null;
     });
+  }
+
+  private async loadStations(ids: number[]) {
+    const stations: Array<Station> = await this.db.Station.query().where('stationID', 'in', ids);
+    return this.mapItems<Station>(ids, stations, station => station.stationID);
   }
 
   private async loadCharacters(ids: number[]) {

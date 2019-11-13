@@ -12,6 +12,7 @@ import { WalletTransaction } from './models/walletTransaction';
 
 import { JournalEntry } from './models/journalEntry';
 import { IDataSources } from '../index';
+import { Station } from './models/station';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
@@ -25,6 +26,7 @@ const db: IDataSources['db'] = {
   Scope,
   Invitation,
   InventoryItem,
+  Station,
   WalletTransaction,
 };
 
