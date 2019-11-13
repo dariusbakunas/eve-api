@@ -49,6 +49,13 @@ export type Corporation = {
 
 
 
+export type InventoryItem = {
+   __typename?: 'InventoryItem',
+  id: Scalars['ID'],
+  name?: Maybe<Scalars['String']>,
+  description?: Maybe<Scalars['String']>,
+};
+
 export type Mutation = {
    __typename?: 'Mutation',
   addCharacter: Character,
@@ -71,16 +78,27 @@ export type MutationRegisterArgs = {
   input: RegistrationInput
 };
 
+export type PageInput = {
+  index?: Maybe<Scalars['Int']>,
+  size?: Maybe<Scalars['Int']>,
+};
+
 export type Query = {
    __typename?: 'Query',
   characters: Array<Character>,
   scopes: Array<Scope>,
   userByEmail?: Maybe<User>,
+  walletTransactions?: Maybe<WalletTransactions>,
 };
 
 
 export type QueryUserByEmailArgs = {
   email: Scalars['String']
+};
+
+
+export type QueryWalletTransactionsArgs = {
+  page?: Maybe<PageInput>
 };
 
 export type RegistrationInput = {
@@ -112,6 +130,23 @@ export enum UserStatus {
   Active = 'ACTIVE',
   Inactive = 'INACTIVE'
 }
+
+export type WalletTransaction = {
+   __typename?: 'WalletTransaction',
+  id: Scalars['ID'],
+  character?: Maybe<Character>,
+  date: Scalars['DateTime'],
+  isBuy: Scalars['Boolean'],
+  item?: Maybe<InventoryItem>,
+  quantity: Scalars['Int'],
+  unitPrice: Scalars['Float'],
+};
+
+export type WalletTransactions = {
+   __typename?: 'WalletTransactions',
+  total: Scalars['Int'],
+  transactions: Array<WalletTransaction>,
+};
 
 
 
@@ -196,10 +231,14 @@ export type ResolversTypes = {
   Scope: ResolverTypeWrapper<Partial<Scope>>,
   User: ResolverTypeWrapper<Partial<User>>,
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
+  PageInput: ResolverTypeWrapper<Partial<PageInput>>,
+  WalletTransactions: ResolverTypeWrapper<Partial<WalletTransactions>>,
+  WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>,
+  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
+  InventoryItem: ResolverTypeWrapper<Partial<InventoryItem>>,
   Mutation: ResolverTypeWrapper<{}>,
   CharacterInput: ResolverTypeWrapper<Partial<CharacterInput>>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
-  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   Date: ResolverTypeWrapper<Partial<Scalars['Date']>>,
   Time: ResolverTypeWrapper<Partial<Scalars['Time']>>,
 };
@@ -218,10 +257,14 @@ export type ResolversParentTypes = {
   Scope: Partial<Scope>,
   User: Partial<User>,
   UserStatus: Partial<UserStatus>,
+  PageInput: Partial<PageInput>,
+  WalletTransactions: Partial<WalletTransactions>,
+  WalletTransaction: Partial<WalletTransaction>,
+  Boolean: Partial<Scalars['Boolean']>,
+  InventoryItem: Partial<InventoryItem>,
   Mutation: {},
   CharacterInput: Partial<CharacterInput>,
   RegistrationInput: Partial<RegistrationInput>,
-  Boolean: Partial<Scalars['Boolean']>,
   Date: Partial<Scalars['Date']>,
   Time: Partial<Scalars['Time']>,
 };
@@ -261,6 +304,12 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime'
 }
 
+export type InventoryItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['InventoryItem'] = ResolversParentTypes['InventoryItem']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+};
+
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'input'>>,
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
@@ -271,6 +320,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
   scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
   userByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>,
+  walletTransactions?: Resolver<Maybe<ResolversTypes['WalletTransactions']>, ParentType, ContextType, QueryWalletTransactionsArgs>,
 };
 
 export type ScopeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Scope'] = ResolversParentTypes['Scope']> = {
@@ -291,17 +341,35 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   status?: Resolver<ResolversTypes['UserStatus'], ParentType, ContextType>,
 };
 
+export type WalletTransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['WalletTransaction'] = ResolversParentTypes['WalletTransaction']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType>,
+  date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
+  isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  item?: Resolver<Maybe<ResolversTypes['InventoryItem']>, ParentType, ContextType>,
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  unitPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+};
+
+export type WalletTransactionsResolvers<ContextType = any, ParentType extends ResolversParentTypes['WalletTransactions'] = ResolversParentTypes['WalletTransactions']> = {
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  transactions?: Resolver<Array<ResolversTypes['WalletTransaction']>, ParentType, ContextType>,
+};
+
 export type Resolvers<ContextType = any> = {
   Alliance?: AllianceResolvers<ContextType>,
   Character?: CharacterResolvers<ContextType>,
   Corporation?: CorporationResolvers<ContextType>,
   Date?: GraphQLScalarType,
   DateTime?: GraphQLScalarType,
+  InventoryItem?: InventoryItemResolvers<ContextType>,
   Mutation?: MutationResolvers<ContextType>,
   Query?: QueryResolvers<ContextType>,
   Scope?: ScopeResolvers<ContextType>,
   Time?: GraphQLScalarType,
   User?: UserResolvers<ContextType>,
+  WalletTransaction?: WalletTransactionResolvers<ContextType>,
+  WalletTransactions?: WalletTransactionsResolvers<ContextType>,
 };
 
 

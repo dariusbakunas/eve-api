@@ -4,12 +4,14 @@ import { Scope } from './models/scope';
 import { User } from './models/user';
 import { Character } from './models/character';
 import { Invitation } from './models/invitation';
+import { InventoryItem } from './models/InventoryItem';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import config from '../../../knexfile';
 import { WalletTransaction } from './models/walletTransaction';
-import { IDataSources } from '../../index';
+
 import { JournalEntry } from './models/journalEntry';
+import { IDataSources } from '../index';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
@@ -22,6 +24,7 @@ const db: IDataSources['db'] = {
   User,
   Scope,
   Invitation,
+  InventoryItem,
   WalletTransaction,
 };
 

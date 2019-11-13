@@ -1,7 +1,7 @@
 import { rule, shield, and, or } from 'graphql-shield';
 import { ApolloContext } from '../types';
 import { MutationRegisterArgs } from '../__generated__/types';
-import { IDataSources } from '../index';
+import { IDataSources } from '../services';
 
 const allow = rule()(() => true);
 const deny = rule()(() => false);
@@ -45,6 +45,7 @@ const shieldMiddleware = shield(
       characters: isActiveUser,
       scopes: isActiveUser,
       userByEmail: hasSameEmail,
+      walletTransactions: isActiveUser,
     },
     Mutation: {
       '*': deny,

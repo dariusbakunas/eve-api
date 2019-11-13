@@ -1,0 +1,24 @@
+type InventoryItem {
+  id: ID!
+  name: String
+  description: String
+}
+
+type WalletTransaction {
+  id: ID!
+  character: Character
+  date: DateTime!
+  isBuy: Boolean!
+  item: InventoryItem
+  quantity: Int!
+  unitPrice: Float!
+}
+
+type WalletTransactions {
+  total: Int!
+  transactions: [WalletTransaction!]!
+}
+
+extend type Query {
+  walletTransactions(page: PageInput): WalletTransactions
+}
