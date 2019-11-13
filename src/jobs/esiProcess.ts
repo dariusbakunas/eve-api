@@ -8,6 +8,7 @@ import logger from '../utils/logger';
 import { InMemoryLRUCache } from 'apollo-server-caching';
 import { processWalletTransactions } from './processWalletTransactions';
 import { processJournalEntries } from './processJournalEntries';
+import { updateCharacterNameCache } from './updateCharacterNameCache';
 
 const initDataSources = () => {
   const dataSources = {
@@ -49,5 +50,11 @@ export const processData = async () => {
     } catch (e) {
       logger.error(e);
     }
+  }
+
+  try {
+    await updateCharacterNameCache(db, esiApi);
+  } catch (e) {
+    logger.error(e);
   }
 };
