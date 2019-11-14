@@ -101,6 +101,10 @@ class EsiAPI extends RESTDataSource {
     }
   }
 
+  async getUniverseNames(ids: number[]) {
+    return this.post('/universe/names', ids);
+  }
+
   async getCharacterSkills(characterId: number, token: string) {
     return this.get(`/characters/${characterId}/skills`, undefined, {
       headers: {

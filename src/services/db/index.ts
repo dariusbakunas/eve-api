@@ -13,7 +13,7 @@ import { WalletTransaction } from './models/walletTransaction';
 import { JournalEntry } from './models/journalEntry';
 import { IDataSources } from '../index';
 import { Station } from './models/station';
-import { CharacterNameCacheItem } from './models/characterNameCacheItem';
+import { NameCacheItem } from './models/nameCacheItem';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
@@ -22,7 +22,7 @@ Model.knex(knex);
 
 const db: IDataSources['db'] = {
   Character,
-  CharacterNameCacheItem,
+  NameCacheItem,
   JournalEntry,
   User,
   Scope,

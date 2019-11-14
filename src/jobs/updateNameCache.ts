@@ -1,11 +1,8 @@
 import logger from '../utils/logger';
 import { IDataSources } from '../services';
 
-export const updateCharacterNameCache = async (
-  db: IDataSources['db'],
-  esiApi: IDataSources['esiApi']
-) => {
-  logger.info(`Updating character name cache`);
+export const updateNameCache = async (db: IDataSources['db'], esiApi: IDataSources['esiApi']) => {
+  logger.info(`Updating item name cache`);
   let newIds = [];
 
   try {
@@ -14,7 +11,7 @@ export const updateCharacterNameCache = async (
       .distinct('clientId')
       .pluck('clientId');
 
-    const cacheIds = await db.CharacterNameCacheItem.query()
+    const cacheIds = await db.NameCacheItem.query()
       .select('id')
       .pluck('id');
 
@@ -26,17 +23,17 @@ export const updateCharacterNameCache = async (
 
   if (newIds.length) {
     logger.info(`Inserting ${newIds.length} new names`);
+    const names = await esiApi.getUniverseNames(newIds);
 
-    for (let i = 0; i < newIds.length; i++) {
+    for (let i = 0; i < names.length; i++) {
       try {
-        const id = newIds[i];
-        const character = await esiApi.getCharacterInfo(id);
-        await db.CharacterNameCacheItem.query().insert({ id: id, name: character.name });
+        const { id, category, name } = names[i];
+        await db.NameCacheItem.query().insert({ id: id, name: name, category: category });
       } catch (e) {
         logger.error(e);
       }
     }
   } else {
-    logger.info('No new character ids detected');
+    logger.info('No new ids detected');
   }
 };

@@ -12,7 +12,7 @@ import { InventoryItem } from './db/models/InventoryItem';
 import { Station } from './db/models/station';
 import db from './db';
 import { RedisCache } from 'apollo-server-cache-redis';
-import { CharacterNameCacheItem } from './db/models/characterNameCacheItem';
+import { NameCacheItem } from './db/models/nameCacheItem';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -22,7 +22,7 @@ const redisCache = new RedisCache({
 export interface IDataSources {
   db: {
     Character: typeof Character;
-    CharacterNameCacheItem: typeof CharacterNameCacheItem;
+    NameCacheItem: typeof NameCacheItem;
     JournalEntry: typeof JournalEntry;
     User: typeof User;
     Scope: typeof Scope;
