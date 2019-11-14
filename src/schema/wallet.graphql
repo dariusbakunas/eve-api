@@ -9,8 +9,15 @@ type Location {
   name: String!
 }
 
+type Client {
+  id: ID!
+  name: String!
+  category: String!
+}
+
 type WalletTransaction {
   id: ID!
+  client: Client!
   character: Character
   date: DateTime!
   isBuy: Boolean!

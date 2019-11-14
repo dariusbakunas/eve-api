@@ -36,6 +36,13 @@ export type CharacterInput = {
   code: Scalars['String'],
 };
 
+export type Client = {
+   __typename?: 'Client',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+  category: Scalars['String'],
+};
+
 export type Corporation = {
    __typename?: 'Corporation',
   id: Scalars['ID'],
@@ -140,6 +147,7 @@ export enum UserStatus {
 export type WalletTransaction = {
    __typename?: 'WalletTransaction',
   id: Scalars['ID'],
+  client: Client,
   character?: Maybe<Character>,
   date: Scalars['DateTime'],
   isBuy: Scalars['Boolean'],
@@ -241,6 +249,7 @@ export type ResolversTypes = {
   PageInput: ResolverTypeWrapper<Partial<PageInput>>,
   WalletTransactions: ResolverTypeWrapper<Partial<WalletTransactions>>,
   WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>,
+  Client: ResolverTypeWrapper<Partial<Client>>,
   Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   InventoryItem: ResolverTypeWrapper<Partial<InventoryItem>>,
   Location: ResolverTypeWrapper<Partial<Location>>,
@@ -268,6 +277,7 @@ export type ResolversParentTypes = {
   PageInput: Partial<PageInput>,
   WalletTransactions: Partial<WalletTransactions>,
   WalletTransaction: Partial<WalletTransaction>,
+  Client: Partial<Client>,
   Boolean: Partial<Scalars['Boolean']>,
   InventoryItem: Partial<InventoryItem>,
   Location: Partial<Location>,
@@ -293,6 +303,12 @@ export type CharacterResolvers<ContextType = any, ParentType extends ResolversPa
   birthday?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
   securityStatus?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
   totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+};
+
+export type ClientResolvers<ContextType = any, ParentType extends ResolversParentTypes['Client'] = ResolversParentTypes['Client']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  category?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
 };
 
 export type CorporationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Corporation'] = ResolversParentTypes['Corporation']> = {
@@ -357,6 +373,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type WalletTransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['WalletTransaction'] = ResolversParentTypes['WalletTransaction']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  client?: Resolver<ResolversTypes['Client'], ParentType, ContextType>,
   character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType>,
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
   isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
@@ -374,6 +391,7 @@ export type WalletTransactionsResolvers<ContextType = any, ParentType extends Re
 export type Resolvers<ContextType = any> = {
   Alliance?: AllianceResolvers<ContextType>,
   Character?: CharacterResolvers<ContextType>,
+  Client?: ClientResolvers<ContextType>,
   Corporation?: CorporationResolvers<ContextType>,
   Date?: GraphQLScalarType,
   DateTime?: GraphQLScalarType,

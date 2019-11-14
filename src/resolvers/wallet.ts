@@ -21,6 +21,7 @@ interface IResolvers<Context> {
   WalletTransaction: {
     item: Resolver<Maybe<ResolversTypes['InventoryItem']>, WalletTransaction, Context>;
     character: Resolver<Maybe<ResolversTypes['Character']>, WalletTransaction, Context>;
+    client: Resolver<ResolversTypes['Client'], WalletTransaction, Context>;
     location: Resolver<Maybe<ResolversTypes['Location']>, WalletTransaction, Context>;
   };
 }
@@ -65,6 +66,19 @@ const resolverMap: IResolvers<IResolverContext> = {
       }
 
       return null;
+    },
+    client: async (parent, args, { dataSources }) => {
+      const { db, esiApi } = dataSources;
+      const nameCache = await db.NameCacheItem.query().findById(parent.clientId);
+      const client = { id: `${parent.clientId}`, name: 'Unknown', category: 'unknown' };
+
+      if (nameCache) {
+        client.name = nameCache.name;
+        client.category = nameCache.category;
+      }
+
+      // TODO: add loader to load names in case it is not yet in cache
+      return client;
     },
     item: async (parent, args, { dataSources }) => {
       const { loaders } = dataSources;
