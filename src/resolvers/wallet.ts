@@ -80,6 +80,9 @@ const resolverMap: IResolvers<IResolverContext> = {
       // TODO: add loader to load names in case it is not yet in cache
       return client;
     },
+    credit: parent => {
+      return parent.unitPrice * parent.quantity * (parent.isBuy ? -1 : 1);
+    },
     item: async (parent, args, { dataSources }) => {
       const { loaders } = dataSources;
       const item = await loaders.invItemLoader.load(parent.typeId);

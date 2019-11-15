@@ -17,6 +17,7 @@ type Client {
 
 type WalletTransaction {
   id: ID!
+  credit: Float!
   client: Client!
   character: Character
   date: DateTime!
