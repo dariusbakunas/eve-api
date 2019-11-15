@@ -6,6 +6,7 @@ import {
   Resolver,
   ResolversParentTypes,
   ResolversTypes,
+  WalletTransactionOrderBy,
 } from '../__generated__/types';
 import { WalletTransaction } from '../services/db/models/walletTransaction';
 
@@ -22,24 +23,61 @@ interface IResolvers<Context> {
     item: Resolver<Maybe<ResolversTypes['InventoryItem']>, WalletTransaction, Context>;
     character: Resolver<Maybe<ResolversTypes['Character']>, WalletTransaction, Context>;
     client: Resolver<ResolversTypes['Client'], WalletTransaction, Context>;
+    credit: Resolver<ResolversTypes['Float'], WalletTransaction, Context>;
     location: Resolver<Maybe<ResolversTypes['Location']>, WalletTransaction, Context>;
   };
 }
 
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
-    walletTransactions: async (_parent, { page }, { dataSources, user }) => {
+    walletTransactions: async (_parent, { page, orderBy }, { dataSources, user }) => {
       const { index, size } = page;
+
       const characterIds = await dataSources.db.Character.query()
         .select('id')
         .where('ownerId', user.id)
         .pluck('id');
 
       if (characterIds.length) {
-        const transactions = await dataSources.db.WalletTransaction.query()
-          .where('characterId', 'in', characterIds)
-          .page(index, size)
-          .orderBy('date', 'desc');
+        const query = dataSources.db.WalletTransaction.query();
+
+        if (orderBy) {
+          let orderByCol;
+          const { column, order } = orderBy;
+          switch (column) {
+            case WalletTransactionOrderBy.UnitPrice:
+              orderByCol = 'unitPrice';
+              break;
+            case WalletTransactionOrderBy.Date:
+              orderByCol = 'date';
+              break;
+            case WalletTransactionOrderBy.Quantity:
+              orderByCol = 'quantity';
+              break;
+            case WalletTransactionOrderBy.Character:
+              query.join(
+                'characters as character',
+                'character.id',
+                'walletTransactions.characterId'
+              );
+              orderByCol = 'character.name';
+              break;
+            case WalletTransactionOrderBy.Item:
+              query.join('invTypes as item', 'item.typeID', 'walletTransactions.typeId');
+              orderByCol = 'item.typeName';
+              break;
+            case WalletTransactionOrderBy.Client:
+              query.join('nameCache', 'nameCache.id', 'walletTransactions.clientId');
+              orderByCol = 'nameCache.name';
+              break;
+          }
+
+          if (orderByCol) {
+            query.orderBy(orderByCol, order);
+          }
+        }
+
+        const transactions = await query.where('characterId', 'in', characterIds).page(index, size);
 
         return {
           total: transactions.total,
@@ -68,7 +106,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       return null;
     },
     client: async (parent, args, { dataSources }) => {
-      const { db, esiApi } = dataSources;
+      const { db } = dataSources;
       const nameCache = await db.NameCacheItem.query().findById(parent.clientId);
       const client = { id: `${parent.clientId}`, name: 'Unknown', category: 'unknown' };
 

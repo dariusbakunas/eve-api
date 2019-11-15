@@ -4,3 +4,8 @@ input PageInput {
   index: Int = 0
   size: Int = 10
 }
+
+enum Order {
+  asc
+  desc
+}

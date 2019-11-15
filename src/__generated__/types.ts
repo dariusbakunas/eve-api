@@ -91,6 +91,11 @@ export type MutationRegisterArgs = {
   input: RegistrationInput
 };
 
+export enum Order {
+  Asc = 'asc',
+  Desc = 'desc'
+}
+
 export type PageInput = {
   index?: Maybe<Scalars['Int']>,
   size?: Maybe<Scalars['Int']>,
@@ -111,7 +116,8 @@ export type QueryUserByEmailArgs = {
 
 
 export type QueryWalletTransactionsArgs = {
-  page?: Maybe<PageInput>
+  page?: Maybe<PageInput>,
+  orderBy?: Maybe<WalletTransactionOrderByInput>
 };
 
 export type RegistrationInput = {
@@ -147,6 +153,7 @@ export enum UserStatus {
 export type WalletTransaction = {
    __typename?: 'WalletTransaction',
   id: Scalars['ID'],
+  credit: Scalars['Float'],
   client: Client,
   character?: Maybe<Character>,
   date: Scalars['DateTime'],
@@ -155,6 +162,21 @@ export type WalletTransaction = {
   location: Location,
   quantity: Scalars['Int'],
   unitPrice: Scalars['Float'],
+};
+
+export enum WalletTransactionOrderBy {
+  Date = 'date',
+  Client = 'client',
+  Character = 'character',
+  Credit = 'credit',
+  Item = 'item',
+  Quantity = 'quantity',
+  UnitPrice = 'unitPrice'
+}
+
+export type WalletTransactionOrderByInput = {
+  column: WalletTransactionOrderBy,
+  order: Order,
 };
 
 export type WalletTransactions = {
@@ -247,6 +269,9 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<Partial<User>>,
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
   PageInput: ResolverTypeWrapper<Partial<PageInput>>,
+  WalletTransactionOrderByInput: ResolverTypeWrapper<Partial<WalletTransactionOrderByInput>>,
+  WalletTransactionOrderBy: ResolverTypeWrapper<Partial<WalletTransactionOrderBy>>,
+  Order: ResolverTypeWrapper<Partial<Order>>,
   WalletTransactions: ResolverTypeWrapper<Partial<WalletTransactions>>,
   WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>,
   Client: ResolverTypeWrapper<Partial<Client>>,
@@ -275,6 +300,9 @@ export type ResolversParentTypes = {
   User: Partial<User>,
   UserStatus: Partial<UserStatus>,
   PageInput: Partial<PageInput>,
+  WalletTransactionOrderByInput: Partial<WalletTransactionOrderByInput>,
+  WalletTransactionOrderBy: Partial<WalletTransactionOrderBy>,
+  Order: Partial<Order>,
   WalletTransactions: Partial<WalletTransactions>,
   WalletTransaction: Partial<WalletTransaction>,
   Client: Partial<Client>,
@@ -373,6 +401,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type WalletTransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['WalletTransaction'] = ResolversParentTypes['WalletTransaction']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  credit?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
   client?: Resolver<ResolversTypes['Client'], ParentType, ContextType>,
   character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType>,
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,

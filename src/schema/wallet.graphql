@@ -1,3 +1,18 @@
+enum WalletTransactionOrderBy {
+  date
+  client
+  character
+  credit
+  item
+  quantity
+  unitPrice
+}
+
+input WalletTransactionOrderByInput {
+  column: WalletTransactionOrderBy!
+  order: Order!
+}
+
 type InventoryItem {
   id: ID!
   name: String
@@ -34,5 +49,5 @@ type WalletTransactions {
 }
 
 extend type Query {
-  walletTransactions(page: PageInput): WalletTransactions
+  walletTransactions(page: PageInput, orderBy: WalletTransactionOrderByInput): WalletTransactions
 }
