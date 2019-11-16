@@ -70,7 +70,7 @@ const resolverMap: IResolvers<IResolverContext> = {
         throw new Error(e.message);
       }
     },
-    updateCharacter: async (_, { id, code }, { dataSources: { db, esiAuth } }) => {
+    updateCharacter: async (_, { id, code }, { dataSources: { db, crypt, esiAuth } }) => {
       const tokens = await esiAuth.getCharacterTokens(process.env.EVE_CLIENT_ID!, process.env.EVE_CLIENT_SECRET!, code);
       const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = tokens;
       const expiresAt = expiresIn * 1000 + new Date().getTime();
@@ -81,7 +81,12 @@ const resolverMap: IResolvers<IResolverContext> = {
       }
 
       const character = await db.Character.query().findById(id);
-      return character.$query().updateAndFetch({ scopes: Scopes, accessToken, refreshToken, expiresAt });
+      return character.$query().updateAndFetch({
+        scopes: Scopes,
+        accessToken: crypt.encrypt(accessToken),
+        refreshToken: crypt.encrypt(refreshToken),
+        expiresAt,
+      });
     },
     removeCharacter: async (_, { id }, { dataSources: { db } }) => {
       await db.Character.query().deleteById(id);
