@@ -1,4 +1,5 @@
 import {
+  MutationAddCharacterArgs,
   MutationRemoveCharacterArgs,
   RequireFields,
   Resolver,
@@ -19,9 +20,15 @@ interface IResolvers<Context> {
     characters: Resolver<Array<Character>, any, Context>;
   };
   Mutation: {
+    addCharacter: Resolver<
+      ResolversTypes['Character'],
+      unknown,
+      Context,
+      RequireFields<MutationAddCharacterArgs, 'code'>
+    >;
     removeCharacter: Resolver<
       ResolversTypes['ID'],
-      any,
+      unknown,
       Context,
       RequireFields<MutationRemoveCharacterArgs, 'id'>
     >;
@@ -43,7 +50,49 @@ const resolverMap: IResolvers<IResolverContext> = {
     },
   },
   Mutation: {
-    removeCharacter: async (_, { id }, { dataSources: { db }, user: { id: userId } }) => {
+    addCharacter: async (
+      _,
+      { code },
+      { dataSources: { esiAuth, db, crypt }, user: { id: userId } }
+    ) => {
+      try {
+        const tokens = await esiAuth.getCharacterTokens(
+          process.env.EVE_CLIENT_ID!,
+          process.env.EVE_CLIENT_SECRET!,
+          code
+        );
+
+        const {
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          expires_in: expiresIn,
+        } = tokens;
+
+        const expiresAt = expiresIn * 1000 + new Date().getTime();
+
+        const { CharacterID, CharacterName, Scopes } = await esiAuth.verifyToken(accessToken);
+
+        const user = await db.User.query().findById(userId);
+
+        return user.$relatedQuery('characters').insert({
+          id: CharacterID,
+          expiresAt,
+          name: CharacterName,
+          accessToken: crypt.encrypt(accessToken),
+          refreshToken: crypt.encrypt(refreshToken),
+          scopes: Scopes,
+        });
+      } catch (e) {
+        if (e.extensions && e.extensions.response) {
+          const { url, body } = e.extensions.response;
+
+          const message = `${e.message}: url: ${url}, description: ${body.error_description}`;
+          throw new Error(message);
+        }
+        throw new Error(e.message);
+      }
+    },
+    removeCharacter: async (_, { id }, { dataSources: { db } }) => {
       await db.Character.query().deleteById(id);
       return id;
     },

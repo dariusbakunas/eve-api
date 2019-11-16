@@ -9,8 +9,6 @@ type Character {
   totalSp: Int
 }
 
-input CharacterInput {
-  code: String!
 }
 
 extend type Query {
@@ -18,6 +16,6 @@ extend type Query {
 }
 
 extend type Mutation {
-  addCharacter(input: CharacterInput!): Character!
+  addCharacter(code: String!): Character!
   removeCharacter(id: ID!): ID!
 }
