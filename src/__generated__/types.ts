@@ -32,10 +32,6 @@ export type Character = {
   totalSp?: Maybe<Scalars['Int']>,
 };
 
-export type CharacterUpdateInput = {
-  scopes: Array<Scalars['String']>,
-};
-
 export type Client = {
    __typename?: 'Client',
   id: Scalars['ID'],
@@ -84,7 +80,8 @@ export type MutationAddCharacterArgs = {
 
 
 export type MutationUpdateCharacterArgs = {
-  input: CharacterUpdateInput
+  id: Scalars['ID'],
+  code: Scalars['String']
 };
 
 
@@ -285,7 +282,6 @@ export type ResolversTypes = {
   InventoryItem: ResolverTypeWrapper<Partial<InventoryItem>>,
   Location: ResolverTypeWrapper<Partial<Location>>,
   Mutation: ResolverTypeWrapper<{}>,
-  CharacterUpdateInput: ResolverTypeWrapper<Partial<CharacterUpdateInput>>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
   Date: ResolverTypeWrapper<Partial<Scalars['Date']>>,
   Time: ResolverTypeWrapper<Partial<Scalars['Time']>>,
@@ -316,7 +312,6 @@ export type ResolversParentTypes = {
   InventoryItem: Partial<InventoryItem>,
   Location: Partial<Location>,
   Mutation: {},
-  CharacterUpdateInput: Partial<CharacterUpdateInput>,
   RegistrationInput: Partial<RegistrationInput>,
   Date: Partial<Scalars['Date']>,
   Time: Partial<Scalars['Time']>,
@@ -376,7 +371,7 @@ export type LocationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'code'>>,
-  updateCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationUpdateCharacterArgs, 'input'>>,
+  updateCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>,
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
   register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
 };

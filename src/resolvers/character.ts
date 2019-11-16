@@ -1,6 +1,7 @@
 import {
   MutationAddCharacterArgs,
   MutationRemoveCharacterArgs,
+  MutationUpdateCharacterArgs,
   RequireFields,
   Resolver,
   ResolversTypes,
@@ -9,6 +10,7 @@ import { IResolverContext, Maybe } from '../types';
 import { Character } from '../services/db/models/character';
 import { getAccessToken } from './common';
 import { IDataSources } from '../services';
+import { UserInputError } from 'apollo-server-errors';
 
 const getCharacterInfo = async (id: number, esiApi: IDataSources['esiApi'], fieldName: string) => {
   const info = await esiApi.getCharacterInfo(id);
@@ -20,18 +22,9 @@ interface IResolvers<Context> {
     characters: Resolver<Array<Character>, any, Context>;
   };
   Mutation: {
-    addCharacter: Resolver<
-      ResolversTypes['Character'],
-      unknown,
-      Context,
-      RequireFields<MutationAddCharacterArgs, 'code'>
-    >;
-    removeCharacter: Resolver<
-      ResolversTypes['ID'],
-      unknown,
-      Context,
-      RequireFields<MutationRemoveCharacterArgs, 'id'>
-    >;
+    addCharacter: Resolver<ResolversTypes['Character'], unknown, Context, RequireFields<MutationAddCharacterArgs, 'code'>>;
+    updateCharacter: Resolver<ResolversTypes['Character'], unknown, Context, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>;
+    removeCharacter: Resolver<ResolversTypes['ID'], unknown, Context, RequireFields<MutationRemoveCharacterArgs, 'id'>>;
   };
   Character: {
     birthday: Resolver<ResolversTypes['DateTime'], Character, Context>;
@@ -50,26 +43,11 @@ const resolverMap: IResolvers<IResolverContext> = {
     },
   },
   Mutation: {
-    addCharacter: async (
-      _,
-      { code },
-      { dataSources: { esiAuth, db, crypt }, user: { id: userId } }
-    ) => {
+    addCharacter: async (_, { code }, { dataSources: { esiAuth, db, crypt }, user: { id: userId } }) => {
       try {
-        const tokens = await esiAuth.getCharacterTokens(
-          process.env.EVE_CLIENT_ID!,
-          process.env.EVE_CLIENT_SECRET!,
-          code
-        );
-
-        const {
-          access_token: accessToken,
-          refresh_token: refreshToken,
-          expires_in: expiresIn,
-        } = tokens;
-
+        const tokens = await esiAuth.getCharacterTokens(process.env.EVE_CLIENT_ID!, process.env.EVE_CLIENT_SECRET!, code);
+        const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = tokens;
         const expiresAt = expiresIn * 1000 + new Date().getTime();
-
         const { CharacterID, CharacterName, Scopes } = await esiAuth.verifyToken(accessToken);
 
         const user = await db.User.query().findById(userId);
@@ -91,6 +69,19 @@ const resolverMap: IResolvers<IResolverContext> = {
         }
         throw new Error(e.message);
       }
+    },
+    updateCharacter: async (_, { id, code }, { dataSources: { db, esiAuth } }) => {
+      const tokens = await esiAuth.getCharacterTokens(process.env.EVE_CLIENT_ID!, process.env.EVE_CLIENT_SECRET!, code);
+      const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = tokens;
+      const expiresAt = expiresIn * 1000 + new Date().getTime();
+      const { CharacterID, CharacterName, Scopes } = await esiAuth.verifyToken(accessToken);
+
+      if (id !== `${CharacterID}`) {
+        throw new UserInputError(`character '${CharacterName}' does not match original request`);
+      }
+
+      const character = await db.Character.query().findById(id);
+      return character.$query().updateAndFetch({ scopes: Scopes, accessToken, refreshToken, expiresAt });
     },
     removeCharacter: async (_, { id }, { dataSources: { db } }) => {
       await db.Character.query().deleteById(id);
@@ -116,24 +107,12 @@ const resolverMap: IResolvers<IResolverContext> = {
     gender: ({ id }, args, { dataSources }, { fieldName }) => {
       return getCharacterInfo(id!, dataSources.esiApi, fieldName);
     },
-    totalSp: async (
-      { id, accessToken, refreshToken, expiresAt, scopes },
-      args,
-      { dataSources }: { dataSources: IDataSources }
-    ) => {
+    totalSp: async ({ id, accessToken, refreshToken, expiresAt, scopes }, args, { dataSources }: { dataSources: IDataSources }) => {
       if (scopes.split(' ').findIndex(scope => scope === 'esi-skills.read_skills.v1') === -1) {
         return null;
       }
 
-      const token = await getAccessToken(
-        id,
-        accessToken,
-        refreshToken,
-        expiresAt,
-        dataSources.db,
-        dataSources.crypt,
-        dataSources.esiAuth
-      );
+      const token = await getAccessToken(id, accessToken, refreshToken, expiresAt, dataSources.db, dataSources.crypt, dataSources.esiAuth);
 
       const { total_sp: totalSp } = await dataSources.esiApi.getCharacterSkills(id, token);
       return totalSp;

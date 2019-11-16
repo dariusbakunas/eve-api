@@ -9,16 +9,12 @@ type Character {
   totalSp: Int
 }
 
-input CharacterUpdateInput {
-  scopes: [String!]!
-}
-
 extend type Query {
   characters: [Character!]!
 }
 
 extend type Mutation {
   addCharacter(code: String!): Character!
-  updateCharacter(input: CharacterUpdateInput!): Character!
+  updateCharacter(id: ID!, code: String!): Character!
   removeCharacter(id: ID!): ID!
 }

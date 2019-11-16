@@ -6,37 +6,26 @@ import { IDataSources } from '../services';
 const allow = rule()(() => true);
 const deny = rule()(() => false);
 
-const isCharacterOwner = rule()(
-  async (parent, { id }, { user, dataSources }: ApolloContext & { dataSources: IDataSources }) => {
-    const result = await dataSources.db.Character.query()
-      .where('id', '=', id)
-      .andWhere('ownerId', '=', user!.id)
-      .count('*')
-      .pluck('count(*)')
-      .first();
+const isCharacterOwner = rule()(async (parent, { id }, { user, dataSources }: ApolloContext & { dataSources: IDataSources }) => {
+  const result = await dataSources.db.Character.query()
+    .where('id', '=', id)
+    .andWhere('ownerId', '=', user!.id)
+    .count('*')
+    .pluck('count(*)')
+    .first();
 
-    const count = (result as unknown) as number;
-    return count === 1;
-  }
-);
+  const count = (result as unknown) as number;
+  return count === 1;
+});
 
-const isActiveUser = rule({ cache: 'contextual' })(
-  (parent, args, { user }: ApolloContext) => !!user && user.status === 'ACTIVE'
-);
+const isActiveUser = rule({ cache: 'contextual' })((parent, args, { user }: ApolloContext) => !!user && user.status === 'ACTIVE');
 
 // current user email should match the one requested
-const hasSameEmail = rule()(
-  (parent, args, { user }: ApolloContext) => !!user && user.email === args.email
-);
+const hasSameEmail = rule()((parent, args, { user }: ApolloContext) => !!user && user.email === args.email);
 
-const canRegister = rule()(
-  (parent, args: MutationRegisterArgs, { user }: ApolloContext) =>
-    !!user && user.email === args.input.email
-);
+const canRegister = rule()((parent, args: MutationRegisterArgs, { user }: ApolloContext) => !!user && user.email === args.input.email);
 
-const isGuest = rule()(
-  (parent, args, { user }: ApolloContext) => !!user && user.status === 'GUEST'
-);
+const isGuest = rule()((parent, args, { user }: ApolloContext) => !!user && user.status === 'GUEST');
 
 const shieldMiddleware = shield(
   {
@@ -51,6 +40,7 @@ const shieldMiddleware = shield(
       '*': deny,
       addCharacter: isActiveUser,
       removeCharacter: and(isActiveUser, isCharacterOwner),
+      updateCharacter: and(isActiveUser, isCharacterOwner),
       register: and(isGuest, canRegister),
     },
   },
