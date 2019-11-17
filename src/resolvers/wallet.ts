@@ -3,7 +3,6 @@ import {
   Maybe,
   OrderType,
   QueryWalletTransactionsArgs,
-  RequireFields,
   Resolver,
   ResolversParentTypes,
   ResolversTypes,
@@ -20,7 +19,6 @@ interface IResolvers<Context> {
     item: Resolver<Maybe<ResolversTypes['InventoryItem']>, WalletTransaction, Context>;
     character: Resolver<Maybe<ResolversTypes['Character']>, WalletTransaction, Context>;
     client: Resolver<ResolversTypes['Client'], WalletTransaction, Context>;
-    credit: Resolver<ResolversTypes['Float'], WalletTransaction, Context>;
     location: Resolver<Maybe<ResolversTypes['Location']>, WalletTransaction, Context>;
   };
 }
@@ -37,7 +35,11 @@ const resolverMap: IResolvers<IResolverContext> = {
 
       if (characterIds.length) {
         const query = dataSources.db.WalletTransaction.query()
-          .select('walletTransactions.*', raw('coalesce(citadel.name, station.stationName) as locationName'))
+          .select(
+            'walletTransactions.*',
+            raw('coalesce(citadel.name, station.stationName) as locationName'),
+            raw('(walletTransactions.quantity * walletTransactions.unitPrice) * if(walletTransactions.isBuy, -1, 1) as credit')
+          )
           .leftJoin('citadelCache as citadel', 'citadel.id', 'walletTransactions.locationId')
           .leftJoin('staStations as station', 'station.stationID', 'walletTransactions.locationId');
 
@@ -57,6 +59,9 @@ const resolverMap: IResolvers<IResolverContext> = {
           switch (column) {
             case WalletTransactionOrderBy.UnitPrice:
               orderByCol = 'unitPrice';
+              break;
+            case WalletTransactionOrderBy.Credit:
+              orderByCol = 'credit';
               break;
             case WalletTransactionOrderBy.Date:
               orderByCol = 'date';
@@ -126,9 +131,6 @@ const resolverMap: IResolvers<IResolverContext> = {
 
       // TODO: add loader to load names in case it is not yet in cache
       return client;
-    },
-    credit: parent => {
-      return parent.unitPrice * parent.quantity * (parent.isBuy ? -1 : 1);
     },
     item: async (parent, args, { dataSources }) => {
       const { loaders } = dataSources;

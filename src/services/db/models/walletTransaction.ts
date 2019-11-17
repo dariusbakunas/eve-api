@@ -6,6 +6,7 @@ export class WalletTransaction extends BaseModel {
   readonly id!: number;
   characterId!: number;
   clientId!: number;
+  credit!: number;
   isBuy!: boolean;
   isPersonal!: boolean;
   quantity!: number;
