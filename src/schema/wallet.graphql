@@ -9,6 +9,11 @@ enum WalletTransactionOrderBy {
   unitPrice
 }
 
+enum OrderType {
+  buy
+  sell
+}
+
 input WalletTransactionOrderByInput {
   column: WalletTransactionOrderBy!
   order: Order!
@@ -49,6 +54,10 @@ type WalletTransactions {
   transactions: [WalletTransaction!]!
 }
 
+input WalletTransactionFilter {
+  orderType: OrderType
+}
+
 extend type Query {
-  walletTransactions(page: PageInput, orderBy: WalletTransactionOrderByInput): WalletTransactions
+  walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions
 }

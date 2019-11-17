@@ -99,6 +99,11 @@ export enum Order {
   Desc = 'desc'
 }
 
+export enum OrderType {
+  Buy = 'buy',
+  Sell = 'sell'
+}
+
 export type PageInput = {
   index?: Maybe<Scalars['Int']>,
   size?: Maybe<Scalars['Int']>,
@@ -120,6 +125,7 @@ export type QueryUserByEmailArgs = {
 
 export type QueryWalletTransactionsArgs = {
   page?: Maybe<PageInput>,
+  filter?: Maybe<WalletTransactionFilter>,
   orderBy?: Maybe<WalletTransactionOrderByInput>
 };
 
@@ -165,6 +171,10 @@ export type WalletTransaction = {
   location: Location,
   quantity: Scalars['Int'],
   unitPrice: Scalars['Float'],
+};
+
+export type WalletTransactionFilter = {
+  orderType?: Maybe<OrderType>,
 };
 
 export enum WalletTransactionOrderBy {
@@ -273,6 +283,8 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<Partial<User>>,
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
   PageInput: ResolverTypeWrapper<Partial<PageInput>>,
+  WalletTransactionFilter: ResolverTypeWrapper<Partial<WalletTransactionFilter>>,
+  OrderType: ResolverTypeWrapper<Partial<OrderType>>,
   WalletTransactionOrderByInput: ResolverTypeWrapper<Partial<WalletTransactionOrderByInput>>,
   WalletTransactionOrderBy: ResolverTypeWrapper<Partial<WalletTransactionOrderBy>>,
   Order: ResolverTypeWrapper<Partial<Order>>,
@@ -303,6 +315,8 @@ export type ResolversParentTypes = {
   User: Partial<User>,
   UserStatus: Partial<UserStatus>,
   PageInput: Partial<PageInput>,
+  WalletTransactionFilter: Partial<WalletTransactionFilter>,
+  OrderType: Partial<OrderType>,
   WalletTransactionOrderByInput: Partial<WalletTransactionOrderByInput>,
   WalletTransactionOrderBy: Partial<WalletTransactionOrderBy>,
   Order: Partial<Order>,

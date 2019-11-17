@@ -1,6 +1,7 @@
 import { IResolverContext } from '../types';
 import {
   Maybe,
+  OrderType,
   QueryWalletTransactionsArgs,
   RequireFields,
   Resolver,
@@ -13,12 +14,7 @@ import { WalletTransaction } from '../services/db/models/walletTransaction';
 
 interface IResolvers<Context> {
   Query: {
-    walletTransactions: Resolver<
-      Maybe<ResolversTypes['WalletTransactions']>,
-      ResolversParentTypes['Query'],
-      Context,
-      RequireFields<QueryWalletTransactionsArgs, 'page'>
-    >;
+    walletTransactions: Resolver<Maybe<ResolversTypes['WalletTransactions']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionsArgs>;
   };
   WalletTransaction: {
     item: Resolver<Maybe<ResolversTypes['InventoryItem']>, WalletTransaction, Context>;
@@ -31,8 +27,8 @@ interface IResolvers<Context> {
 
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
-    walletTransactions: async (_parent, { page, orderBy }, { dataSources, user }) => {
-      const { index, size } = page;
+    walletTransactions: async (_parent, { filter, page, orderBy }, { dataSources, user }) => {
+      const { index, size } = page || { index: 0, size: 10 };
 
       const characterIds = await dataSources.db.Character.query()
         .select('id')
@@ -44,6 +40,16 @@ const resolverMap: IResolvers<IResolverContext> = {
           .select('walletTransactions.*', raw('coalesce(citadel.name, station.stationName) as locationName'))
           .leftJoin('citadelCache as citadel', 'citadel.id', 'walletTransactions.locationId')
           .leftJoin('staStations as station', 'station.stationID', 'walletTransactions.locationId');
+
+        if (filter) {
+          if (filter.orderType) {
+            if (filter.orderType === OrderType.Buy) {
+              query.where('walletTransactions.isBuy', 1);
+            } else {
+              query.where('walletTransactions.isBuy', 0);
+            }
+          }
+        }
 
         if (orderBy) {
           let orderByCol;
