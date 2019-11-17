@@ -26,3 +26,22 @@ export interface IEsiJournalEntry {
   tax?: number;
   tax_receiver_id?: number;
 }
+
+export interface IEsiBookmark {
+  bookmark_id: number;
+  coordinates?: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  created: string;
+  creator_id: number;
+  folder_id?: number;
+  item?: {
+    item_id: number;
+    type_id: number;
+  };
+  label: string;
+  location_id: number;
+  notes: string;
+}

@@ -13,6 +13,7 @@ import { Station } from './db/models/station';
 import db from './db';
 import { RedisCache } from 'apollo-server-cache-redis';
 import { NameCacheItem } from './db/models/nameCacheItem';
+import { CitadelCacheItem } from './db/models/citadelCacheItem';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -29,6 +30,7 @@ export interface IDataSources {
     Invitation: typeof Invitation;
     InventoryItem: typeof InventoryItem;
     Station: typeof Station;
+    CitadelCacheItem: typeof CitadelCacheItem;
     WalletTransaction: typeof WalletTransaction;
   };
   loaders: Loaders;

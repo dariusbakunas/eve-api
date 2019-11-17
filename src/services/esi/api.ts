@@ -3,9 +3,9 @@ import { RequestOptions } from 'apollo-datasource-rest/src/RESTDataSource';
 import logger from '../../utils/logger';
 import moment from 'moment';
 import { KeyValueCache } from 'apollo-server-caching';
-import { IEsiJournalEntry, IEsiWalletTransaction } from './esiTypes';
+import { IEsiBookmark, IEsiJournalEntry, IEsiWalletTransaction } from './esiTypes';
 
-interface IWalletTransaction {
+export interface IWalletTransaction {
   id: number;
   clientId: number;
   characterId: number;
@@ -19,7 +19,7 @@ interface IWalletTransaction {
   unitPrice: number;
 }
 
-interface IJournalEntry {
+export interface IJournalEntry {
   amount?: number;
   balance?: number;
   characterId: number;
@@ -34,6 +34,24 @@ interface IJournalEntry {
   secondPartyId?: string;
   tax?: number;
   taxReceiverId?: number;
+}
+
+export interface IBookmark {
+  id: number;
+  coordinates?: {
+    x: number;
+    y: number;
+    z: number;
+  };
+  created: Date;
+  creatorId: number;
+  item?: {
+    id: number;
+    typeId: number;
+  };
+  label: string;
+  locationId: number;
+  notes: string;
 }
 
 class EsiAPI extends RESTDataSource {
@@ -62,10 +80,7 @@ class EsiAPI extends RESTDataSource {
     }
   }
 
-  protected async didReceiveResponse<TResult = any>(
-    response: Response,
-    request: Request
-  ): Promise<TResult> {
+  protected async didReceiveResponse<TResult = any>(response: Response, request: Request): Promise<TResult> {
     const cacheKey = `${request.url}`;
     if (response.ok) {
       const data = (await (this.parseBody(response) as any)) as Promise<TResult>;
@@ -101,6 +116,39 @@ class EsiAPI extends RESTDataSource {
     }
   }
 
+  async getBookmarks(characterId: number, token: string): Promise<IBookmark[]> {
+    const bookmarks = await this.get(`/characters/${characterId}/bookmarks`, undefined, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return bookmarks.map((bookmark: IEsiBookmark) => {
+      const result: IBookmark = {
+        id: bookmark.bookmark_id,
+        created: moment(bookmark.created).toDate(),
+        creatorId: bookmark.creator_id,
+        label: bookmark.label,
+        locationId: bookmark.location_id,
+        notes: bookmark.notes,
+      };
+
+      if (bookmark.item) {
+        result.item = {
+          id: bookmark.item.item_id,
+          typeId: bookmark.item.type_id,
+        };
+      }
+
+      if (bookmark.coordinates) {
+        result.coordinates = bookmark.coordinates;
+      }
+
+      return result;
+    });
+  }
+
   async getUniverseNames(ids: number[]) {
     return this.post('/universe/names', ids);
   }
@@ -115,16 +163,12 @@ class EsiAPI extends RESTDataSource {
   }
 
   async getWalletTransactions(characterId: number, token: string): Promise<IWalletTransaction[]> {
-    const transactions = await this.get(
-      `/characters/${characterId}/wallet/transactions/`,
-      undefined,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const transactions = await this.get(`/characters/${characterId}/wallet/transactions/`, undefined, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
     return transactions.map((t: IEsiWalletTransaction) => ({
       clientId: t.client_id,
