@@ -11,6 +11,7 @@ export class WalletTransaction extends BaseModel {
   quantity!: number;
   typeId!: number;
   locationId!: number;
+  locationName?: string;
   journalRefId!: number;
   unitPrice!: number;
   date!: Date;

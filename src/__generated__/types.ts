@@ -174,6 +174,7 @@ export enum WalletTransactionOrderBy {
   Credit = 'credit',
   Item = 'item',
   Quantity = 'quantity',
+  Station = 'station',
   UnitPrice = 'unitPrice'
 }
 

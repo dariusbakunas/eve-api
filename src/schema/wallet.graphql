@@ -5,6 +5,7 @@ enum WalletTransactionOrderBy {
   credit
   item
   quantity
+  station
   unitPrice
 }
 

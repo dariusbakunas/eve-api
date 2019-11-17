@@ -8,6 +8,7 @@ import {
   ResolversTypes,
   WalletTransactionOrderBy,
 } from '../__generated__/types';
+import { raw } from 'objection';
 import { WalletTransaction } from '../services/db/models/walletTransaction';
 
 interface IResolvers<Context> {
@@ -39,7 +40,10 @@ const resolverMap: IResolvers<IResolverContext> = {
         .pluck('id');
 
       if (characterIds.length) {
-        const query = dataSources.db.WalletTransaction.query();
+        const query = dataSources.db.WalletTransaction.query()
+          .select('walletTransactions.*', raw('coalesce(citadel.name, station.stationName) as locationName'))
+          .leftJoin('citadelCache as citadel', 'citadel.id', 'walletTransactions.locationId')
+          .leftJoin('staStations as station', 'station.stationID', 'walletTransactions.locationId');
 
         if (orderBy) {
           let orderByCol;
@@ -55,11 +59,7 @@ const resolverMap: IResolvers<IResolverContext> = {
               orderByCol = 'quantity';
               break;
             case WalletTransactionOrderBy.Character:
-              query.join(
-                'characters as character',
-                'character.id',
-                'walletTransactions.characterId'
-              );
+              query.join('characters as character', 'character.id', 'walletTransactions.characterId');
               orderByCol = 'character.name';
               break;
             case WalletTransactionOrderBy.Item:
@@ -67,8 +67,11 @@ const resolverMap: IResolvers<IResolverContext> = {
               orderByCol = 'item.typeName';
               break;
             case WalletTransactionOrderBy.Client:
-              query.join('nameCache', 'nameCache.id', 'walletTransactions.clientId');
-              orderByCol = 'nameCache.name';
+              query.join('nameCache as client', 'client.id', 'walletTransactions.clientId');
+              orderByCol = 'client.name';
+              break;
+            case WalletTransactionOrderBy.Station:
+              orderByCol = 'locationName';
               break;
           }
 
@@ -135,24 +138,10 @@ const resolverMap: IResolvers<IResolverContext> = {
 
       return null;
     },
-    location: async (parent, args, { dataSources }) => {
-      const { loaders } = dataSources;
-      if (parent.locationId.toString().length === 8) {
-        // all staStation ids have 8 digits, otherwise it is a citadel
-        const station = await loaders.stationLoader.load(parent.locationId);
-
-        if (station) {
-          return {
-            id: `${station.stationID}`,
-            name: station.stationName,
-          };
-        }
-      }
-
-      // TODO: add api call for citadels
+    location: parent => {
       return {
         id: `${parent.locationId}`,
-        name: 'Unknown Citadel',
+        name: parent.locationName || 'Unknown Station',
       };
     },
   },
