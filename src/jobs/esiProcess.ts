@@ -9,6 +9,7 @@ import { InMemoryLRUCache } from 'apollo-server-caching';
 import { processWalletTransactions } from './processWalletTransactions';
 import { processJournalEntries } from './processJournalEntries';
 import { updateNameCache } from './updateNameCache';
+import { processBookmarks } from './processBookmarks';
 
 const initDataSources = () => {
   const dataSources = {
@@ -33,19 +34,15 @@ export const processData = async () => {
     const { id, accessToken, refreshToken, expiresAt, scopes } = character;
 
     try {
-      const token = await getAccessToken(
-        id,
-        accessToken,
-        refreshToken,
-        expiresAt,
-        db,
-        crypt,
-        esiAuth
-      );
+      const token = await getAccessToken(id, accessToken, refreshToken, expiresAt, db, crypt, esiAuth);
 
       if (scopes.includes('esi-wallet.read_character_wallet.v1')) {
         await processWalletTransactions(character, token, db, esiApi);
         await processJournalEntries(character, token, db, esiApi);
+      }
+
+      if (scopes.includes('esi-bookmarks.read_character_bookmarks.v1')) {
+        await processBookmarks(character, token, db, esiApi);
       }
     } catch (e) {
       logger.error(e);
