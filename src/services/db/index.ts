@@ -14,6 +14,7 @@ import { JournalEntry } from './models/journalEntry';
 import { IDataSources } from '../index';
 import { Station } from './models/station';
 import { NameCacheItem } from './models/nameCacheItem';
+import { CitadelCacheItem } from './models/citadelCacheItem';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
@@ -29,6 +30,7 @@ const db: IDataSources['db'] = {
   Invitation,
   InventoryItem,
   Station,
+  CitadelCacheItem,
   WalletTransaction,
 };
 
