@@ -55,6 +55,7 @@ type WalletTransactions {
 }
 
 input WalletTransactionFilter {
+  item: String
   orderType: OrderType
 }
 

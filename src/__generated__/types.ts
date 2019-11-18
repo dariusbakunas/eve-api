@@ -174,6 +174,7 @@ export type WalletTransaction = {
 };
 
 export type WalletTransactionFilter = {
+  item?: Maybe<Scalars['String']>,
   orderType?: Maybe<OrderType>,
 };
 

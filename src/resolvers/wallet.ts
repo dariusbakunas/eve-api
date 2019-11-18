@@ -41,7 +41,8 @@ const resolverMap: IResolvers<IResolverContext> = {
             raw('(walletTransactions.quantity * walletTransactions.unitPrice) * if(walletTransactions.isBuy, -1, 1) as credit')
           )
           .leftJoin('citadelCache as citadel', 'citadel.id', 'walletTransactions.locationId')
-          .leftJoin('staStations as station', 'station.stationID', 'walletTransactions.locationId');
+          .leftJoin('staStations as station', 'station.stationID', 'walletTransactions.locationId')
+          .join('invTypes as item', 'item.typeID', 'walletTransactions.typeId');
 
         if (filter) {
           if (filter.orderType) {
@@ -50,6 +51,10 @@ const resolverMap: IResolvers<IResolverContext> = {
             } else {
               query.where('walletTransactions.isBuy', 0);
             }
+          }
+
+          if (filter.item) {
+            query.where('item.typeName', 'like', `%${filter.item}%`);
           }
         }
 
@@ -74,7 +79,6 @@ const resolverMap: IResolvers<IResolverContext> = {
               orderByCol = 'character.name';
               break;
             case WalletTransactionOrderBy.Item:
-              query.join('invTypes as item', 'item.typeID', 'walletTransactions.typeId');
               orderByCol = 'item.typeName';
               break;
             case WalletTransactionOrderBy.Client:
@@ -133,6 +137,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       return client;
     },
     item: async (parent, args, { dataSources }) => {
+      // TODO: since we do join anyway reuse that from parent
       const { loaders } = dataSources;
       const item = await loaders.invItemLoader.load(parent.typeId);
 
