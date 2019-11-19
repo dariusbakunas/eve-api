@@ -34,6 +34,7 @@ const shieldMiddleware = shield(
       characters: isActiveUser,
       scopes: isActiveUser,
       userByEmail: hasSameEmail,
+      walletJournal: isActiveUser,
       walletTransactions: isActiveUser,
     },
     Mutation: {

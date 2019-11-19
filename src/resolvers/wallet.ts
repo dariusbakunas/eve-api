@@ -2,6 +2,7 @@ import { IResolverContext } from '../types';
 import {
   Maybe,
   OrderType,
+  QueryWalletJournalArgs,
   QueryWalletTransactionsArgs,
   Resolver,
   ResolversParentTypes,
@@ -13,6 +14,7 @@ import { WalletTransaction } from '../services/db/models/walletTransaction';
 
 interface IResolvers<Context> {
   Query: {
+    walletJournal: Resolver<Maybe<ResolversTypes['JournalEntries']>, ResolversParentTypes['Query'], Context, QueryWalletJournalArgs>;
     walletTransactions: Resolver<Maybe<ResolversTypes['WalletTransactions']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionsArgs>;
   };
   WalletTransaction: {
@@ -25,6 +27,29 @@ interface IResolvers<Context> {
 
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
+    walletJournal: async (_parent, { page }, { dataSources, user }) => {
+      const { index, size } = page || { index: 0, size: 10 };
+
+      const characterIds = await dataSources.db.Character.query()
+        .select('id')
+        .where('ownerId', user.id)
+        .pluck('id');
+
+      if (characterIds.length) {
+        const query = dataSources.db.JournalEntry.query().select('journalEntries.*');
+
+        const entries = await query.where('journalEntries.characterId', 'in', characterIds).page(index, size);
+        return {
+          total: entries.total,
+          entries: entries.results,
+        };
+      }
+
+      return {
+        total: 0,
+        entries: [],
+      };
+    },
     walletTransactions: async (_parent, { filter, page, orderBy }, { dataSources, user }) => {
       const { index, size } = page || { index: 0, size: 10 };
 
@@ -95,7 +120,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           }
         }
 
-        const transactions = await query.where('characterId', 'in', characterIds).page(index, size);
+        const transactions = await query.where('walletTransactions.characterId', 'in', characterIds).page(index, size);
 
         return {
           total: transactions.total,

@@ -59,6 +59,22 @@ export type InventoryItem = {
   description?: Maybe<Scalars['String']>,
 };
 
+export type JournalEntries = {
+   __typename?: 'JournalEntries',
+  total: Scalars['Int'],
+  entries: Array<JournalEntry>,
+};
+
+export type JournalEntry = {
+   __typename?: 'JournalEntry',
+  id: Scalars['ID'],
+  amount: Scalars['Float'],
+  balance: Scalars['Float'],
+  character?: Maybe<Character>,
+  date: Scalars['DateTime'],
+  description?: Maybe<Scalars['String']>,
+};
+
 export type Location = {
    __typename?: 'Location',
   id: Scalars['ID'],
@@ -114,12 +130,18 @@ export type Query = {
   characters: Array<Character>,
   scopes: Array<Scope>,
   userByEmail?: Maybe<User>,
+  walletJournal?: Maybe<JournalEntries>,
   walletTransactions?: Maybe<WalletTransactions>,
 };
 
 
 export type QueryUserByEmailArgs = {
   email: Scalars['String']
+};
+
+
+export type QueryWalletJournalArgs = {
+  page?: Maybe<PageInput>
 };
 
 
@@ -284,6 +306,8 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<Partial<User>>,
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
   PageInput: ResolverTypeWrapper<Partial<PageInput>>,
+  JournalEntries: ResolverTypeWrapper<Partial<JournalEntries>>,
+  JournalEntry: ResolverTypeWrapper<Partial<JournalEntry>>,
   WalletTransactionFilter: ResolverTypeWrapper<Partial<WalletTransactionFilter>>,
   OrderType: ResolverTypeWrapper<Partial<OrderType>>,
   WalletTransactionOrderByInput: ResolverTypeWrapper<Partial<WalletTransactionOrderByInput>>,
@@ -316,6 +340,8 @@ export type ResolversParentTypes = {
   User: Partial<User>,
   UserStatus: Partial<UserStatus>,
   PageInput: Partial<PageInput>,
+  JournalEntries: Partial<JournalEntries>,
+  JournalEntry: Partial<JournalEntry>,
   WalletTransactionFilter: Partial<WalletTransactionFilter>,
   OrderType: Partial<OrderType>,
   WalletTransactionOrderByInput: Partial<WalletTransactionOrderByInput>,
@@ -380,6 +406,20 @@ export type InventoryItemResolvers<ContextType = any, ParentType extends Resolve
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 };
 
+export type JournalEntriesResolvers<ContextType = any, ParentType extends ResolversParentTypes['JournalEntries'] = ResolversParentTypes['JournalEntries']> = {
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  entries?: Resolver<Array<ResolversTypes['JournalEntry']>, ParentType, ContextType>,
+};
+
+export type JournalEntryResolvers<ContextType = any, ParentType extends ResolversParentTypes['JournalEntry'] = ResolversParentTypes['JournalEntry']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+  balance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType>,
+  date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+};
+
 export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
@@ -396,6 +436,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
   scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
   userByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>,
+  walletJournal?: Resolver<Maybe<ResolversTypes['JournalEntries']>, ParentType, ContextType, QueryWalletJournalArgs>,
   walletTransactions?: Resolver<Maybe<ResolversTypes['WalletTransactions']>, ParentType, ContextType, QueryWalletTransactionsArgs>,
 };
 
@@ -443,6 +484,8 @@ export type Resolvers<ContextType = any> = {
   Date?: GraphQLScalarType,
   DateTime?: GraphQLScalarType,
   InventoryItem?: InventoryItemResolvers<ContextType>,
+  JournalEntries?: JournalEntriesResolvers<ContextType>,
+  JournalEntry?: JournalEntryResolvers<ContextType>,
   Location?: LocationResolvers<ContextType>,
   Mutation?: MutationResolvers<ContextType>,
   Query?: QueryResolvers<ContextType>,
