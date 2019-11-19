@@ -141,7 +141,8 @@ export type QueryUserByEmailArgs = {
 
 
 export type QueryWalletJournalArgs = {
-  page?: Maybe<PageInput>
+  page?: Maybe<PageInput>,
+  orderBy?: Maybe<WalletJournalOrderByInput>
 };
 
 
@@ -180,6 +181,17 @@ export enum UserStatus {
   Active = 'ACTIVE',
   Inactive = 'INACTIVE'
 }
+
+export enum WalletJournalOrderBy {
+  Date = 'date',
+  Amount = 'amount',
+  Balance = 'balance'
+}
+
+export type WalletJournalOrderByInput = {
+  column: WalletJournalOrderBy,
+  order: Order,
+};
 
 export type WalletTransaction = {
    __typename?: 'WalletTransaction',
@@ -306,13 +318,15 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<Partial<User>>,
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
   PageInput: ResolverTypeWrapper<Partial<PageInput>>,
+  WalletJournalOrderByInput: ResolverTypeWrapper<Partial<WalletJournalOrderByInput>>,
+  WalletJournalOrderBy: ResolverTypeWrapper<Partial<WalletJournalOrderBy>>,
+  Order: ResolverTypeWrapper<Partial<Order>>,
   JournalEntries: ResolverTypeWrapper<Partial<JournalEntries>>,
   JournalEntry: ResolverTypeWrapper<Partial<JournalEntry>>,
   WalletTransactionFilter: ResolverTypeWrapper<Partial<WalletTransactionFilter>>,
   OrderType: ResolverTypeWrapper<Partial<OrderType>>,
   WalletTransactionOrderByInput: ResolverTypeWrapper<Partial<WalletTransactionOrderByInput>>,
   WalletTransactionOrderBy: ResolverTypeWrapper<Partial<WalletTransactionOrderBy>>,
-  Order: ResolverTypeWrapper<Partial<Order>>,
   WalletTransactions: ResolverTypeWrapper<Partial<WalletTransactions>>,
   WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>,
   Client: ResolverTypeWrapper<Partial<Client>>,
@@ -340,13 +354,15 @@ export type ResolversParentTypes = {
   User: Partial<User>,
   UserStatus: Partial<UserStatus>,
   PageInput: Partial<PageInput>,
+  WalletJournalOrderByInput: Partial<WalletJournalOrderByInput>,
+  WalletJournalOrderBy: Partial<WalletJournalOrderBy>,
+  Order: Partial<Order>,
   JournalEntries: Partial<JournalEntries>,
   JournalEntry: Partial<JournalEntry>,
   WalletTransactionFilter: Partial<WalletTransactionFilter>,
   OrderType: Partial<OrderType>,
   WalletTransactionOrderByInput: Partial<WalletTransactionOrderByInput>,
   WalletTransactionOrderBy: Partial<WalletTransactionOrderBy>,
-  Order: Partial<Order>,
   WalletTransactions: Partial<WalletTransactions>,
   WalletTransaction: Partial<WalletTransaction>,
   Client: Partial<Client>,

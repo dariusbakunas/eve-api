@@ -7,6 +7,7 @@ import {
   Resolver,
   ResolversParentTypes,
   ResolversTypes,
+  WalletJournalOrderBy,
   WalletTransactionOrderBy,
 } from '../__generated__/types';
 import { raw } from 'objection';
@@ -27,7 +28,7 @@ interface IResolvers<Context> {
 
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
-    walletJournal: async (_parent, { page }, { dataSources, user }) => {
+    walletJournal: async (_parent, { orderBy, page }, { dataSources, user }) => {
       const { index, size } = page || { index: 0, size: 10 };
 
       const characterIds = await dataSources.db.Character.query()
@@ -38,7 +39,23 @@ const resolverMap: IResolvers<IResolverContext> = {
       if (characterIds.length) {
         const query = dataSources.db.JournalEntry.query().select('journalEntries.*');
 
+        if (orderBy) {
+          let orderByCol;
+          const { column, order } = orderBy;
+
+          switch (column) {
+            case WalletJournalOrderBy.Date:
+              orderByCol = 'date';
+              break;
+          }
+
+          if (orderByCol) {
+            query.orderBy(orderByCol, order);
+          }
+        }
+
         const entries = await query.where('journalEntries.characterId', 'in', characterIds).page(index, size);
+
         return {
           total: entries.total,
           entries: entries.results,

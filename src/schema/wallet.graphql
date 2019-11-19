@@ -9,6 +9,12 @@ enum WalletTransactionOrderBy {
   unitPrice
 }
 
+enum WalletJournalOrderBy {
+  date
+  amount
+  balance
+}
+
 enum OrderType {
   buy
   sell
@@ -16,6 +22,11 @@ enum OrderType {
 
 input WalletTransactionOrderByInput {
   column: WalletTransactionOrderBy!
+  order: Order!
+}
+
+input WalletJournalOrderByInput {
+  column: WalletJournalOrderBy!
   order: Order!
 }
 
@@ -74,6 +85,6 @@ input WalletTransactionFilter {
 }
 
 extend type Query {
-  walletJournal(page: PageInput): JournalEntries
+  walletJournal(page: PageInput, orderBy: WalletJournalOrderByInput): JournalEntries
   walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions
 }
