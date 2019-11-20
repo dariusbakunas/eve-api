@@ -83,6 +83,7 @@ type JournalEntries {
 
 input WalletTransactionFilter {
   item: String
+  characterId: ID
   orderType: OrderType
 }
 

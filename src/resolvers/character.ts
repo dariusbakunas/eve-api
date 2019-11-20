@@ -39,7 +39,9 @@ interface IResolvers<Context> {
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
     characters: async (_, args, { dataSources, user: { id } }) => {
-      return dataSources.db.Character.query().where('ownerId', id);
+      return dataSources.db.Character.query()
+        .where('ownerId', id)
+        .orderBy('name');
     },
   },
   Mutation: {

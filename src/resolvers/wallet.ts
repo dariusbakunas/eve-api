@@ -13,6 +13,7 @@ import {
 import { raw } from 'objection';
 import { WalletTransaction } from '../services/db/models/walletTransaction';
 import { JournalEntry } from '../services/db/models/journalEntry';
+import { UserInputError } from 'apollo-server-express';
 
 interface IResolvers<Context> {
   Query: {
@@ -109,6 +110,16 @@ const resolverMap: IResolvers<IResolverContext> = {
           if (filter.item) {
             query.where('item.typeName', 'like', `%${filter.item}%`);
           }
+
+          if (filter.characterId) {
+            if (characterIds.includes(+filter.characterId)) {
+              query.where('walletTransactions.characterId', filter.characterId);
+            } else {
+              throw new UserInputError('Invalid character id');
+            }
+          } else {
+            query.where('walletTransactions.characterId', 'in', characterIds);
+          }
         }
 
         if (orderBy) {
@@ -142,7 +153,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           }
         }
 
-        const transactions = await query.where('walletTransactions.characterId', 'in', characterIds).page(index, size);
+        const transactions = await query.page(index, size);
 
         return {
           total: transactions.total,
