@@ -185,7 +185,9 @@ export enum UserStatus {
 export enum WalletJournalOrderBy {
   Date = 'date',
   Amount = 'amount',
-  Balance = 'balance'
+  Character = 'character',
+  Balance = 'balance',
+  Description = 'description'
 }
 
 export type WalletJournalOrderByInput = {

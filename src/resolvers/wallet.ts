@@ -12,6 +12,7 @@ import {
 } from '../__generated__/types';
 import { raw } from 'objection';
 import { WalletTransaction } from '../services/db/models/walletTransaction';
+import { JournalEntry } from '../services/db/models/journalEntry';
 
 interface IResolvers<Context> {
   Query: {
@@ -23,6 +24,9 @@ interface IResolvers<Context> {
     character: Resolver<Maybe<ResolversTypes['Character']>, WalletTransaction, Context>;
     client: Resolver<ResolversTypes['Client'], WalletTransaction, Context>;
     location: Resolver<Maybe<ResolversTypes['Location']>, WalletTransaction, Context>;
+  };
+  JournalEntry: {
+    character: Resolver<Maybe<ResolversTypes['Character']>, JournalEntry, Context>;
   };
 }
 
@@ -45,7 +49,14 @@ const resolverMap: IResolvers<IResolverContext> = {
 
           switch (column) {
             case WalletJournalOrderBy.Date:
-              orderByCol = 'date';
+            case WalletJournalOrderBy.Amount:
+            case WalletJournalOrderBy.Balance:
+            case WalletJournalOrderBy.Description:
+              orderByCol = column;
+              break;
+            case WalletJournalOrderBy.Character:
+              query.join('characters as character', 'character.id', 'journalEntries.characterId');
+              orderByCol = 'character.name';
               break;
           }
 
@@ -104,17 +115,11 @@ const resolverMap: IResolvers<IResolverContext> = {
           let orderByCol;
           const { column, order } = orderBy;
           switch (column) {
-            case WalletTransactionOrderBy.UnitPrice:
-              orderByCol = 'unitPrice';
-              break;
-            case WalletTransactionOrderBy.Credit:
-              orderByCol = 'credit';
-              break;
-            case WalletTransactionOrderBy.Date:
-              orderByCol = 'date';
-              break;
             case WalletTransactionOrderBy.Quantity:
-              orderByCol = 'quantity';
+            case WalletTransactionOrderBy.Date:
+            case WalletTransactionOrderBy.Credit:
+            case WalletTransactionOrderBy.UnitPrice:
+              orderByCol = column;
               break;
             case WalletTransactionOrderBy.Character:
               query.join('characters as character', 'character.id', 'walletTransactions.characterId');
@@ -149,6 +154,21 @@ const resolverMap: IResolvers<IResolverContext> = {
         total: 0,
         transactions: [],
       };
+    },
+  },
+  JournalEntry: {
+    character: async (parent, args, { dataSources }) => {
+      const { loaders } = dataSources;
+      const character = await loaders.characterLoader.load(parent.characterId);
+
+      if (character != null) {
+        return ({
+          ...character,
+          id: `${character.id}`,
+        } as unknown) as ResolversTypes['Character']; // TODO: no idea why it would not like it??
+      }
+
+      return null;
     },
   },
   WalletTransaction: {

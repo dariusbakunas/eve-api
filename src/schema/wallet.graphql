@@ -12,7 +12,9 @@ enum WalletTransactionOrderBy {
 enum WalletJournalOrderBy {
   date
   amount
+  character
   balance
+  description
 }
 
 enum OrderType {
