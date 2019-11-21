@@ -142,6 +142,7 @@ export type QueryUserByEmailArgs = {
 
 export type QueryWalletJournalArgs = {
   page?: Maybe<PageInput>,
+  filter?: Maybe<WalletJournalFilter>,
   orderBy?: Maybe<WalletJournalOrderByInput>
 };
 
@@ -181,6 +182,10 @@ export enum UserStatus {
   Active = 'ACTIVE',
   Inactive = 'INACTIVE'
 }
+
+export type WalletJournalFilter = {
+  characterId?: Maybe<Scalars['ID']>,
+};
 
 export enum WalletJournalOrderBy {
   Date = 'date',
@@ -321,6 +326,7 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<Partial<User>>,
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
   PageInput: ResolverTypeWrapper<Partial<PageInput>>,
+  WalletJournalFilter: ResolverTypeWrapper<Partial<WalletJournalFilter>>,
   WalletJournalOrderByInput: ResolverTypeWrapper<Partial<WalletJournalOrderByInput>>,
   WalletJournalOrderBy: ResolverTypeWrapper<Partial<WalletJournalOrderBy>>,
   Order: ResolverTypeWrapper<Partial<Order>>,
@@ -357,6 +363,7 @@ export type ResolversParentTypes = {
   User: Partial<User>,
   UserStatus: Partial<UserStatus>,
   PageInput: Partial<PageInput>,
+  WalletJournalFilter: Partial<WalletJournalFilter>,
   WalletJournalOrderByInput: Partial<WalletJournalOrderByInput>,
   WalletJournalOrderBy: Partial<WalletJournalOrderBy>,
   Order: Partial<Order>,

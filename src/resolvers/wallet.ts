@@ -33,7 +33,7 @@ interface IResolvers<Context> {
 
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
-    walletJournal: async (_parent, { orderBy, page }, { dataSources, user }) => {
+    walletJournal: async (_parent, { filter, orderBy, page }, { dataSources, user }) => {
       const { index, size } = page || { index: 0, size: 10 };
 
       const characterIds = await dataSources.db.Character.query()
@@ -43,6 +43,18 @@ const resolverMap: IResolvers<IResolverContext> = {
 
       if (characterIds.length) {
         const query = dataSources.db.JournalEntry.query().select('journalEntries.*');
+
+        if (filter) {
+          if (filter.characterId) {
+            if (characterIds.includes(+filter.characterId)) {
+              query.where('journalEntries.characterId', filter.characterId);
+            } else {
+              throw new UserInputError('Invalid character id');
+            }
+          } else {
+            query.where('journalEntries.characterId', 'in', characterIds);
+          }
+        }
 
         if (orderBy) {
           let orderByCol;

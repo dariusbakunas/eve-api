@@ -87,7 +87,11 @@ input WalletTransactionFilter {
   orderType: OrderType
 }
 
+input WalletJournalFilter {
+  characterId: ID
+}
+
 extend type Query {
-  walletJournal(page: PageInput, orderBy: WalletJournalOrderByInput): JournalEntries
+  walletJournal(page: PageInput, filter: WalletJournalFilter, orderBy: WalletJournalOrderByInput): JournalEntries
   walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions
 }
