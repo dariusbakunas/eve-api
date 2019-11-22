@@ -2,9 +2,7 @@ import * as Knex from 'knex';
 
 export async function up(knex: Knex): Promise<any> {
   return knex.schema.createTable('journalEntries', t => {
-    t.bigInteger('id')
-      .unsigned()
-      .primary();
+    t.bigInteger('id').unsigned();
     t.float('amount', 15);
     t.float('balance', 15);
     t.bigInteger('contextId');
@@ -17,9 +15,8 @@ export async function up(knex: Knex): Promise<any> {
     t.integer('secondPartyId').unsigned();
     t.float('tax', 15);
     t.integer('taxReceiverId').unsigned();
-    t.bigInteger('characterId')
-      .unsigned()
-      .notNullable();
+    t.bigInteger('characterId').unsigned();
+    t.primary(['id', 'characterId']);
   });
 }
 

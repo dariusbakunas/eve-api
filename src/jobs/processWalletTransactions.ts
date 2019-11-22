@@ -13,16 +13,17 @@ export const processWalletTransactions = async (character: Character, token: str
   let inserted = 0;
 
   await transaction(knex, async trx => {
+    const existingEntries = await db.WalletTransaction.query(trx)
+      .select('id')
+      .where('characterId', character.id)
+      .pluck('id');
+
+    const entrySet = new Set(existingEntries);
+
     for (let t = 0; t < transactions.length; t++) {
       const walletTransaction = transactions[t];
 
-      const exists = await db.WalletTransaction.query(trx)
-        .select('id')
-        .where({
-          id: walletTransaction.transaction_id,
-        });
-
-      if (!exists.length) {
+      if (!entrySet.has(walletTransaction.transaction_id)) {
         await db.WalletTransaction.query(trx).insert({
           clientId: walletTransaction.client_id,
           characterId: character.id,

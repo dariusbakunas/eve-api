@@ -13,16 +13,17 @@ export const processJournalEntries = async (character: Character, token: string,
   let inserted = 0;
 
   await transaction(knex, async trx => {
+    const existingEntries = await db.JournalEntry.query(trx)
+      .select('id')
+      .where('characterId', character.id)
+      .pluck('id');
+
+    const entrySet = new Set(existingEntries);
+
     for (let i = 0; i < journalEntries.length; i++) {
       const entry = journalEntries[i];
 
-      const exists = await db.JournalEntry.query(trx)
-        .select('id')
-        .where({
-          id: entry.id,
-        });
-
-      if (!exists.length) {
+      if (!entrySet.has(entry.id)) {
         await db.JournalEntry.query(trx).insert({
           id: entry.id,
           amount: entry.amount,
