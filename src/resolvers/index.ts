@@ -8,13 +8,4 @@ import User from './user';
 import CustomScalars from './customScalars';
 import Wallet from './wallet';
 
-export default merge(
-  Query,
-  Alliance,
-  Character,
-  Corporation,
-  Mutation,
-  CustomScalars,
-  User,
-  Wallet
-);
+export default merge(Query, Alliance, Character, Corporation, Mutation, CustomScalars, User, Wallet);

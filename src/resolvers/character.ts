@@ -17,7 +17,7 @@ const getCharacterInfo = async (id: number, esiApi: IDataSources['esiApi'], fiel
   return info[fieldName === 'securityStatus' ? 'security_status' : fieldName];
 };
 
-interface IResolvers<Context> {
+interface ICharacterResolvers<Context> {
   Query: {
     characters: Resolver<Array<Character>, any, Context>;
   };
@@ -36,7 +36,7 @@ interface IResolvers<Context> {
   };
 }
 
-const resolverMap: IResolvers<IResolverContext> = {
+const resolverMap: ICharacterResolvers<IResolverContext> = {
   Query: {
     characters: async (_, args, { dataSources, user: { id } }) => {
       return dataSources.db.Character.query()
