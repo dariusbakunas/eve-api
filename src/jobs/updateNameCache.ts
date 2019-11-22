@@ -6,17 +6,29 @@ export const updateNameCache = async (db: IDataSources['db'], esiApi: IDataSourc
   let newIds = [];
 
   try {
-    const clientIds = await db.WalletTransaction.query()
+    const transactionClientIds = await db.WalletTransaction.query()
       .select('clientId')
       .distinct('clientId')
       .pluck('clientId');
+
+    const journalFirstPartyIds = await db.JournalEntry.query()
+      .select('firstPartyId')
+      .distinct('firstPartyId')
+      .pluck('firstPartyId');
+
+    const journalSecondPartyIds = await db.JournalEntry.query()
+      .select('secondPartyId')
+      .distinct('secondPartyId')
+      .pluck('secondPartyId');
+
+    const ids = new Set([...transactionClientIds, ...journalFirstPartyIds, ...journalSecondPartyIds]);
 
     const cacheIds = await db.NameCacheItem.query()
       .select('id')
       .pluck('id');
 
-    const idSet = new Set(cacheIds);
-    newIds = clientIds.filter((id: number) => !idSet.has(id));
+    const cacheIdSet = new Set(cacheIds);
+    newIds = [...ids].filter((id: number) => !cacheIdSet.has(id));
   } catch (e) {
     logger.error(e);
   }
