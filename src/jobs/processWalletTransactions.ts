@@ -3,13 +3,9 @@ import { Character } from '../services/db/models/character';
 import { WalletTransaction } from '../services/db/models/walletTransaction';
 import { transaction } from 'objection';
 import { IDataSources } from '../services';
+import moment from 'moment';
 
-export const processWalletTransactions = async (
-  character: Character,
-  token: string,
-  db: IDataSources['db'],
-  esiApi: IDataSources['esiApi']
-) => {
+export const processWalletTransactions = async (character: Character, token: string, db: IDataSources['db'], esiApi: IDataSources['esiApi']) => {
   logger.info(`Getting transactions for character: ${character.name}`);
   const transactions = await esiApi.getWalletTransactions(character.id, token);
 
@@ -23,11 +19,23 @@ export const processWalletTransactions = async (
       const exists = await db.WalletTransaction.query(trx)
         .select('id')
         .where({
-          id: walletTransaction.id,
+          id: walletTransaction.transaction_id,
         });
 
       if (!exists.length) {
-        await db.WalletTransaction.query(trx).insert(walletTransaction);
+        await db.WalletTransaction.query(trx).insert({
+          clientId: walletTransaction.client_id,
+          characterId: character.id,
+          date: moment(walletTransaction.date).toDate(),
+          isBuy: walletTransaction.is_buy,
+          isPersonal: walletTransaction.is_personal,
+          journalRefId: walletTransaction.journal_ref_id,
+          locationId: walletTransaction.location_id,
+          quantity: walletTransaction.quantity,
+          id: walletTransaction.transaction_id,
+          typeId: walletTransaction.type_id,
+          unitPrice: walletTransaction.unit_price,
+        });
 
         inserted++;
       }

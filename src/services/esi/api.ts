@@ -1,58 +1,8 @@
 import { Request, Response, RESTDataSource } from 'apollo-datasource-rest';
 import { RequestOptions } from 'apollo-datasource-rest/src/RESTDataSource';
 import logger from '../../utils/logger';
-import moment from 'moment';
 import { KeyValueCache } from 'apollo-server-caching';
-import { IEsiBookmark, IEsiJournalEntry, IEsiWalletTransaction } from './esiTypes';
-
-export interface IWalletTransaction {
-  id: number;
-  clientId: number;
-  characterId: number;
-  date: Date;
-  isBuy: boolean;
-  isPersonal: boolean;
-  journalRefId: number;
-  locationId: number;
-  quantity: 3;
-  typeId: number;
-  unitPrice: number;
-}
-
-export interface IJournalEntry {
-  amount?: number;
-  balance?: number;
-  characterId: number;
-  contextId?: number;
-  contextIdType?: number;
-  date: Date;
-  description: string;
-  firstPartyId?: number;
-  id: number;
-  reason?: string;
-  refType: string;
-  secondPartyId?: string;
-  tax?: number;
-  taxReceiverId?: number;
-}
-
-export interface IBookmark {
-  id: number;
-  coordinates?: {
-    x: number;
-    y: number;
-    z: number;
-  };
-  created: Date;
-  creatorId: number;
-  item?: {
-    id: number;
-    typeId: number;
-  };
-  label: string;
-  locationId: number;
-  notes: string;
-}
+import { IEsiBookmark, IEsiJournalEntry, IEsiMarketOrder, IEsiWalletTransaction } from './esiTypes';
 
 class EsiAPI extends RESTDataSource {
   private cache: KeyValueCache;
@@ -116,36 +66,12 @@ class EsiAPI extends RESTDataSource {
     }
   }
 
-  async getBookmarks(characterId: number, token: string): Promise<IBookmark[]> {
-    const bookmarks = await this.get(`/characters/${characterId}/bookmarks`, undefined, {
+  async getBookmarks(characterId: number, token: string): Promise<IEsiBookmark[]> {
+    return this.get(`/characters/${characterId}/bookmarks`, undefined, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-    });
-
-    return bookmarks.map((bookmark: IEsiBookmark) => {
-      const result: IBookmark = {
-        id: bookmark.bookmark_id,
-        created: moment(bookmark.created).toDate(),
-        creatorId: bookmark.creator_id,
-        label: bookmark.label,
-        locationId: bookmark.location_id,
-        notes: bookmark.notes,
-      };
-
-      if (bookmark.item) {
-        result.item = {
-          id: bookmark.item.item_id,
-          typeId: bookmark.item.type_id,
-        };
-      }
-
-      if (bookmark.coordinates) {
-        result.coordinates = bookmark.coordinates;
-      }
-
-      return result;
     });
   }
 
@@ -162,53 +88,31 @@ class EsiAPI extends RESTDataSource {
     });
   }
 
-  async getWalletTransactions(characterId: number, token: string): Promise<IWalletTransaction[]> {
-    const transactions = await this.get(`/characters/${characterId}/wallet/transactions/`, undefined, {
+  async getWalletTransactions(characterId: number, token: string): Promise<IEsiWalletTransaction[]> {
+    return this.get(`/characters/${characterId}/wallet/transactions/`, undefined, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
-
-    return transactions.map((t: IEsiWalletTransaction) => ({
-      clientId: t.client_id,
-      characterId: characterId,
-      date: moment(t.date).toDate(),
-      isBuy: t.is_buy,
-      isPersonal: t.is_personal,
-      journalRefId: t.journal_ref_id,
-      locationId: t.location_id,
-      quantity: t.quantity,
-      id: t.transaction_id,
-      typeId: t.type_id,
-      unitPrice: t.unit_price,
-    }));
   }
 
-  async getJournalEntries(characterId: number, token: string): Promise<IJournalEntry[]> {
-    const entries = await this.get(`/characters/${characterId}/wallet/journal`, undefined, {
+  async getMarketOrders(characterId: number, token: string): Promise<IEsiMarketOrder[]> {
+    return this.get(`/characters/${characterId}/orders`, undefined, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
+  }
 
-    return entries.map((entry: IEsiJournalEntry) => ({
-      id: entry.id,
-      amount: entry.amount,
-      balance: entry.balance,
-      characterId: characterId,
-      contextId: entry.context_id,
-      contextIdType: entry.context_id_type,
-      date: moment(entry.date).toDate(),
-      description: entry.description,
-      firstPartyId: entry.first_party_id,
-      reason: entry.reason,
-      refType: entry.ref_type,
-      secondPartyId: entry.second_party_id,
-      tax: entry.tax,
-      taxReceiverId: entry.tax_receiver_id,
-    }));
+  async getJournalEntries(characterId: number, token: string): Promise<IEsiJournalEntry[]> {
+    return this.get(`/characters/${characterId}/wallet/journal`, undefined, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
   }
 
   async getCorporationInfo(corporationId: number) {

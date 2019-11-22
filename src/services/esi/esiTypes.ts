@@ -45,3 +45,20 @@ export interface IEsiBookmark {
   location_id: number;
   notes: string;
 }
+
+export interface IEsiMarketOrder {
+  duration: number;
+  escrow?: number;
+  is_buy_order?: boolean;
+  is_corporation: boolean;
+  issued: string;
+  location_id: number;
+  min_volume?: number;
+  order_id: number;
+  price: number;
+  range: string;
+  region_id: number;
+  type_id: number;
+  volume_remain: number;
+  volume_total: number;
+}

@@ -1,7 +1,8 @@
 import { Character } from '../services/db/models/character';
 import { IDataSources } from '../services';
 import logger from '../utils/logger';
-import { IBookmark } from '../services/esi/api';
+import moment from 'moment';
+import { IEsiBookmark } from '../services/esi/esiTypes';
 
 const CITADEL_GROUP_ID = 1657;
 
@@ -19,8 +20,8 @@ export const processBookmarks = async (character: Character, token: string, db: 
     .pluck('id');
 
   const existingIdSet = new Set(existingStructures);
-  const citadelBookmarks = allBookmarks.filter((bookmark: IBookmark) => {
-    return bookmark.item && citadelIdSet.has(bookmark.item.typeId) && !existingIdSet.has(bookmark.item.id);
+  const citadelBookmarks = allBookmarks.filter((bookmark: IEsiBookmark) => {
+    return bookmark.item && citadelIdSet.has(bookmark.item.type_id) && !existingIdSet.has(bookmark.item.item_id);
   });
 
   for (let i = 0; i < citadelBookmarks.length; i++) {
@@ -28,12 +29,12 @@ export const processBookmarks = async (character: Character, token: string, db: 
     const name = citadel.label.replace('\t', '');
     logger.info(`Inserting new citadel: ${name}`);
     await db.CitadelCacheItem.query().insert({
-      id: citadel.item!.id,
+      id: citadel.item!.item_id,
       name: name,
-      systemId: citadel.locationId,
-      typeId: citadel.item!.typeId,
+      systemId: citadel.location_id,
+      typeId: citadel.item!.type_id,
       creatorId: character.id,
-      createdAt: citadel.created,
+      createdAt: moment(citadel.created).toDate(),
     });
   }
 };
