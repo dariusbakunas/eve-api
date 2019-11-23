@@ -92,5 +92,9 @@
     "ts-jest": "24.1.0",
     "ts-node": "^8.3.0",
     "typescript": "3.7.2"
+  },
+  "resolutions": {
+    "mem": "^4.1.0",
+    "handlebars": "^4.5.3"
   }
 }
