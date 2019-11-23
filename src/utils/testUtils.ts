@@ -4,6 +4,7 @@ import { Character } from '../services/db/models/character';
 import { User } from '../services/db/models/user';
 
 export class QueryMock {
+  public deleteByIdFn: Mock;
   public findByIdFn: Mock;
   public whereFn: Mock;
   public orderByFn: Mock;
@@ -16,6 +17,7 @@ export class QueryMock {
   };
 
   constructor() {
+    this.deleteByIdFn = jest.fn();
     this.findByIdFn = jest.fn();
     this.orderByFn = jest.fn();
     this.whereFn = jest.fn();
@@ -23,6 +25,11 @@ export class QueryMock {
 
   findById = (...args: any[]) => {
     const ret = this.findByIdFn(...args);
+    return ret ? Promise.resolve(ret) : this;
+  };
+
+  deleteById = (...args: any[]) => {
+    const ret = this.deleteByIdFn(...args);
     return ret ? Promise.resolve(ret) : this;
   };
 
@@ -48,9 +55,20 @@ export const getTestContext = (userId: number) => {
         User,
       },
       esiAuth: {
-        getCharacterTokens: jest.fn(),
+        getCharacterTokens: jest.fn().mockReturnValue({
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          access_token: 'TEST_ACCESS_TOKEN',
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          refresh_token: 'TEST_REFRESH_TOKEN',
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          expires_in: 5000,
+        }),
         getAccessToken: jest.fn(),
-        verifyToken: jest.fn(),
+        verifyToken: jest.fn().mockReturnValue({
+          CharacterID: 'TEST_CHARACTER_ID',
+          CharacterName: 'TEST_CHARACTER_NAME',
+          Scopes: 'scope01 scope02 scope03',
+        }),
       },
     },
     user: {

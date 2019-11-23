@@ -1,5 +1,5 @@
 import { makeExecutableSchema } from 'graphql-tools';
-import { graphql, GraphQLSchema } from 'graphql';
+import { graphql, GraphQLError, GraphQLSchema } from 'graphql';
 import resolvers from './index';
 import { IResolverContext } from '../types';
 import { loadSchema } from '../schema/loadSchema';
@@ -18,6 +18,10 @@ describe('Character Resolver', () => {
     typeDefs = loadSchema();
     schema = makeExecutableSchema<IResolverContext>({ typeDefs, resolvers });
     process.env = Object.assign(process.env, { EVE_CLIENT_ID, EVE_CLIENT_SECRET });
+  });
+
+  beforeEach(() => {
+    jest.spyOn(Date, 'now').mockImplementationOnce(() => new Date('2019-11-23T19:06:22.575Z').getTime());
   });
 
   test('query: characters', async () => {
@@ -45,22 +49,7 @@ describe('Character Resolver', () => {
   });
 
   test('mutation: addCharacter', async () => {
-    jest.spyOn(Date, 'now').mockImplementationOnce(() => new Date('2019-11-23T19:06:22.575Z').getTime());
     const context = getTestContext(123);
-    context.dataSources.esiAuth.getCharacterTokens.mockReturnValue({
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      access_token: 'TEST_ACCESS_TOKEN',
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      refresh_token: 'TEST_REFRESH_TOKEN',
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      expires_in: 5000,
-    });
-
-    context.dataSources.esiAuth.verifyToken.mockReturnValue({
-      CharacterID: 'TEST_CHARACTER_ID',
-      CharacterName: 'TEST_CHARACTER_NAME',
-      Scopes: 'scope01 scope02 scope03',
-    });
 
     const queryMock = QueryMock.spyOn(User, 'query');
     const insertMock = jest.fn();
@@ -106,6 +95,100 @@ describe('Character Resolver', () => {
           id: 'TEST_CHARACTER_ID',
           name: 'TEST_CHARACTER_NAME',
         },
+      },
+    });
+  });
+
+  test('mutation: updateCharacter', async () => {
+    const context = getTestContext(123);
+    const queryMock = QueryMock.spyOn(Character, 'query');
+
+    const query = `
+      mutation UpdateCharacter($id: ID!, $code: String!) {
+        updateCharacter(id: $id, code: $code) {
+          id          
+          name         
+        }
+      }
+    `;
+
+    const updateAndFetchMock = jest.fn().mockReturnValue({
+      id: 'TEST_CHARACTER_ID',
+      name: 'TEST_CHARACTER_NAME',
+    });
+    const characterMock = {
+      $query: () => ({
+        updateAndFetch: updateAndFetchMock,
+      }),
+    };
+    queryMock.findByIdFn.mockReturnValue(characterMock);
+
+    const result = await graphql(schema, query, null, context, {
+      id: 'TEST_CHARACTER_ID',
+      code: 'TEST_CODE',
+    });
+
+    expect(context.dataSources.esiAuth.getCharacterTokens).toHaveBeenCalledWith(EVE_CLIENT_ID, EVE_CLIENT_SECRET, 'TEST_CODE');
+    expect(context.dataSources.esiAuth.verifyToken).toHaveBeenCalledWith('TEST_ACCESS_TOKEN');
+    expect(queryMock.findByIdFn).toHaveBeenCalledWith('TEST_CHARACTER_ID');
+    expect(updateAndFetchMock).toHaveBeenCalledWith({
+      scopes: 'scope01 scope02 scope03',
+      accessToken: 'TEST_ACCESS_TOKEN_encrypted',
+      refreshToken: 'TEST_REFRESH_TOKEN_encrypted',
+      expiresAt: 1574540982575,
+    });
+    expect(result).toEqual({
+      data: {
+        updateCharacter: {
+          id: 'TEST_CHARACTER_ID',
+          name: 'TEST_CHARACTER_NAME',
+        },
+      },
+    });
+  });
+
+  test('mutation: updateCharacter throws for mismatch character id', async () => {
+    const context = getTestContext(123);
+
+    const query = `
+      mutation UpdateCharacter($id: ID!, $code: String!) {
+        updateCharacter(id: $id, code: $code) {
+          id          
+          name         
+        }
+      }
+    `;
+
+    // verifyToken returns { CharacterID: 'TEST_CHARACTER_ID', CharacterName: 'TEST_CHARACTER_NAME' }
+    const result = await graphql(schema, query, null, context, {
+      id: 'TEST_CHARACTER_ID_MISMATCH',
+      code: 'TEST_CODE',
+    });
+
+    expect(result).toEqual({
+      data: null,
+      errors: [new GraphQLError("character 'TEST_CHARACTER_NAME' does not match original request")],
+    });
+  });
+
+  test('mutation: removeCharacter', async () => {
+    const context = getTestContext(123);
+    const queryMock = QueryMock.spyOn(Character, 'query');
+
+    const query = `
+      mutation RemoveCharacter($id: ID!) {
+        removeCharacter(id: $id)
+      }
+    `;
+
+    const result = await graphql(schema, query, null, context, {
+      id: 'TEST_CHARACTER_ID',
+    });
+
+    expect(queryMock.deleteByIdFn).toHaveBeenCalledWith('TEST_CHARACTER_ID');
+    expect(result).toEqual({
+      data: {
+        removeCharacter: 'TEST_CHARACTER_ID',
       },
     });
   });

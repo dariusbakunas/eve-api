@@ -75,7 +75,7 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
     updateCharacter: async (_, { id, code }, { dataSources: { db, crypt, esiAuth } }) => {
       const tokens = await esiAuth.getCharacterTokens(process.env.EVE_CLIENT_ID!, process.env.EVE_CLIENT_SECRET!, code);
       const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = tokens;
-      const expiresAt = expiresIn * 1000 + new Date().getTime();
+      const expiresAt = expiresIn * 1000 + new Date(Date.now()).getTime();
       const { CharacterID, CharacterName, Scopes } = await esiAuth.verifyToken(accessToken);
 
       if (id !== `${CharacterID}`) {
