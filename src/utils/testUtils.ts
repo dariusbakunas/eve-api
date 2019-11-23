@@ -1,7 +1,10 @@
 import Mock = jest.Mock;
 import FunctionPropertyNames = jest.FunctionPropertyNames;
+import { Character } from '../services/db/models/character';
+import { User } from '../services/db/models/user';
 
 export class QueryMock {
+  public findByIdFn: Mock;
   public whereFn: Mock;
   public orderByFn: Mock;
 
@@ -13,9 +16,15 @@ export class QueryMock {
   };
 
   constructor() {
+    this.findByIdFn = jest.fn();
     this.orderByFn = jest.fn();
     this.whereFn = jest.fn();
   }
+
+  findById = (...args: any[]) => {
+    const ret = this.findByIdFn(...args);
+    return ret ? Promise.resolve(ret) : this;
+  };
 
   where = (...args: any[]) => {
     const ret = this.whereFn(...args);
@@ -27,3 +36,25 @@ export class QueryMock {
     return ret ? Promise.resolve(ret) : this;
   };
 }
+
+export const getTestContext = (userId: number) => {
+  return {
+    dataSources: {
+      crypt: {
+        encrypt: (content: string) => content + '_encrypted', // encryption is irrelevant here
+      },
+      db: {
+        Character,
+        User,
+      },
+      esiAuth: {
+        getCharacterTokens: jest.fn(),
+        getAccessToken: jest.fn(),
+        verifyToken: jest.fn(),
+      },
+    },
+    user: {
+      id: userId,
+    },
+  };
+};
