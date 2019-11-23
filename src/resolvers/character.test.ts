@@ -45,7 +45,7 @@ describe('Character Resolver', () => {
   });
 
   test('mutation: addCharacter', async () => {
-    jest.spyOn(Date, 'now').mockImplementation(() => new Date(2019, 12, 1).getTime());
+    jest.spyOn(Date, 'now').mockImplementationOnce(() => new Date('2019-11-23T19:06:22.575Z').getTime());
     const context = getTestContext(123);
     context.dataSources.esiAuth.getCharacterTokens.mockReturnValue({
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -95,7 +95,7 @@ describe('Character Resolver', () => {
     expect(insertMock).toHaveBeenCalledWith({
       id: 'TEST_CHARACTER_ID',
       name: 'TEST_CHARACTER_NAME',
-      expiresAt: 1577859800000, // 1577854800000 (mocked timestamp) + expiresIn * 1000
+      expiresAt: 1574540982575,
       accessToken: 'TEST_ACCESS_TOKEN_encrypted',
       refreshToken: 'TEST_REFRESH_TOKEN_encrypted',
       scopes: 'scope01 scope02 scope03',
