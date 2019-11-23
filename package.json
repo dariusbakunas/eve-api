@@ -23,6 +23,10 @@
       "pre-commit": "pretty-quick --staged"
     }
   },
+  "graphdoc": {
+    "endpoint": "http://localhost:4000/graphql",
+    "output": "./doc/schema"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dariusbakunas/eve-api.git"
@@ -62,6 +66,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@2fd/graphdoc": "^2.4.0",
     "@graphql-codegen/cli": "^1.8.1",
     "@graphql-codegen/introspection": "1.8.3",
     "@graphql-codegen/typescript": "1.8.3",
