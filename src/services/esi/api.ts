@@ -2,7 +2,7 @@ import { Request, Response, RESTDataSource } from 'apollo-datasource-rest';
 import { RequestOptions } from 'apollo-datasource-rest/src/RESTDataSource';
 import logger from '../../utils/logger';
 import { KeyValueCache } from 'apollo-server-caching';
-import { IEsiBookmark, IEsiJournalEntry, IEsiMarketOrder, IEsiWalletTransaction } from './esiTypes';
+import { IEsiBookmark, IEsiCharacterInfo, IEsiCorporationInfo, IEsiJournalEntry, IEsiMarketOrder, IEsiWalletTransaction } from './esiTypes';
 
 class EsiAPI extends RESTDataSource {
   private cache: KeyValueCache;
@@ -12,7 +12,7 @@ class EsiAPI extends RESTDataSource {
     this.baseURL = baseUrl;
     this.cache = cache;
   }
-  async getCharacterInfo(characterId: number) {
+  async getCharacterInfo(characterId: number): Promise<IEsiCharacterInfo> {
     return this.get(`/characters/${characterId}`);
   }
 
@@ -115,7 +115,7 @@ class EsiAPI extends RESTDataSource {
     });
   }
 
-  async getCorporationInfo(corporationId: number) {
+  async getCorporationInfo(corporationId: number): Promise<IEsiCorporationInfo> {
     return this.get(`/corporations/${corporationId}`);
   }
 

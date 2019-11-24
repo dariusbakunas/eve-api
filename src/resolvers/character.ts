@@ -11,10 +11,15 @@ import { Character } from '../services/db/models/character';
 import { getAccessToken } from './common';
 import { IDataSources } from '../services';
 import { UserInputError } from 'apollo-server-errors';
+import { IEsiCharacterInfo } from '../services/esi/esiTypes';
 
-const getCharacterInfo = async (id: number, esiApi: IDataSources['esiApi'], fieldName: string) => {
+const getCharacterInfo: <T extends keyof IEsiCharacterInfo>(
+  id: number,
+  esiApi: IDataSources['esiApi'],
+  fieldName: T
+) => Promise<IEsiCharacterInfo[T]> = async (id, esiApi, fieldName) => {
   const info = await esiApi.getCharacterInfo(id);
-  return info[fieldName === 'securityStatus' ? 'security_status' : fieldName];
+  return info[fieldName];
 };
 
 interface ICharacterResolvers<Context> {
@@ -96,23 +101,23 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
     },
   },
   Character: {
-    birthday: ({ id }, args, { dataSources }, { fieldName }) => {
-      return getCharacterInfo(id, dataSources.esiApi, fieldName);
+    birthday: ({ id }, args, { dataSources }) => {
+      return getCharacterInfo(id, dataSources.esiApi, 'birthday');
     },
     corporation: async ({ id }, args, { dataSources }) => {
       const { corporation_id: corporationId } = await dataSources.esiApi.getCharacterInfo(id);
       const corporationInfo = await dataSources.esiApi.getCorporationInfo(corporationId);
 
       return {
-        id: corporationId,
+        id: `${corporationId}`,
         ...corporationInfo,
       };
     },
     scopes: ({ scopes }) => {
       return scopes.split(' ');
     },
-    gender: ({ id }, args, { dataSources }, { fieldName }) => {
-      return getCharacterInfo(id!, dataSources.esiApi, fieldName);
+    gender: ({ id }, args, { dataSources }) => {
+      return getCharacterInfo(id!, dataSources.esiApi, 'gender');
     },
     totalSp: async ({ id, accessToken, refreshToken, expiresAt, scopes }, args, { dataSources }: { dataSources: IDataSources }) => {
       if (scopes.split(' ').findIndex(scope => scope === 'esi-skills.read_skills.v1') === -1) {
@@ -124,8 +129,8 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
       const { total_sp: totalSp } = await dataSources.esiApi.getCharacterSkills(id, token);
       return totalSp;
     },
-    securityStatus: ({ id }, args, { dataSources }, { fieldName }) => {
-      return getCharacterInfo(id!, dataSources.esiApi, fieldName);
+    securityStatus: ({ id }, args, { dataSources }) => {
+      return getCharacterInfo(id!, dataSources.esiApi, 'security_status');
     },
   },
 };
