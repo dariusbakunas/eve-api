@@ -33,9 +33,7 @@ interface ICharacterResolvers<Context> {
     removeCharacter: Resolver<ResolversTypes['ID'], unknown, Context, RequireFields<MutationRemoveCharacterArgs, 'id'>>;
   };
   Character: {
-    birthday: Resolver<ResolversTypes['DateTime'], Character, Context>;
     corporation: Resolver<ResolversTypes['Corporation'], Character, Context>;
-    gender: Resolver<ResolversTypes['String'], Character, Context>;
     totalSp: Resolver<Maybe<ResolversTypes['Int']>, Character, Context>;
     scopes: Resolver<Maybe<Array<ResolversTypes['String']>>, Character, Context>;
     securityStatus: Resolver<ResolversTypes['Float'], Character, Context>;
@@ -109,9 +107,6 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
     },
   },
   Character: {
-    birthday: ({ id }, args, { dataSources }) => {
-      return getCharacterInfo(id, dataSources.esiApi, 'birthday');
-    },
     corporation: async ({ id }, args, { dataSources }) => {
       const { corporation_id: corporationId } = await dataSources.esiApi.getCharacterInfo(id);
       const corporationInfo = await dataSources.esiApi.getCorporationInfo(corporationId);
@@ -123,9 +118,6 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
     },
     scopes: ({ scopes }) => {
       return scopes.split(' ');
-    },
-    gender: ({ id }, args, { dataSources }) => {
-      return getCharacterInfo(id!, dataSources.esiApi, 'gender');
     },
     totalSp: async ({ id, accessToken, refreshToken, expiresAt, scopes }, args, { dataSources }: { dataSources: IDataSources }) => {
       if (scopes.split(' ').findIndex(scope => scope === 'esi-skills.read_skills.v1') === -1) {
