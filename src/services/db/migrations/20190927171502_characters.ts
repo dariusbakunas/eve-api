@@ -20,6 +20,22 @@ export async function up(knex: Knex): Promise<any> {
 
     t.integer('ownerId').unsigned();
 
+    t.integer('ancestryId')
+      .unsigned()
+      .notNullable();
+
+    t.integer('bloodlineId')
+      .unsigned()
+      .notNullable();
+
+    t.integer('raceId')
+      .unsigned()
+      .notNullable();
+
+    t.dateTime('birthday').notNullable();
+
+    t.string('gender').notNullable();
+
     t.foreign('ownerId').references('users.id');
 
     t.timestamps(true, true);

@@ -70,6 +70,9 @@ export const getTestContext = (userId: number) => {
           Scopes: 'scope01 scope02 scope03',
         }),
       },
+      esiApi: {
+        getCharacterInfo: jest.fn(),
+      },
     },
     user: {
       id: userId,

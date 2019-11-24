@@ -21,4 +21,9 @@ export class Character extends BaseModel {
   refreshToken!: string;
   expiresAt!: number;
   scopes!: string;
+  ancestryId!: number;
+  bloodlineId!: number;
+  birthday!: Date;
+  gender!: string;
+  raceId!: number;
 }

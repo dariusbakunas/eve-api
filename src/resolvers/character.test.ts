@@ -6,6 +6,7 @@ import { loadSchema } from '../schema/loadSchema';
 import { Character } from '../services/db/models/character';
 import { getTestContext, QueryMock } from '../utils/testUtils';
 import { User } from '../services/db/models/user';
+import moment = require('moment');
 
 const EVE_CLIENT_ID = 'TEST_CLIENT_ID';
 const EVE_CLIENT_SECRET = 'TEST_CLIENT_SECRET';
@@ -64,6 +65,17 @@ describe('Character Resolver', () => {
       }),
     };
 
+    context.dataSources.esiApi.getCharacterInfo.mockReturnValue({
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      ancestry_id: 'TEST_ANCESTRY_ID',
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      bloodline_id: 'TEST_BLOODLINE_ID',
+      birthday: '2008-03-08T17:07:00Z',
+      gender: 'male',
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      race_id: 'TEST_RACE_ID',
+    });
+
     queryMock.findByIdFn.mockReturnValue(mockUser);
 
     const query = `
@@ -81,8 +93,14 @@ describe('Character Resolver', () => {
 
     expect(context.dataSources.esiAuth.getCharacterTokens).toHaveBeenCalledWith(EVE_CLIENT_ID, EVE_CLIENT_SECRET, 'TEST_CODE');
     expect(context.dataSources.esiAuth.verifyToken).toHaveBeenCalledWith('TEST_ACCESS_TOKEN');
+    expect(context.dataSources.esiApi.getCharacterInfo).toHaveBeenCalledWith('TEST_CHARACTER_ID');
     expect(insertMock).toHaveBeenCalledWith({
       id: 'TEST_CHARACTER_ID',
+      ancestryId: 'TEST_ANCESTRY_ID',
+      birthday: moment('2008-03-08T17:07:00Z').toDate(),
+      bloodlineId: 'TEST_BLOODLINE_ID',
+      gender: 'male',
+      raceId: 'TEST_RACE_ID',
       name: 'TEST_CHARACTER_NAME',
       expiresAt: 1574540982575,
       accessToken: 'TEST_ACCESS_TOKEN_encrypted',

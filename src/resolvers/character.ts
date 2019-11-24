@@ -12,6 +12,7 @@ import { getAccessToken } from './common';
 import { IDataSources } from '../services';
 import { UserInputError } from 'apollo-server-errors';
 import { IEsiCharacterInfo } from '../services/esi/esiTypes';
+import moment from 'moment';
 
 const getCharacterInfo: <T extends keyof IEsiCharacterInfo>(
   id: number,
@@ -50,12 +51,14 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
     },
   },
   Mutation: {
-    addCharacter: async (_, { code }, { dataSources: { esiAuth, db, crypt }, user: { id: userId } }) => {
+    addCharacter: async (_, { code }, { dataSources: { esiAuth, db, crypt, esiApi }, user: { id: userId } }) => {
       try {
         const tokens = await esiAuth.getCharacterTokens(process.env.EVE_CLIENT_ID!, process.env.EVE_CLIENT_SECRET!, code);
         const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = tokens;
         const expiresAt = expiresIn * 1000 + new Date(Date.now()).getTime();
         const { CharacterID, CharacterName, Scopes } = await esiAuth.verifyToken(accessToken);
+
+        const { ancestry_id: ancestryId, bloodline_id: bloodlineId, birthday, gender, race_id: raceId } = await esiApi.getCharacterInfo(CharacterID);
 
         const user = await db.User.query().findById(userId);
 
@@ -66,6 +69,11 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
           accessToken: crypt.encrypt(accessToken),
           refreshToken: crypt.encrypt(refreshToken),
           scopes: Scopes,
+          ancestryId,
+          bloodlineId,
+          birthday: moment(birthday).toDate(),
+          gender,
+          raceId,
         });
       } catch (e) {
         if (e.extensions && e.extensions.response) {
