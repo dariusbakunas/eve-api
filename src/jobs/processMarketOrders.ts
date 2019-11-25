@@ -15,18 +15,22 @@ export const processMarketOrders = async (character: Character, token: string, d
   const knex = MarketOrder.knex();
 
   await transaction(knex, async trx => {
-    const existingOrders = await db.MarketOrder.query(trx)
-      .select('id')
-      .where('characterId', character.id)
-      .pluck('id');
+    const existingOrders: Array<{ id: number; state: string }> = await db.MarketOrder.query(trx)
+      .select('id', 'state')
+      .where('characterId', character.id);
+
+    const orderMap = existingOrders.reduce<{ [key: number]: string }>((acc, order) => {
+      acc[order.id] = order.state;
+      return acc;
+    }, {});
 
     let newOrders = 0;
     let updated = 0;
-    const entrySet = new Set(existingOrders);
+
     for (let i = 0; i < orders.length; i++) {
       const order = orders[i];
 
-      if (!entrySet.has(order.order_id)) {
+      if (!orderMap[order.order_id]) {
         newOrders++;
         await db.MarketOrder.query(trx).insert({
           id: order.order_id,
@@ -47,22 +51,26 @@ export const processMarketOrders = async (character: Character, token: string, d
           volumeTotal: order.volume_total,
         });
       } else {
-        updated++;
-        const update: PartialUpdate<MarketOrder> = {
-          duration: order.duration,
-          escrow: order.escrow,
-          issued: moment(order.issued).toDate(),
-          minVolume: order.min_volume,
-          price: order.price,
-          range: order.range,
-          state: order.state || 'active',
-          volumeRemain: order.volume_remain,
-          volumeTotal: order.volume_total,
-        };
+        const state = orderMap[order.order_id];
+        if (state === 'active') {
+          // no need to update expired or cancelled orders
+          updated++;
+          const update: PartialUpdate<MarketOrder> = {
+            duration: order.duration,
+            escrow: order.escrow,
+            issued: moment(order.issued).toDate(),
+            minVolume: order.min_volume,
+            price: order.price,
+            range: order.range,
+            state: order.state || 'active',
+            volumeRemain: order.volume_remain,
+            volumeTotal: order.volume_total,
+          };
 
-        await db.MarketOrder.query(trx)
-          .findById(order.order_id)
-          .patch(update);
+          await db.MarketOrder.query(trx)
+            .findById(order.order_id)
+            .patch(update);
+        }
       }
     }
 
