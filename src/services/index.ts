@@ -14,6 +14,7 @@ import db from './db';
 import { RedisCache } from 'apollo-server-cache-redis';
 import { NameCacheItem } from './db/models/nameCacheItem';
 import { CitadelCacheItem } from './db/models/citadelCacheItem';
+import { MarketOrder } from './db/models/marketOrder';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -24,6 +25,7 @@ export interface IDataSources {
   db: {
     Character: typeof Character;
     NameCacheItem: typeof NameCacheItem;
+    MarketOrder: typeof MarketOrder;
     JournalEntry: typeof JournalEntry;
     User: typeof User;
     Scope: typeof Scope;

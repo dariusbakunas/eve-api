@@ -97,8 +97,17 @@ class EsiAPI extends RESTDataSource {
     });
   }
 
-  async getMarketOrders(characterId: number, token: string): Promise<IEsiMarketOrder[]> {
+  async getActiveMarketOrders(characterId: number, token: string): Promise<IEsiMarketOrder[]> {
     return this.get(`/characters/${characterId}/orders`, undefined, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
+  async getOrderHistory(characterId: number, token: string): Promise<IEsiMarketOrder[]> {
+    return this.get(`/characters/${characterId}/orders/history`, undefined, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',

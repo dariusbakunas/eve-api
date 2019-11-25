@@ -10,6 +10,7 @@ import { processWalletTransactions } from './processWalletTransactions';
 import { processJournalEntries } from './processJournalEntries';
 import { updateNameCache } from './updateNameCache';
 import { processBookmarks } from './processBookmarks';
+import { processMarketOrders } from './processMarketOrders';
 
 const initDataSources = () => {
   const dataSources = {
@@ -43,6 +44,10 @@ export const processData = async () => {
 
       if (scopes.includes('esi-bookmarks.read_character_bookmarks.v1')) {
         await processBookmarks(character, token, db, esiApi);
+      }
+
+      if (scopes.includes('esi-markets.read_character_orders.v1')) {
+        await processMarketOrders(character, token, db, esiApi);
       }
     } catch (e) {
       logger.error(e);

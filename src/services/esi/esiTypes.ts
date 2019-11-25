@@ -58,6 +58,7 @@ export interface IEsiMarketOrder {
   price: number;
   range: string;
   region_id: number;
+  state: 'active' | 'cancelled' | 'expired';
   type_id: number;
   volume_remain: number;
   volume_total: number;
