@@ -91,6 +91,6 @@ export interface IEsiCorporationInfo {
   shares?: number;
   tax_rate: number;
   ticker: string;
-  url: string;
-  war_eligible: boolean;
+  url?: string;
+  war_eligible?: boolean;
 }
