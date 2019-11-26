@@ -13,7 +13,7 @@ import {
   WalletJournalOrderBy,
   WalletTransactionOrderBy,
 } from '../__generated__/types';
-import { raw } from 'objection';
+import { QueryBuilder, raw } from 'objection';
 import { WalletTransaction } from '../services/db/models/walletTransaction';
 import { JournalEntry } from '../services/db/models/journalEntry';
 import { UserInputError } from 'apollo-server-express';
@@ -86,6 +86,22 @@ const resolverMap: IResolvers<IResolverContext> = {
           }
         } else {
           query.where('marketOrders.characterId', 'in', characterIds);
+        }
+
+        if (filter && filter.state) {
+          query.where((builder: QueryBuilder<MarketOrder>) => {
+            if (filter.state!.active) {
+              builder.orWhere('state', 'active');
+            }
+
+            if (filter.state!.expired) {
+              builder.orWhere('state', 'expired');
+            }
+
+            if (filter.state!.cancelled) {
+              builder.orWhere('state', 'cancelled');
+            }
+          });
         }
 
         if (orderBy) {

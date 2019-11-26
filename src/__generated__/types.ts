@@ -116,6 +116,7 @@ export type MarketOrder = {
 
 export type MarketOrderFilter = {
   characterId?: Maybe<Scalars['ID']>,
+  state?: Maybe<OrderStateFilter>,
 };
 
 export enum MarketOrderOrderBy {
@@ -172,6 +173,12 @@ export enum OrderState {
   Cancelled = 'cancelled',
   Expired = 'expired'
 }
+
+export type OrderStateFilter = {
+  active?: Maybe<Scalars['Boolean']>,
+  expired?: Maybe<Scalars['Boolean']>,
+  cancelled?: Maybe<Scalars['Boolean']>,
+};
 
 export enum OrderType {
   Buy = 'buy',
@@ -393,13 +400,14 @@ export type ResolversTypes = {
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
   PageInput: ResolverTypeWrapper<Partial<PageInput>>,
   MarketOrderFilter: ResolverTypeWrapper<Partial<MarketOrderFilter>>,
+  OrderStateFilter: ResolverTypeWrapper<Partial<OrderStateFilter>>,
+  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   MarketOrderOrderByInput: ResolverTypeWrapper<Partial<MarketOrderOrderByInput>>,
   MarketOrderOrderBy: ResolverTypeWrapper<Partial<MarketOrderOrderBy>>,
   Order: ResolverTypeWrapper<Partial<Order>>,
   MarketOrders: ResolverTypeWrapper<Partial<MarketOrders>>,
   MarketOrder: ResolverTypeWrapper<Partial<MarketOrder>>,
   InventoryItem: ResolverTypeWrapper<Partial<InventoryItem>>,
-  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   Location: ResolverTypeWrapper<Partial<Location>>,
   OrderState: ResolverTypeWrapper<Partial<OrderState>>,
   WalletJournalFilter: ResolverTypeWrapper<Partial<WalletJournalFilter>>,
@@ -436,13 +444,14 @@ export type ResolversParentTypes = {
   UserStatus: Partial<UserStatus>,
   PageInput: Partial<PageInput>,
   MarketOrderFilter: Partial<MarketOrderFilter>,
+  OrderStateFilter: Partial<OrderStateFilter>,
+  Boolean: Partial<Scalars['Boolean']>,
   MarketOrderOrderByInput: Partial<MarketOrderOrderByInput>,
   MarketOrderOrderBy: Partial<MarketOrderOrderBy>,
   Order: Partial<Order>,
   MarketOrders: Partial<MarketOrders>,
   MarketOrder: Partial<MarketOrder>,
   InventoryItem: Partial<InventoryItem>,
-  Boolean: Partial<Scalars['Boolean']>,
   Location: Partial<Location>,
   OrderState: Partial<OrderState>,
   WalletJournalFilter: Partial<WalletJournalFilter>,

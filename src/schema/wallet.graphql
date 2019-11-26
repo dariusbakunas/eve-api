@@ -171,8 +171,15 @@ input WalletJournalFilter {
   characterId: ID
 }
 
+input OrderStateFilter {
+  active: Boolean
+  expired: Boolean
+  cancelled: Boolean
+}
+
 input MarketOrderFilter {
   characterId: ID
+  state: OrderStateFilter
 }
 
 extend type Query {
