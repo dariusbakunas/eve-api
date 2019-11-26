@@ -11,6 +11,7 @@ export class MarketOrder extends BaseModel {
   isCorporation!: boolean;
   issued!: Date;
   locationId!: number;
+  locationName?: string;
   minVolume?: number;
   price!: number;
   range!: string;

@@ -30,6 +30,7 @@ interface IResolvers<Context> {
   MarketOrder: {
     item: Resolver<ResolversTypes['InventoryItem'], MarketOrder, Context>;
     character: Resolver<Character, MarketOrder, Context>;
+    location: Resolver<Maybe<ResolversTypes['Location']>, MarketOrder, Context>;
   };
   WalletTransaction: {
     item: Resolver<ResolversTypes['InventoryItem'], WalletTransaction, Context>;
@@ -76,7 +77,10 @@ const resolverMap: IResolvers<IResolverContext> = {
         .pluck('id');
 
       if (characterIds.length) {
-        const query = dataSources.db.MarketOrder.query().select('marketOrders.*');
+        const query = dataSources.db.MarketOrder.query()
+          .select('marketOrders.*', raw('coalesce(citadel.name, station.stationName) as locationName'))
+          .leftJoin('citadelCache as citadel', 'citadel.id', 'marketOrders.locationId')
+          .leftJoin('staStations as station', 'station.stationID', 'marketOrders.locationId');
 
         if (filter && filter.characterId) {
           if (characterIds.includes(+filter.characterId)) {
@@ -287,6 +291,12 @@ const resolverMap: IResolvers<IResolverContext> = {
     },
     item: async (parent, args, { dataSources }) => {
       return getItem(parent.typeId, dataSources.loaders);
+    },
+    location: parent => {
+      return {
+        id: `${parent.locationId}`,
+        name: parent.locationName || 'Unknown Station',
+      };
     },
   },
   WalletTransaction: {
