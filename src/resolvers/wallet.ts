@@ -85,7 +85,7 @@ const resolverMap: IResolvers<IResolverContext> = {
             throw new UserInputError('Invalid character id');
           }
         } else {
-          query.where('journalEntries.characterId', 'in', characterIds);
+          query.where('marketOrders.characterId', 'in', characterIds);
         }
 
         if (orderBy) {
@@ -129,7 +129,7 @@ const resolverMap: IResolvers<IResolverContext> = {
 
         if (filter && filter.characterId) {
           if (characterIds.includes(+filter.characterId)) {
-            query.where('marketOrders.characterId', filter.characterId);
+            query.where('journalEntries.characterId', filter.characterId);
           } else {
             throw new UserInputError('Invalid character id');
           }
