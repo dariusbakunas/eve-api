@@ -70,7 +70,7 @@ export type JournalEntry = {
   id: Scalars['ID'],
   amount: Scalars['Float'],
   balance: Scalars['Float'],
-  character?: Maybe<Character>,
+  character: Character,
   date: Scalars['DateTime'],
   description?: Maybe<Scalars['String']>,
 };
@@ -79,6 +79,58 @@ export type Location = {
    __typename?: 'Location',
   id: Scalars['ID'],
   name: Scalars['String'],
+};
+
+export type MarketOrder = {
+   __typename?: 'MarketOrder',
+  id: Scalars['ID'],
+  /** Character who issued the order */
+  character: Character,
+  /** Number of days for which order is valid (starting from the issued date). An order expires at time issued + duration */
+  duration: Scalars['Int'],
+  /** For buy orders, the amount of ISK in escrow */
+  escrow?: Maybe<Scalars['Float']>,
+  /** Item transacted in this order */
+  item: InventoryItem,
+  /** True if this is buy order */
+  isBuy: Scalars['Boolean'],
+  /** Signifies whether the buy/sell order was placed on behalf of a corporation */
+  isCorporation: Scalars['Boolean'],
+  /** Location where order was placed */
+  location: Location,
+  /** For buy orders, the minimum quantity that will be accepted in a matching sell order */
+  minVolume?: Maybe<Scalars['Int']>,
+  /** Date and time when this order was issued */
+  issued: Scalars['DateTime'],
+  /** Cost per unit for this order */
+  price: Scalars['Float'],
+  /** Valid order range, numbers are ranges in jumps */
+  range: Scalars['String'],
+  /** Quantity of items still required or offered */
+  volumeRemain: Scalars['Int'],
+  /** Quantity of items required or offered at time order was placed */
+  volumeTotal: Scalars['Int'],
+  /** Current order state */
+  state: OrderState,
+};
+
+export type MarketOrderFilter = {
+  characterId?: Maybe<Scalars['ID']>,
+};
+
+export enum MarketOrderOrderBy {
+  Issued = 'issued'
+}
+
+export type MarketOrderOrderByInput = {
+  column: MarketOrderOrderBy,
+  order: Order,
+};
+
+export type MarketOrders = {
+   __typename?: 'MarketOrders',
+  total: Scalars['Int'],
+  orders: Array<MarketOrder>,
 };
 
 export type Mutation = {
@@ -115,6 +167,12 @@ export enum Order {
   Desc = 'desc'
 }
 
+export enum OrderState {
+  Active = 'active',
+  Cancelled = 'cancelled',
+  Expired = 'expired'
+}
+
 export enum OrderType {
   Buy = 'buy',
   Sell = 'sell'
@@ -130,13 +188,21 @@ export type Query = {
   characters: Array<Character>,
   scopes: Array<Scope>,
   userByEmail?: Maybe<User>,
-  walletJournal?: Maybe<JournalEntries>,
-  walletTransactions?: Maybe<WalletTransactions>,
+  marketOrders: MarketOrders,
+  walletJournal: JournalEntries,
+  walletTransactions: WalletTransactions,
 };
 
 
 export type QueryUserByEmailArgs = {
   email: Scalars['String']
+};
+
+
+export type QueryMarketOrdersArgs = {
+  page?: Maybe<PageInput>,
+  filter?: Maybe<MarketOrderFilter>,
+  orderBy?: Maybe<MarketOrderOrderByInput>
 };
 
 
@@ -205,10 +271,10 @@ export type WalletTransaction = {
   id: Scalars['ID'],
   credit: Scalars['Float'],
   client: Client,
-  character?: Maybe<Character>,
+  character: Character,
   date: Scalars['DateTime'],
   isBuy: Scalars['Boolean'],
-  item?: Maybe<InventoryItem>,
+  item: InventoryItem,
   location: Location,
   quantity: Scalars['Int'],
   unitPrice: Scalars['Float'],
@@ -326,10 +392,19 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<Partial<User>>,
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
   PageInput: ResolverTypeWrapper<Partial<PageInput>>,
+  MarketOrderFilter: ResolverTypeWrapper<Partial<MarketOrderFilter>>,
+  MarketOrderOrderByInput: ResolverTypeWrapper<Partial<MarketOrderOrderByInput>>,
+  MarketOrderOrderBy: ResolverTypeWrapper<Partial<MarketOrderOrderBy>>,
+  Order: ResolverTypeWrapper<Partial<Order>>,
+  MarketOrders: ResolverTypeWrapper<Partial<MarketOrders>>,
+  MarketOrder: ResolverTypeWrapper<Partial<MarketOrder>>,
+  InventoryItem: ResolverTypeWrapper<Partial<InventoryItem>>,
+  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
+  Location: ResolverTypeWrapper<Partial<Location>>,
+  OrderState: ResolverTypeWrapper<Partial<OrderState>>,
   WalletJournalFilter: ResolverTypeWrapper<Partial<WalletJournalFilter>>,
   WalletJournalOrderByInput: ResolverTypeWrapper<Partial<WalletJournalOrderByInput>>,
   WalletJournalOrderBy: ResolverTypeWrapper<Partial<WalletJournalOrderBy>>,
-  Order: ResolverTypeWrapper<Partial<Order>>,
   JournalEntries: ResolverTypeWrapper<Partial<JournalEntries>>,
   JournalEntry: ResolverTypeWrapper<Partial<JournalEntry>>,
   WalletTransactionFilter: ResolverTypeWrapper<Partial<WalletTransactionFilter>>,
@@ -339,9 +414,6 @@ export type ResolversTypes = {
   WalletTransactions: ResolverTypeWrapper<Partial<WalletTransactions>>,
   WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>,
   Client: ResolverTypeWrapper<Partial<Client>>,
-  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
-  InventoryItem: ResolverTypeWrapper<Partial<InventoryItem>>,
-  Location: ResolverTypeWrapper<Partial<Location>>,
   Mutation: ResolverTypeWrapper<{}>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
   Date: ResolverTypeWrapper<Partial<Scalars['Date']>>,
@@ -363,10 +435,19 @@ export type ResolversParentTypes = {
   User: Partial<User>,
   UserStatus: Partial<UserStatus>,
   PageInput: Partial<PageInput>,
+  MarketOrderFilter: Partial<MarketOrderFilter>,
+  MarketOrderOrderByInput: Partial<MarketOrderOrderByInput>,
+  MarketOrderOrderBy: Partial<MarketOrderOrderBy>,
+  Order: Partial<Order>,
+  MarketOrders: Partial<MarketOrders>,
+  MarketOrder: Partial<MarketOrder>,
+  InventoryItem: Partial<InventoryItem>,
+  Boolean: Partial<Scalars['Boolean']>,
+  Location: Partial<Location>,
+  OrderState: Partial<OrderState>,
   WalletJournalFilter: Partial<WalletJournalFilter>,
   WalletJournalOrderByInput: Partial<WalletJournalOrderByInput>,
   WalletJournalOrderBy: Partial<WalletJournalOrderBy>,
-  Order: Partial<Order>,
   JournalEntries: Partial<JournalEntries>,
   JournalEntry: Partial<JournalEntry>,
   WalletTransactionFilter: Partial<WalletTransactionFilter>,
@@ -376,9 +457,6 @@ export type ResolversParentTypes = {
   WalletTransactions: Partial<WalletTransactions>,
   WalletTransaction: Partial<WalletTransaction>,
   Client: Partial<Client>,
-  Boolean: Partial<Scalars['Boolean']>,
-  InventoryItem: Partial<InventoryItem>,
-  Location: Partial<Location>,
   Mutation: {},
   RegistrationInput: Partial<RegistrationInput>,
   Date: Partial<Scalars['Date']>,
@@ -441,7 +519,7 @@ export type JournalEntryResolvers<ContextType = any, ParentType extends Resolver
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
   balance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
-  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType>,
+  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 };
@@ -449,6 +527,29 @@ export type JournalEntryResolvers<ContextType = any, ParentType extends Resolver
 export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
+export type MarketOrderResolvers<ContextType = any, ParentType extends ResolversParentTypes['MarketOrder'] = ResolversParentTypes['MarketOrder']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
+  duration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  escrow?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
+  item?: Resolver<ResolversTypes['InventoryItem'], ParentType, ContextType>,
+  isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  isCorporation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>,
+  minVolume?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  issued?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
+  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+  range?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  volumeRemain?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  volumeTotal?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  state?: Resolver<ResolversTypes['OrderState'], ParentType, ContextType>,
+};
+
+export type MarketOrdersResolvers<ContextType = any, ParentType extends ResolversParentTypes['MarketOrders'] = ResolversParentTypes['MarketOrders']> = {
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  orders?: Resolver<Array<ResolversTypes['MarketOrder']>, ParentType, ContextType>,
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -462,8 +563,9 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
   scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
   userByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>,
-  walletJournal?: Resolver<Maybe<ResolversTypes['JournalEntries']>, ParentType, ContextType, QueryWalletJournalArgs>,
-  walletTransactions?: Resolver<Maybe<ResolversTypes['WalletTransactions']>, ParentType, ContextType, QueryWalletTransactionsArgs>,
+  marketOrders?: Resolver<ResolversTypes['MarketOrders'], ParentType, ContextType, QueryMarketOrdersArgs>,
+  walletJournal?: Resolver<ResolversTypes['JournalEntries'], ParentType, ContextType, QueryWalletJournalArgs>,
+  walletTransactions?: Resolver<ResolversTypes['WalletTransactions'], ParentType, ContextType, QueryWalletTransactionsArgs>,
 };
 
 export type ScopeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Scope'] = ResolversParentTypes['Scope']> = {
@@ -488,10 +590,10 @@ export type WalletTransactionResolvers<ContextType = any, ParentType extends Res
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   credit?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
   client?: Resolver<ResolversTypes['Client'], ParentType, ContextType>,
-  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType>,
+  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
   isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
-  item?: Resolver<Maybe<ResolversTypes['InventoryItem']>, ParentType, ContextType>,
+  item?: Resolver<ResolversTypes['InventoryItem'], ParentType, ContextType>,
   location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>,
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   unitPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
@@ -513,6 +615,8 @@ export type Resolvers<ContextType = any> = {
   JournalEntries?: JournalEntriesResolvers<ContextType>,
   JournalEntry?: JournalEntryResolvers<ContextType>,
   Location?: LocationResolvers<ContextType>,
+  MarketOrder?: MarketOrderResolvers<ContextType>,
+  MarketOrders?: MarketOrdersResolvers<ContextType>,
   Mutation?: MutationResolvers<ContextType>,
   Query?: QueryResolvers<ContextType>,
   Scope?: ScopeResolvers<ContextType>,

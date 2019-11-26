@@ -4,6 +4,7 @@ export class MarketOrder extends BaseModel {
   static tableName = 'marketOrders';
 
   readonly id!: number;
+  characterId!: number;
   duration!: number;
   escrow?: number;
   isBuy!: boolean;

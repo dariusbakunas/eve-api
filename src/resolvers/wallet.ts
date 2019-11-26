@@ -1,7 +1,10 @@
 import { IResolverContext } from '../types';
 import {
+  InventoryItem,
+  MarketOrderOrderBy,
   Maybe,
   OrderType,
+  QueryMarketOrdersArgs,
   QueryWalletJournalArgs,
   QueryWalletTransactionsArgs,
   Resolver,
@@ -14,25 +17,105 @@ import { raw } from 'objection';
 import { WalletTransaction } from '../services/db/models/walletTransaction';
 import { JournalEntry } from '../services/db/models/journalEntry';
 import { UserInputError } from 'apollo-server-express';
+import { MarketOrder } from '../services/db/models/marketOrder';
+import { Character } from '../services/db/models/character';
+import { Loaders } from '../services/db/loaders';
 
 interface IResolvers<Context> {
   Query: {
+    marketOrders: Resolver<Maybe<ResolversTypes['MarketOrders']>, ResolversParentTypes['Query'], Context, QueryMarketOrdersArgs>;
     walletJournal: Resolver<Maybe<ResolversTypes['JournalEntries']>, ResolversParentTypes['Query'], Context, QueryWalletJournalArgs>;
     walletTransactions: Resolver<Maybe<ResolversTypes['WalletTransactions']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionsArgs>;
   };
+  MarketOrder: {
+    item: Resolver<ResolversTypes['InventoryItem'], MarketOrder, Context>;
+    character: Resolver<Character, MarketOrder, Context>;
+  };
   WalletTransaction: {
-    item: Resolver<Maybe<ResolversTypes['InventoryItem']>, WalletTransaction, Context>;
-    character: Resolver<Maybe<ResolversTypes['Character']>, WalletTransaction, Context>;
+    item: Resolver<ResolversTypes['InventoryItem'], WalletTransaction, Context>;
+    character: Resolver<Character, WalletTransaction, Context>;
     client: Resolver<ResolversTypes['Client'], WalletTransaction, Context>;
     location: Resolver<Maybe<ResolversTypes['Location']>, WalletTransaction, Context>;
   };
   JournalEntry: {
-    character: Resolver<Maybe<ResolversTypes['Character']>, JournalEntry, Context>;
+    character: Resolver<Character, JournalEntry, Context>;
   };
 }
 
+const getCharacter: (characterId: number, loaders: Loaders) => Promise<Character> = async (characterId, loaders) => {
+  const character = await loaders.characterLoader.load(characterId);
+
+  if (!character) {
+    throw new Error(`Character id: ${characterId} not found`);
+  }
+
+  return character;
+};
+
+const getItem: (typeId: number, loaders: Loaders) => Promise<InventoryItem> = async (typeId, loaders) => {
+  const item = await loaders.invItemLoader.load(typeId);
+
+  if (!item) {
+    throw new Error(`Item id: ${typeId} not found`);
+  }
+
+  return {
+    ...item,
+    id: `${item.typeID}`,
+    name: item.typeName,
+  };
+};
+
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
+    marketOrders: async (_parent, { filter, orderBy, page }, { dataSources, user }) => {
+      const { index, size } = page || { index: 0, size: 10 };
+      const characterIds = await dataSources.db.Character.query()
+        .select('id')
+        .where('ownerId', user.id)
+        .pluck('id');
+
+      if (characterIds.length) {
+        const query = dataSources.db.MarketOrder.query().select('marketOrders.*');
+
+        if (filter && filter.characterId) {
+          if (characterIds.includes(+filter.characterId)) {
+            query.where('marketOrders.characterId', filter.characterId);
+          } else {
+            throw new UserInputError('Invalid character id');
+          }
+        } else {
+          query.where('journalEntries.characterId', 'in', characterIds);
+        }
+
+        if (orderBy) {
+          let orderByCol;
+          const { column, order } = orderBy;
+
+          switch (column) {
+            case MarketOrderOrderBy.Issued:
+              orderByCol = column;
+              break;
+          }
+
+          if (orderByCol) {
+            query.orderBy(orderByCol, order);
+          }
+        }
+
+        const orders = await query.page(index, size);
+
+        return {
+          total: orders.total,
+          orders: orders.results,
+        };
+      }
+
+      return {
+        total: 0,
+        entries: [],
+      };
+    },
     walletJournal: async (_parent, { filter, orderBy, page }, { dataSources, user }) => {
       const { index, size } = page || { index: 0, size: 10 };
 
@@ -44,16 +127,14 @@ const resolverMap: IResolvers<IResolverContext> = {
       if (characterIds.length) {
         const query = dataSources.db.JournalEntry.query().select('journalEntries.*');
 
-        if (filter) {
-          if (filter.characterId) {
-            if (characterIds.includes(+filter.characterId)) {
-              query.where('journalEntries.characterId', filter.characterId);
-            } else {
-              throw new UserInputError('Invalid character id');
-            }
+        if (filter && filter.characterId) {
+          if (characterIds.includes(+filter.characterId)) {
+            query.where('marketOrders.characterId', filter.characterId);
           } else {
-            query.where('journalEntries.characterId', 'in', characterIds);
+            throw new UserInputError('Invalid character id');
           }
+        } else {
+          query.where('journalEntries.characterId', 'in', characterIds);
         }
 
         if (orderBy) {
@@ -78,7 +159,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           }
         }
 
-        const entries = await query.where('journalEntries.characterId', 'in', characterIds).page(index, size);
+        const entries = await query.page(index, size);
 
         return {
           total: entries.total,
@@ -181,32 +262,20 @@ const resolverMap: IResolvers<IResolverContext> = {
   },
   JournalEntry: {
     character: async (parent, args, { dataSources }) => {
-      const { loaders } = dataSources;
-      const character = await loaders.characterLoader.load(parent.characterId);
-
-      if (character != null) {
-        return ({
-          ...character,
-          id: `${character.id}`,
-        } as unknown) as ResolversTypes['Character']; // TODO: no idea why it would not like it??
-      }
-
-      return null;
+      return getCharacter(parent.characterId, dataSources.loaders);
+    },
+  },
+  MarketOrder: {
+    character: async (parent, args, { dataSources }) => {
+      return getCharacter(parent.characterId, dataSources.loaders);
+    },
+    item: async (parent, args, { dataSources }) => {
+      return getItem(parent.typeId, dataSources.loaders);
     },
   },
   WalletTransaction: {
     character: async (parent, args, { dataSources }) => {
-      const { loaders } = dataSources;
-      const character = await loaders.characterLoader.load(parent.characterId);
-
-      if (character != null) {
-        return ({
-          ...character,
-          id: `${character.id}`,
-        } as unknown) as ResolversTypes['Character']; // TODO: no idea why it would not like it??
-      }
-
-      return null;
+      return getCharacter(parent.characterId, dataSources.loaders);
     },
     client: async (parent, args, { dataSources }) => {
       const { db } = dataSources;
@@ -222,19 +291,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       return client;
     },
     item: async (parent, args, { dataSources }) => {
-      // TODO: since we do join anyway reuse that from parent
-      const { loaders } = dataSources;
-      const item = await loaders.invItemLoader.load(parent.typeId);
-
-      if (item) {
-        return {
-          ...item,
-          id: `${item.typeID}`,
-          name: item.typeName,
-        };
-      }
-
-      return null;
+      return getItem(parent.typeId, dataSources.loaders);
     },
     location: parent => {
       return {

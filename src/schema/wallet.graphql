@@ -17,6 +17,10 @@ enum WalletJournalOrderBy {
   description
 }
 
+enum MarketOrderOrderBy {
+  issued
+}
+
 enum OrderType {
   buy
   sell
@@ -29,6 +33,11 @@ input WalletTransactionOrderByInput {
 
 input WalletJournalOrderByInput {
   column: WalletJournalOrderBy!
+  order: Order!
+}
+
+input MarketOrderOrderByInput {
+  column: MarketOrderOrderBy!
   order: Order!
 }
 
@@ -49,14 +58,80 @@ type Client {
   category: String!
 }
 
+enum OrderState {
+  active
+  cancelled
+  expired
+}
+
+type MarketOrder {
+  id: ID!
+  """
+  Character who issued the order
+  """
+  character: Character!
+  """
+  Number of days for which order is valid (starting from the issued date). An order expires at time issued + duration
+  """
+  duration: Int!
+  """
+  For buy orders, the amount of ISK in escrow
+  """
+  escrow: Float
+  """
+  Item transacted in this order
+  """
+  item: InventoryItem!
+  """
+  True if this is buy order
+  """
+  isBuy: Boolean!
+  """
+  Signifies whether the buy/sell order was placed on behalf of a corporation
+  """
+  isCorporation: Boolean!
+  """
+  Location where order was placed
+  """
+  location: Location!
+  """
+  For buy orders, the minimum quantity that will be accepted in a matching sell order
+  """
+  minVolume: Int
+  """
+  Date and time when this order was issued
+  """
+  issued: DateTime!
+  """
+  Cost per unit for this order
+  """
+  price: Float!
+  """
+  Valid order range, numbers are ranges in jumps
+  """
+  range: String!
+  """
+  Quantity of items still required or offered
+  """
+  volumeRemain: Int!
+  """
+  Quantity of items required or offered at time order was placed
+  """
+  volumeTotal: Int!
+  """
+  Current order state
+  """
+  state: OrderState!
+}
+
 type WalletTransaction {
   id: ID!
   credit: Float!
   client: Client!
-  character: Character
+  character: Character!
   date: DateTime!
   isBuy: Boolean!
-  item: InventoryItem
+  item: InventoryItem!
   location: Location!
   quantity: Int!
   unitPrice: Float!
@@ -66,7 +141,7 @@ type JournalEntry {
   id: ID!
   amount: Float!
   balance: Float!
-  character: Character
+  character: Character!
   date: DateTime!
   description: String
 }
@@ -81,6 +156,11 @@ type JournalEntries {
   entries: [JournalEntry!]!
 }
 
+type MarketOrders {
+  total: Int!
+  orders: [MarketOrder!]!
+}
+
 input WalletTransactionFilter {
   item: String
   characterId: ID
@@ -91,7 +171,12 @@ input WalletJournalFilter {
   characterId: ID
 }
 
+input MarketOrderFilter {
+  characterId: ID
+}
+
 extend type Query {
-  walletJournal(page: PageInput, filter: WalletJournalFilter, orderBy: WalletJournalOrderByInput): JournalEntries
-  walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions
+  marketOrders(page: PageInput, filter: MarketOrderFilter, orderBy: MarketOrderOrderByInput): MarketOrders!
+  walletJournal(page: PageInput, filter: WalletJournalFilter, orderBy: WalletJournalOrderByInput): JournalEntries!
+  walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions!
 }
