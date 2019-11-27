@@ -7,5 +7,6 @@ import Mutation from './mutation';
 import User from './user';
 import CustomScalars from './customScalars';
 import Wallet from './wallet';
+import Processing from './processing';
 
-export default merge(Query, Alliance, Character, Corporation, Mutation, CustomScalars, User, Wallet);
+export default merge(Query, Alliance, Character, Corporation, Mutation, CustomScalars, User, Wallet, Processing);

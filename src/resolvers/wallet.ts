@@ -20,6 +20,7 @@ import { UserInputError } from 'apollo-server-express';
 import { MarketOrder } from '../services/db/models/marketOrder';
 import { Character } from '../services/db/models/character';
 import { Loaders } from '../services/db/loaders';
+import { getCharacter } from './common';
 
 interface IResolvers<Context> {
   Query: {
@@ -42,16 +43,6 @@ interface IResolvers<Context> {
     character: Resolver<Character, JournalEntry, Context>;
   };
 }
-
-const getCharacter: (characterId: number, loaders: Loaders) => Promise<Character> = async (characterId, loaders) => {
-  const character = await loaders.characterLoader.load(characterId);
-
-  if (!character) {
-    throw new Error(`Character id: ${characterId} not found`);
-  }
-
-  return character;
-};
 
 const getItem: (typeId: number, loaders: Loaders) => Promise<InventoryItem> = async (typeId, loaders) => {
   const item = await loaders.invItemLoader.load(typeId);

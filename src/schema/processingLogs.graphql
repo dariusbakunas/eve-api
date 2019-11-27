@@ -1,0 +1,35 @@
+enum ProcessingStatus {
+  SUCCESS
+  FAILURE
+}
+
+enum ProcessingCategory {
+  WALLET_TRANSACTIONS
+  WALLET_JOURNAL
+  BOOKMARKS
+  MARKET_ORDERS
+  ASSETS
+  CALENDAR
+  BLUEPRINTS
+  CLONES
+  IMPLANTS
+  CONTACTS
+  INDUSTRY_JOBS
+  STATS
+}
+
+type ProcessingLogEntry {
+  id: ID!
+  createdAt: DateTime!
+  character: Character
+  category: ProcessingCategory!
+  status: ProcessingStatus!
+}
+
+input ProcessingLogFilter {
+  characterId: Int
+}
+
+extend type Query {
+  processingLogs(filter: ProcessingLogFilter): [ProcessingLogEntry!]!
+}

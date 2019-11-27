@@ -190,14 +190,53 @@ export type PageInput = {
   size?: Maybe<Scalars['Int']>,
 };
 
+export enum ProcessingCategory {
+  WalletTransactions = 'WALLET_TRANSACTIONS',
+  WalletJournal = 'WALLET_JOURNAL',
+  Bookmarks = 'BOOKMARKS',
+  MarketOrders = 'MARKET_ORDERS',
+  Assets = 'ASSETS',
+  Calendar = 'CALENDAR',
+  Blueprints = 'BLUEPRINTS',
+  Clones = 'CLONES',
+  Implants = 'IMPLANTS',
+  Contacts = 'CONTACTS',
+  IndustryJobs = 'INDUSTRY_JOBS',
+  Stats = 'STATS'
+}
+
+export type ProcessingLogEntry = {
+   __typename?: 'ProcessingLogEntry',
+  id: Scalars['ID'],
+  createdAt: Scalars['DateTime'],
+  character?: Maybe<Character>,
+  category: ProcessingCategory,
+  status: ProcessingStatus,
+};
+
+export type ProcessingLogFilter = {
+  characterId?: Maybe<Scalars['Int']>,
+};
+
+export enum ProcessingStatus {
+  Success = 'SUCCESS',
+  Failure = 'FAILURE'
+}
+
 export type Query = {
    __typename?: 'Query',
   characters: Array<Character>,
+  processingLogs: Array<ProcessingLogEntry>,
   scopes: Array<Scope>,
   userByEmail?: Maybe<User>,
   marketOrders: MarketOrders,
   walletJournal: JournalEntries,
   walletTransactions: WalletTransactions,
+};
+
+
+export type QueryProcessingLogsArgs = {
+  filter?: Maybe<ProcessingLogFilter>
 };
 
 
@@ -395,6 +434,10 @@ export type ResolversTypes = {
   DateTime: ResolverTypeWrapper<Partial<Scalars['DateTime']>>,
   Int: ResolverTypeWrapper<Partial<Scalars['Int']>>,
   Float: ResolverTypeWrapper<Partial<Scalars['Float']>>,
+  ProcessingLogFilter: ResolverTypeWrapper<Partial<ProcessingLogFilter>>,
+  ProcessingLogEntry: ResolverTypeWrapper<Partial<ProcessingLogEntry>>,
+  ProcessingCategory: ResolverTypeWrapper<Partial<ProcessingCategory>>,
+  ProcessingStatus: ResolverTypeWrapper<Partial<ProcessingStatus>>,
   Scope: ResolverTypeWrapper<Partial<Scope>>,
   User: ResolverTypeWrapper<Partial<User>>,
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
@@ -439,6 +482,10 @@ export type ResolversParentTypes = {
   DateTime: Partial<Scalars['DateTime']>,
   Int: Partial<Scalars['Int']>,
   Float: Partial<Scalars['Float']>,
+  ProcessingLogFilter: Partial<ProcessingLogFilter>,
+  ProcessingLogEntry: Partial<ProcessingLogEntry>,
+  ProcessingCategory: Partial<ProcessingCategory>,
+  ProcessingStatus: Partial<ProcessingStatus>,
   Scope: Partial<Scope>,
   User: Partial<User>,
   UserStatus: Partial<UserStatus>,
@@ -568,8 +615,17 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
 };
 
+export type ProcessingLogEntryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProcessingLogEntry'] = ResolversParentTypes['ProcessingLogEntry']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
+  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType>,
+  category?: Resolver<ResolversTypes['ProcessingCategory'], ParentType, ContextType>,
+  status?: Resolver<ResolversTypes['ProcessingStatus'], ParentType, ContextType>,
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
+  processingLogs?: Resolver<Array<ResolversTypes['ProcessingLogEntry']>, ParentType, ContextType, QueryProcessingLogsArgs>,
   scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
   userByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>,
   marketOrders?: Resolver<ResolversTypes['MarketOrders'], ParentType, ContextType, QueryMarketOrdersArgs>,
@@ -627,6 +683,7 @@ export type Resolvers<ContextType = any> = {
   MarketOrder?: MarketOrderResolvers<ContextType>,
   MarketOrders?: MarketOrdersResolvers<ContextType>,
   Mutation?: MutationResolvers<ContextType>,
+  ProcessingLogEntry?: ProcessingLogEntryResolvers<ContextType>,
   Query?: QueryResolvers<ContextType>,
   Scope?: ScopeResolvers<ContextType>,
   Time?: GraphQLScalarType,

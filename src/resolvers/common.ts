@@ -2,6 +2,7 @@ import logger from '../utils/logger';
 import { PartialUpdate } from 'objection';
 import { Character } from '../services/db/models/character';
 import { IDataSources } from '../services';
+import { Loaders } from '../services/db/loaders';
 
 export const getAccessToken = async (
   characterId: number,
@@ -18,11 +19,7 @@ export const getAccessToken = async (
     logger.info(`Getting new access token for character: ${characterId}`);
 
     // get new tokens
-    const tokens = await esiAuth.getAccessToken(
-      process.env.EVE_CLIENT_ID!,
-      process.env.EVE_CLIENT_SECRET!,
-      crypt.decrypt(refreshToken)
-    );
+    const tokens = await esiAuth.getAccessToken(process.env.EVE_CLIENT_ID!, process.env.EVE_CLIENT_SECRET!, crypt.decrypt(refreshToken));
 
     const update: PartialUpdate<Character> = {
       accessToken: crypt.encrypt(tokens.access_token),
@@ -36,4 +33,14 @@ export const getAccessToken = async (
 
     return tokens.access_token;
   }
+};
+
+export const getCharacter: (characterId: number, loaders: Loaders) => Promise<Character> = async (characterId, loaders) => {
+  const character = await loaders.characterLoader.load(characterId);
+
+  if (!character) {
+    throw new Error(`Character id: ${characterId} not found`);
+  }
+
+  return character;
 };
