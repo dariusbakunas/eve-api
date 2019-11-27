@@ -16,6 +16,7 @@ import { Station } from './models/station';
 import { NameCacheItem } from './models/nameCacheItem';
 import { CitadelCacheItem } from './models/citadelCacheItem';
 import { MarketOrder } from './models/marketOrder';
+import { JobLogEntry } from './models/jobLogEntry';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
@@ -27,6 +28,7 @@ const db: IDataSources['db'] = {
   NameCacheItem,
   MarketOrder,
   JournalEntry,
+  JobLogEntry,
   User,
   Scope,
   Invitation,
