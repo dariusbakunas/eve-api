@@ -24,6 +24,8 @@ type ProcessingLogEntry {
   character: Character
   category: ProcessingCategory!
   status: ProcessingStatus!
+  message: String!
+  error: String
 }
 
 input ProcessingLogFilter {

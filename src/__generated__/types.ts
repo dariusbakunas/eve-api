@@ -212,6 +212,8 @@ export type ProcessingLogEntry = {
   character?: Maybe<Character>,
   category: ProcessingCategory,
   status: ProcessingStatus,
+  message: Scalars['String'],
+  error?: Maybe<Scalars['String']>,
 };
 
 export type ProcessingLogFilter = {
@@ -621,6 +623,8 @@ export type ProcessingLogEntryResolvers<ContextType = any, ParentType extends Re
   character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType>,
   category?: Resolver<ResolversTypes['ProcessingCategory'], ParentType, ContextType>,
   status?: Resolver<ResolversTypes['ProcessingStatus'], ParentType, ContextType>,
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
