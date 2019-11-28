@@ -29,7 +29,7 @@ type ProcessingLogEntry {
 }
 
 input ProcessingLogFilter {
-  characterId: Int
+  characterId: ID
 }
 
 extend type Query {
