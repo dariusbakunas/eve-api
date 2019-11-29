@@ -16,6 +16,7 @@ import { NameCacheItem } from './db/models/nameCacheItem';
 import { CitadelCacheItem } from './db/models/citadelCacheItem';
 import { MarketOrder } from './db/models/marketOrder';
 import { JobLogEntry } from './db/models/jobLogEntry';
+import { Corporation } from './db/models/corporation';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -25,6 +26,7 @@ const redisCache = new RedisCache({
 export interface IDataSources {
   db: {
     Character: typeof Character;
+    Corporation: typeof Corporation;
     NameCacheItem: typeof NameCacheItem;
     MarketOrder: typeof MarketOrder;
     JournalEntry: typeof JournalEntry;
