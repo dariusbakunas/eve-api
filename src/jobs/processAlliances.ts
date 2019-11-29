@@ -11,6 +11,7 @@ export const processAlliances = async (db: IDataSources['db'], esiApi: IDataSour
     const allianceIds = await db.Corporation.query()
       .select('allianceId')
       .distinct('allianceId')
+      .whereNotNull('allianceId')
       .pluck('allianceId');
 
     const existing = await db.Alliance.query()
