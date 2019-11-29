@@ -21,14 +21,20 @@ const resolverMap: IResolvers<IResolverContext> = {
         return null;
       }
 
-      const allianceInfo = await dataSources.esiApi.getAllianceInfo(allianceId);
+      const alliance = await dataSources.db.Alliance.query().findById(allianceId);
 
-      const alliance: Partial<Alliance> = {
-        id: `${allianceId}`,
-        ...allianceInfo,
-      };
+      if (alliance) {
+        return alliance;
+      } else {
+        const allianceInfo = await dataSources.esiApi.getAllianceInfo(allianceId);
 
-      return alliance;
+        const alliance: Partial<Alliance> = {
+          id: `${allianceId}`,
+          ...allianceInfo,
+        };
+
+        return alliance;
+      }
     },
     memberCount: property('member_count'),
     dateFounded: property('date_founded'),
