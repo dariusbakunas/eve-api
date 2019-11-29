@@ -1,11 +1,12 @@
 import property from 'lodash.property';
 import { Maybe, Resolver, ResolversTypes } from '../__generated__/types';
 import { IResolverContext } from '../types';
+import { Corporation } from '../services/db/models/corporation';
 
 //TODO: add esiApi type definitions
 interface IResolvers<Context> {
   Corporation: {
-    alliance: Resolver<Maybe<ResolversTypes['Alliance']>, { alliance_id: number }, Context>;
+    alliance: Resolver<Maybe<ResolversTypes['Alliance']>, Corporation, Context>;
     memberCount: Resolver<ResolversTypes['Int'], { member_count: number }, Context>;
     dateFounded: Resolver<Maybe<ResolversTypes['DateTime']>, { date_founded: Date }, Context>;
     taxRate: Resolver<ResolversTypes['Float'], { tax_rate: number }, Context>;
@@ -14,7 +15,7 @@ interface IResolvers<Context> {
 
 const resolverMap: IResolvers<IResolverContext> = {
   Corporation: {
-    alliance: async ({ alliance_id: allianceId }, args, { dataSources }) => {
+    alliance: async ({ allianceId }, args, { dataSources }) => {
       if (!allianceId) {
         // NPC corporations do not have alliance_id
         return null;

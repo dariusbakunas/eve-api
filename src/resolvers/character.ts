@@ -13,6 +13,7 @@ import { IDataSources } from '../services';
 import { UserInputError } from 'apollo-server-errors';
 import { IEsiCharacterInfo } from '../services/esi/esiTypes';
 import moment from 'moment';
+import { Corporation } from '../services/db/models/corporation';
 
 const getCharacterInfo: <T extends keyof IEsiCharacterInfo>(
   id: number,
@@ -33,7 +34,7 @@ interface ICharacterResolvers<Context> {
     removeCharacter: Resolver<ResolversTypes['ID'], unknown, Context, RequireFields<MutationRemoveCharacterArgs, 'id'>>;
   };
   Character: {
-    corporation: Resolver<ResolversTypes['Corporation'], Character, Context>;
+    corporation: Resolver<Partial<Corporation>, Character, Context>;
     totalSp: Resolver<Maybe<ResolversTypes['Int']>, Character, Context>;
     scopes: Resolver<Maybe<Array<ResolversTypes['String']>>, Character, Context>;
     securityStatus: Resolver<ResolversTypes['Float'], Character, Context>;
@@ -125,14 +126,23 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
     },
   },
   Character: {
-    corporation: async ({ id }, args, { dataSources }) => {
-      const { corporation_id: corporationId } = await dataSources.esiApi.getCharacterInfo(id);
-      const corporationInfo = await dataSources.esiApi.getCorporationInfo(corporationId);
+    corporation: async ({ corporationId }, args, { dataSources }): Promise<Partial<Corporation>> => {
+      const corporation: Corporation = await dataSources.db.Corporation.query().findById(corporationId);
 
-      return {
-        id: `${corporationId}`,
-        ...corporationInfo,
-      };
+      if (corporation) {
+        return corporation;
+      } else {
+        const response = await dataSources.esiApi.getCorporationInfo(corporationId);
+
+        return {
+          id: corporationId,
+          allianceId: response.alliance_id,
+          name: response.name,
+          memberCount: response.member_count,
+          taxRate: response.tax_rate,
+          ticker: response.ticker,
+        };
+      }
     },
     scopes: ({ scopes }) => {
       return scopes.split(' ');
