@@ -18,6 +18,11 @@ export class Character extends BaseModel {
   readonly id!: number;
   name!: string;
   accessToken!: string;
+  corporationId!: number;
+  allianceId?: number;
+  factionId?: number;
+  securityStatus?: number;
+  title?: string;
   refreshToken!: string;
   expiresAt!: number;
   scopes!: string;

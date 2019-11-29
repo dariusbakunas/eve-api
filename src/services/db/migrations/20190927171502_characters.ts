@@ -19,6 +19,13 @@ export async function up(knex: Knex): Promise<any> {
     t.bigInteger('expiresAt').notNullable();
 
     t.integer('ownerId').unsigned();
+    t.text('description');
+
+    t.bigInteger('corporationId').notNullable();
+    t.bigInteger('allianceId');
+    t.bigInteger('factionId');
+    t.float('securityStatus');
+    t.string('title');
 
     t.integer('ancestryId')
       .unsigned()

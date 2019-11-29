@@ -56,13 +56,31 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
         const expiresAt = expiresIn * 1000 + new Date(Date.now()).getTime();
         const { CharacterID, CharacterName, Scopes } = await esiAuth.verifyToken(accessToken);
 
-        const { ancestry_id: ancestryId, bloodline_id: bloodlineId, birthday, gender, race_id: raceId } = await esiApi.getCharacterInfo(CharacterID);
+        const {
+          ancestry_id: ancestryId,
+          bloodline_id: bloodlineId,
+          birthday,
+          description,
+          gender,
+          race_id: raceId,
+          corporation_id: corporationId,
+          alliance_id: allianceId,
+          faction_id: factionId,
+          security_status: securityStatus,
+          title,
+        } = await esiApi.getCharacterInfo(CharacterID);
 
         const user = await db.User.query().findById(userId);
 
         return user.$relatedQuery('characters').insert({
           id: CharacterID,
           expiresAt,
+          corporationId,
+          allianceId,
+          description,
+          factionId,
+          securityStatus,
+          title,
           name: CharacterName,
           accessToken: crypt.encrypt(accessToken),
           refreshToken: crypt.encrypt(refreshToken),
