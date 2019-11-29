@@ -1,5 +1,5 @@
 import property from 'lodash.property';
-import { Maybe, Resolver, ResolversTypes } from '../__generated__/types';
+import { Alliance, Maybe, Resolver, ResolversTypes } from '../__generated__/types';
 import { IResolverContext } from '../types';
 import { Corporation } from '../services/db/models/corporation';
 
@@ -22,10 +22,13 @@ const resolverMap: IResolvers<IResolverContext> = {
       }
 
       const allianceInfo = await dataSources.esiApi.getAllianceInfo(allianceId);
-      return {
-        id: allianceId,
+
+      const alliance: Partial<Alliance> = {
+        id: `${allianceId}`,
         ...allianceInfo,
       };
+
+      return alliance;
     },
     memberCount: property('member_count'),
     dateFounded: property('date_founded'),
