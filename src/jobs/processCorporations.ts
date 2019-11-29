@@ -63,9 +63,8 @@ export const processCorporations = async (db: IDataSources['db'], esiApi: IDataS
           warEligible: corp.war_eligible,
         });
       }
-
-      logger.info(`Updated ${updated} corporations, inserted ${inserted} new ones`);
     }
+    logger.info(`Updated ${updated} corporations, inserted ${inserted} new ones`);
   } catch (e) {
     logger.error(`Failure updating corporations: ${e.message}`);
   }

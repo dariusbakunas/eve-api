@@ -50,9 +50,8 @@ export const processAlliances = async (db: IDataSources['db'], esiApi: IDataSour
           ticker: alliance.ticker,
         });
       }
-
-      logger.info(`Updated ${updated} alliances, inserted ${inserted} new ones`);
     }
+    logger.info(`Updated ${updated} alliances, inserted ${inserted} new ones`);
   } catch (e) {
     logger.error(`Failure updating alliances: ${e.message}`);
   }
