@@ -95,3 +95,13 @@ export interface IEsiCorporationInfo {
   url?: string;
   war_eligible?: boolean;
 }
+
+export interface IEsiAllianceInfo {
+  creator_corporation_id: number;
+  creator_id: number;
+  date_founded: string;
+  executor_corporation_id?: number;
+  faction_id?: number;
+  name: string;
+  ticker: string;
+}

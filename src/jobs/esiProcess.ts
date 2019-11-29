@@ -13,6 +13,7 @@ import { processBookmarks } from './processBookmarks';
 import { processMarketOrders } from './processMarketOrders';
 import { cleanup } from './cleanup';
 import { processCorporations } from './processCorporations';
+import { processAlliances } from './processAlliances';
 
 const initDataSources = () => {
   const dataSources = {
@@ -59,6 +60,7 @@ export const processData = async () => {
   try {
     await updateNameCache(db, esiApi);
     await processCorporations(db, esiApi);
+    await processAlliances(db, esiApi);
     await cleanup(db);
   } catch (e) {
     logger.error(e);

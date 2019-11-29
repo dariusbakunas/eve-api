@@ -17,6 +17,7 @@ import { CitadelCacheItem } from './db/models/citadelCacheItem';
 import { MarketOrder } from './db/models/marketOrder';
 import { JobLogEntry } from './db/models/jobLogEntry';
 import { Corporation } from './db/models/corporation';
+import { Alliance } from './db/models/alliance';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -25,6 +26,7 @@ const redisCache = new RedisCache({
 
 export interface IDataSources {
   db: {
+    Alliance: typeof Alliance;
     Character: typeof Character;
     Corporation: typeof Corporation;
     NameCacheItem: typeof NameCacheItem;
