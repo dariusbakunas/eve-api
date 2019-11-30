@@ -8,21 +8,9 @@ import {
 } from '../__generated__/types';
 import { IResolverContext, Maybe } from '../types';
 import { Character } from '../services/db/models/character';
-import { getAccessToken } from './common';
-import { IDataSources } from '../services';
 import { UserInputError } from 'apollo-server-errors';
-import { IEsiCharacterInfo } from '../services/esi/esiTypes';
 import moment from 'moment';
 import { Corporation } from '../services/db/models/corporation';
-
-const getCharacterInfo: <T extends keyof IEsiCharacterInfo>(
-  id: number,
-  esiApi: IDataSources['esiApi'],
-  fieldName: T
-) => Promise<IEsiCharacterInfo[T]> = async (id, esiApi, fieldName) => {
-  const info = await esiApi.getCharacterInfo(id);
-  return info[fieldName];
-};
 
 interface ICharacterResolvers<Context> {
   Query: {
@@ -35,9 +23,7 @@ interface ICharacterResolvers<Context> {
   };
   Character: {
     corporation: Resolver<Partial<Corporation>, Character, Context>;
-    totalSp: Resolver<Maybe<ResolversTypes['Int']>, Character, Context>;
     scopes: Resolver<Maybe<Array<ResolversTypes['String']>>, Character, Context>;
-    securityStatus: Resolver<ResolversTypes['Float'], Character, Context>;
   };
 }
 
@@ -146,19 +132,6 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
     },
     scopes: ({ scopes }) => {
       return scopes.split(' ');
-    },
-    totalSp: async ({ id, accessToken, refreshToken, expiresAt, scopes }, args, { dataSources }: { dataSources: IDataSources }) => {
-      if (scopes.split(' ').findIndex(scope => scope === 'esi-skills.read_skills.v1') === -1) {
-        return null;
-      }
-
-      const token = await getAccessToken(id, accessToken, refreshToken, expiresAt, dataSources.db, dataSources.crypt, dataSources.esiAuth);
-
-      const { total_sp: totalSp } = await dataSources.esiApi.getCharacterSkills(id, token);
-      return totalSp;
-    },
-    securityStatus: ({ id }, args, { dataSources }) => {
-      return getCharacterInfo(id!, dataSources.esiApi, 'security_status');
     },
   },
 };
