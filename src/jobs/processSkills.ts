@@ -35,7 +35,7 @@ export const processSkills = async (character: Character, token: string, db: IDa
         const skill = skills[i];
 
         if (!entrySet.has(skill.skill_id)) {
-          await db.CharacterSkill.query().insert({
+          await db.CharacterSkill.query(trx).insert({
             activeSkillLevel: skill.active_skill_level,
             skillId: skill.skill_id,
             skillPointsInSkill: skill.skillpoints_in_skill,
@@ -50,7 +50,7 @@ export const processSkills = async (character: Character, token: string, db: IDa
             trainedSkillLevel: skill.trained_skill_level,
           };
 
-          await db.CharacterSkill.query()
+          await db.CharacterSkill.query(trx)
             .patch(update)
             .where('characterId', character.id)
             .andWhere('skillId', skill.skill_id);
