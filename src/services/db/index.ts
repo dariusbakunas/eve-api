@@ -19,6 +19,7 @@ import { MarketOrder } from './models/marketOrder';
 import { JobLogEntry } from './models/jobLogEntry';
 import { Corporation } from './models/corporation';
 import { Alliance } from './models/alliance';
+import { CharacterSkill } from './models/characterSkill';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
@@ -28,6 +29,7 @@ Model.knex(knex);
 const db: IDataSources['db'] = {
   Alliance,
   Character,
+  CharacterSkill,
   Corporation,
   NameCacheItem,
   MarketOrder,

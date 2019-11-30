@@ -105,3 +105,14 @@ export interface IEsiAllianceInfo {
   name: string;
   ticker: string;
 }
+
+export interface IEsiCharacterSkills {
+  skills: Array<{
+    active_skill_level: number;
+    skill_id: number;
+    skillpoints_in_skill: number;
+    trained_skill_level: number;
+  }>;
+  total_sp: number;
+  unallocated_sp?: number;
+}

@@ -31,4 +31,5 @@ export class Character extends BaseModel {
   birthday!: Date;
   gender!: string;
   raceId!: number;
+  totalSp?: number;
 }

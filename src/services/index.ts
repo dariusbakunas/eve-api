@@ -18,6 +18,7 @@ import { MarketOrder } from './db/models/marketOrder';
 import { JobLogEntry } from './db/models/jobLogEntry';
 import { Corporation } from './db/models/corporation';
 import { Alliance } from './db/models/alliance';
+import { CharacterSkill } from './db/models/characterSkill';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -28,6 +29,7 @@ export interface IDataSources {
   db: {
     Alliance: typeof Alliance;
     Character: typeof Character;
+    CharacterSkill: typeof CharacterSkill;
     Corporation: typeof Corporation;
     NameCacheItem: typeof NameCacheItem;
     MarketOrder: typeof MarketOrder;

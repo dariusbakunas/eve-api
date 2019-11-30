@@ -202,7 +202,9 @@ export enum ProcessingCategory {
   Implants = 'IMPLANTS',
   Contacts = 'CONTACTS',
   IndustryJobs = 'INDUSTRY_JOBS',
-  Stats = 'STATS'
+  Stats = 'STATS',
+  Skills = 'SKILLS',
+  SkillQueue = 'SKILL_QUEUE'
 }
 
 export type ProcessingLogEntry = {
@@ -217,7 +219,7 @@ export type ProcessingLogEntry = {
 };
 
 export type ProcessingLogFilter = {
-  characterId?: Maybe<Scalars['Int']>,
+  characterId?: Maybe<Scalars['ID']>,
 };
 
 export enum ProcessingStatus {

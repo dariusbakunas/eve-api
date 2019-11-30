@@ -6,6 +6,7 @@ import {
   IEsiAllianceInfo,
   IEsiBookmark,
   IEsiCharacterInfo,
+  IEsiCharacterSkills,
   IEsiCorporationInfo,
   IEsiJournalEntry,
   IEsiMarketOrder,
@@ -87,7 +88,7 @@ class EsiAPI extends RESTDataSource {
     return this.post('/universe/names', ids);
   }
 
-  async getCharacterSkills(characterId: number, token: string) {
+  async getCharacterSkills(characterId: number, token: string): Promise<IEsiCharacterSkills> {
     return this.get(`/characters/${characterId}/skills`, undefined, {
       headers: {
         Authorization: `Bearer ${token}`,

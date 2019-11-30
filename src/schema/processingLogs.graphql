@@ -16,6 +16,8 @@ enum ProcessingCategory {
   CONTACTS
   INDUSTRY_JOBS
   STATS
+  SKILLS
+  SKILL_QUEUE
 }
 
 type ProcessingLogEntry {

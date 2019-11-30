@@ -22,6 +22,8 @@ export async function up(knex: Knex): Promise<any> {
       'CONTRACTS',
       'INDUSTRY_JOBS',
       'STATS',
+      'SKILLS',
+      'SKILL_QUEUE',
     ]).notNullable();
     t.enum('status', ['SUCCESS', 'FAILURE']).notNullable();
     t.string('message', 500).notNullable();

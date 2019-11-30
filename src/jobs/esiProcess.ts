@@ -14,6 +14,7 @@ import { processMarketOrders } from './processMarketOrders';
 import { cleanup } from './cleanup';
 import { processCorporations } from './processCorporations';
 import { processAlliances } from './processAlliances';
+import { processSkills } from './processSkills';
 
 const initDataSources = () => {
   const dataSources = {
@@ -51,6 +52,10 @@ export const processData = async () => {
 
       if (scopes.includes('esi-markets.read_character_orders.v1')) {
         await processMarketOrders(character, token, db, esiApi);
+      }
+
+      if (scopes.includes('esi-skills.read_skills.v1')) {
+        await processSkills(character, token, db, esiApi);
       }
     } catch (e) {
       logger.error(e);
