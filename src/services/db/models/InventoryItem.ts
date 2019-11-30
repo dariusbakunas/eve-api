@@ -8,6 +8,7 @@ export class InventoryItem extends BaseModel {
   }
 
   readonly typeID!: number;
+  groupID!: number;
   description?: string;
   typeName?: string;
 }

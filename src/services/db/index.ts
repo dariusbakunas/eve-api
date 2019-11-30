@@ -20,6 +20,8 @@ import { JobLogEntry } from './models/jobLogEntry';
 import { Corporation } from './models/corporation';
 import { Alliance } from './models/alliance';
 import { CharacterSkill } from './models/characterSkill';
+import { InvGroup } from './models/invGroup';
+import { SkillMultiplier } from './models/skillMultiplier';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
@@ -37,8 +39,10 @@ const db: IDataSources['db'] = {
   JobLogEntry,
   User,
   Scope,
+  InvGroup,
   Invitation,
   InventoryItem,
+  SkillMultiplier,
   Station,
   CitadelCacheItem,
   WalletTransaction,

@@ -5,9 +5,12 @@ import logger from '../../utils/logger';
 import { Character } from './models/character';
 import { Maybe } from '../../types';
 import { Station } from './models/station';
+import { InvGroup } from './models/invGroup';
+import { SkillMultiplier } from './models/skillMultiplier';
 
 export class Loaders {
   private db: IDataSources['db'];
+  public invGroupLoader: DataLoader<number, Maybe<InvGroup>>;
   public invItemLoader: DataLoader<number, Maybe<InventoryItem>>;
   public characterLoader: DataLoader<number, Maybe<Character>>;
   public stationLoader: DataLoader<number, Maybe<Station>>;
@@ -17,6 +20,7 @@ export class Loaders {
     this.invItemLoader = new DataLoader(ids => this.loadInvItems(ids));
     this.characterLoader = new DataLoader(ids => this.loadCharacters(ids));
     this.stationLoader = new DataLoader(ids => this.loadStations(ids));
+    this.invGroupLoader = new DataLoader(ids => this.loadInvGroups(ids));
   }
 
   private mapItems<T>(ids: number[], items: T[], idGetter: (item: T) => number) {
@@ -41,14 +45,14 @@ export class Loaders {
     return this.mapItems<Character>(ids, characters, character => character.id);
   }
 
+  private async loadInvGroups(ids: number[]) {
+    const invGroups: Array<InvGroup> = await this.db.InvGroup.query().where('groupID', 'in', ids);
+    return this.mapItems<InvGroup>(ids, invGroups, invGroup => invGroup.groupID);
+  }
+
   private async loadInvItems(ids: number[]) {
     logger.debug(`loaders.loadInvItems, ids: ${ids.join(',')}`);
-    const invItems: Array<InventoryItem> = await this.db.InventoryItem.query().where(
-      'typeID',
-      'in',
-      ids
-    );
-
+    const invItems: Array<InventoryItem> = await this.db.InventoryItem.query().where('typeID', 'in', ids);
     return this.mapItems<InventoryItem>(ids, invItems, item => item.typeID);
   }
 }

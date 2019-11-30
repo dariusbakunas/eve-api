@@ -31,6 +31,7 @@ const shieldMiddleware = shield(
   {
     Query: {
       '*': deny,
+      character: and(isActiveUser, isCharacterOwner),
       characters: isActiveUser,
       scopes: isActiveUser,
       userByEmail: hasSameEmail,

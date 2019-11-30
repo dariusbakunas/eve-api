@@ -1,3 +1,16 @@
+type Skill {
+  id: ID!
+  name: String!
+  multiplier: Int
+}
+
+type SkillGroup {
+  id: ID!
+  name: String!
+  skills: [Skill!]
+  totalSp: Int
+}
+
 type Character {
   id: ID!
   corporation: Corporation!
@@ -6,10 +19,12 @@ type Character {
   scopes: [String!]
   birthday: DateTime!
   securityStatus: Float!
+  skillGroups: [SkillGroup!]!
   totalSp: Int
 }
 
 extend type Query {
+  character(id: ID!): Character
   characters: [Character!]!
 }
 

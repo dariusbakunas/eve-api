@@ -19,6 +19,8 @@ import { JobLogEntry } from './db/models/jobLogEntry';
 import { Corporation } from './db/models/corporation';
 import { Alliance } from './db/models/alliance';
 import { CharacterSkill } from './db/models/characterSkill';
+import { InvGroup } from './db/models/invGroup';
+import { SkillMultiplier } from './db/models/skillMultiplier';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -38,7 +40,9 @@ export interface IDataSources {
     User: typeof User;
     Scope: typeof Scope;
     Invitation: typeof Invitation;
+    InvGroup: typeof InvGroup;
     InventoryItem: typeof InventoryItem;
+    SkillMultiplier: typeof SkillMultiplier;
     Station: typeof Station;
     CitadelCacheItem: typeof CitadelCacheItem;
     WalletTransaction: typeof WalletTransaction;

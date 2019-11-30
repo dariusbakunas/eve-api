@@ -29,6 +29,7 @@ export type Character = {
   scopes?: Maybe<Array<Scalars['String']>>,
   birthday: Scalars['DateTime'],
   securityStatus: Scalars['Float'],
+  skillGroups: Array<SkillGroup>,
   totalSp?: Maybe<Scalars['Int']>,
 };
 
@@ -229,6 +230,7 @@ export enum ProcessingStatus {
 
 export type Query = {
    __typename?: 'Query',
+  character?: Maybe<Character>,
   characters: Array<Character>,
   processingLogs: Array<ProcessingLogEntry>,
   scopes: Array<Scope>,
@@ -236,6 +238,11 @@ export type Query = {
   marketOrders: MarketOrders,
   walletJournal: JournalEntries,
   walletTransactions: WalletTransactions,
+};
+
+
+export type QueryCharacterArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -281,6 +288,21 @@ export type Scope = {
    __typename?: 'Scope',
   id: Scalars['ID'],
   name: Scalars['String'],
+};
+
+export type Skill = {
+   __typename?: 'Skill',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+  multiplier?: Maybe<Scalars['Int']>,
+};
+
+export type SkillGroup = {
+   __typename?: 'SkillGroup',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+  skills?: Maybe<Array<Skill>>,
+  totalSp?: Maybe<Scalars['Int']>,
 };
 
 
@@ -430,14 +452,16 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>,
-  Character: ResolverTypeWrapper<Partial<Character>>,
   ID: ResolverTypeWrapper<Partial<Scalars['ID']>>,
+  Character: ResolverTypeWrapper<Partial<Character>>,
   Corporation: ResolverTypeWrapper<Partial<Corporation>>,
   Alliance: ResolverTypeWrapper<Partial<Alliance>>,
   String: ResolverTypeWrapper<Partial<Scalars['String']>>,
   DateTime: ResolverTypeWrapper<Partial<Scalars['DateTime']>>,
   Int: ResolverTypeWrapper<Partial<Scalars['Int']>>,
   Float: ResolverTypeWrapper<Partial<Scalars['Float']>>,
+  SkillGroup: ResolverTypeWrapper<Partial<SkillGroup>>,
+  Skill: ResolverTypeWrapper<Partial<Skill>>,
   ProcessingLogFilter: ResolverTypeWrapper<Partial<ProcessingLogFilter>>,
   ProcessingLogEntry: ResolverTypeWrapper<Partial<ProcessingLogEntry>>,
   ProcessingCategory: ResolverTypeWrapper<Partial<ProcessingCategory>>,
@@ -478,14 +502,16 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Query: {},
-  Character: Partial<Character>,
   ID: Partial<Scalars['ID']>,
+  Character: Partial<Character>,
   Corporation: Partial<Corporation>,
   Alliance: Partial<Alliance>,
   String: Partial<Scalars['String']>,
   DateTime: Partial<Scalars['DateTime']>,
   Int: Partial<Scalars['Int']>,
   Float: Partial<Scalars['Float']>,
+  SkillGroup: Partial<SkillGroup>,
+  Skill: Partial<Skill>,
   ProcessingLogFilter: Partial<ProcessingLogFilter>,
   ProcessingLogEntry: Partial<ProcessingLogEntry>,
   ProcessingCategory: Partial<ProcessingCategory>,
@@ -537,6 +563,7 @@ export type CharacterResolvers<ContextType = any, ParentType extends ResolversPa
   scopes?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>,
   birthday?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
   securityStatus?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+  skillGroups?: Resolver<Array<ResolversTypes['SkillGroup']>, ParentType, ContextType>,
   totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
 };
 
@@ -630,6 +657,7 @@ export type ProcessingLogEntryResolvers<ContextType = any, ParentType extends Re
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>,
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
   processingLogs?: Resolver<Array<ResolversTypes['ProcessingLogEntry']>, ParentType, ContextType, QueryProcessingLogsArgs>,
   scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
@@ -642,6 +670,19 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 export type ScopeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Scope'] = ResolversParentTypes['Scope']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
+export type SkillResolvers<ContextType = any, ParentType extends ResolversParentTypes['Skill'] = ResolversParentTypes['Skill']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  multiplier?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+};
+
+export type SkillGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['SkillGroup'] = ResolversParentTypes['SkillGroup']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  skills?: Resolver<Maybe<Array<ResolversTypes['Skill']>>, ParentType, ContextType>,
+  totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
 };
 
 export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Time'], any> {
@@ -692,6 +733,8 @@ export type Resolvers<ContextType = any> = {
   ProcessingLogEntry?: ProcessingLogEntryResolvers<ContextType>,
   Query?: QueryResolvers<ContextType>,
   Scope?: ScopeResolvers<ContextType>,
+  Skill?: SkillResolvers<ContextType>,
+  SkillGroup?: SkillGroupResolvers<ContextType>,
   Time?: GraphQLScalarType,
   User?: UserResolvers<ContextType>,
   WalletTransaction?: WalletTransactionResolvers<ContextType>,
