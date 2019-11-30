@@ -18,6 +18,7 @@ module.exports = {
     migrations: {
       directory: __dirname + '/src/services/db/migrations',
       tableName: 'knex_migrations',
+      extension: 'ts',
     },
     seeds: {
       directory: __dirname + '/src/services/db/seeds',
@@ -44,6 +45,7 @@ module.exports = {
     migrations: {
       directory: __dirname + '/src/services/db/migrations',
       tableName: 'knex_migrations',
+      extension: 'ts',
     },
     seeds: {
       directory: __dirname + '/src/services/db/seeds',
