@@ -1,4 +1,5 @@
 import {
+  CharacterSkillGroupArgs,
   MutationAddCharacterArgs,
   MutationRemoveCharacterArgs,
   MutationUpdateCharacterArgs,
@@ -18,6 +19,16 @@ import { InventoryItem } from '../services/db/models/InventoryItem';
 import { SkillMultiplier } from '../services/db/models/skillMultiplier';
 import { JoinClause } from 'knex';
 
+interface SkillGroupWithCharacterId extends SkillGroup {
+  characterId: number;
+}
+
+interface Skill extends InventoryItem {
+  activeSkillLevel?: number;
+  trainedSkillLevel?: number;
+  skillPointsInSkill?: number;
+}
+
 interface ICharacterResolvers<Context> {
   Query: {
     characters: Resolver<Array<Character>, any, Context>;
@@ -31,11 +42,12 @@ interface ICharacterResolvers<Context> {
   Character: {
     corporation: Resolver<Partial<Corporation>, Character, Context>;
     scopes: Resolver<Maybe<Array<ResolversTypes['String']>>, Character, Context>;
-    skillGroups: Resolver<Array<ResolversTypes['SkillGroup']>, Character, Context>;
+    skillGroups: Resolver<Array<SkillGroupWithCharacterId>, Character, Context>;
+    skillGroup: Resolver<Maybe<SkillGroupWithCharacterId>, Character, Context, RequireFields<CharacterSkillGroupArgs, 'id'>>;
   };
   SkillGroup: {
-    skills: Resolver<Maybe<Array<ResolversTypes['Skill']>>, SkillGroup, Context>;
-    totalSp: Resolver<Maybe<ResolversTypes['Int']>, SkillGroup, Context>;
+    skills: Resolver<Maybe<Array<ResolversTypes['Skill']>>, SkillGroupWithCharacterId, Context>;
+    totalSp: Resolver<Maybe<ResolversTypes['Int']>, SkillGroupWithCharacterId, Context>;
   };
 }
 
@@ -151,22 +163,39 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
     scopes: ({ scopes }) => {
       return scopes.split(' ');
     },
-    skillGroups: async ({ id }, args, { dataSources }) => {
+    skillGroup: async ({ id: characterId }, { id }, { dataSources }) => {
+      const group: InvGroup = await dataSources.db.InvGroup.query()
+        .where('groupID', id)
+        .andWhere('categoryID', SKILL_GROUP_CATEGORY_ID)
+        .first();
+      return {
+        id: `${group.groupID}`,
+        characterId,
+        name: group.groupName!, // all skill groups have names
+      };
+    },
+    skillGroups: async ({ id: characterId }, args, { dataSources }) => {
       const skillGroups: Array<InvGroup> = await dataSources.db.InvGroup.query()
         .where('published', true)
-        .andWhere('categoryID', SKILL_GROUP_CATEGORY_ID);
+        .andWhere('categoryID', SKILL_GROUP_CATEGORY_ID)
+        .orderBy('groupName');
 
       return skillGroups.map(group => ({
         id: `${group.groupID}`,
-        name: group.groupName,
+        characterId,
+        name: group.groupName!, // all skill groups have names
       }));
     },
   },
   SkillGroup: {
-    skills: async ({ id }, args, { dataSources }) => {
-      const skills: Array<InventoryItem> = await dataSources.db.InventoryItem.query()
-        .where('groupID', id)
-        .andWhere('published', true);
+    skills: async ({ id, characterId }, args, { dataSources }) => {
+      const skills: Array<Skill> = await dataSources.db.InventoryItem.query()
+        .select('*')
+        .leftJoin('characterSkills as characterSkill', 'invTypes.typeID', 'characterSkill.skillId')
+        .where('characterSkill.characterId', characterId)
+        .andWhere('groupID', id)
+        .andWhere('published', true)
+        .orderBy('typeName');
 
       const skillIds = skills.map(skill => skill.typeID);
       const multipliers: Array<SkillMultiplier> = await dataSources.db.SkillMultiplier.query().whereIn('skillId', skillIds);

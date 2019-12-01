@@ -2,12 +2,15 @@ type Skill {
   id: ID!
   name: String!
   multiplier: Int
+  activeSkillLevel: Int
+  trainedSkillLevel: Int
+  skillPointsInSkill: Int
 }
 
 type SkillGroup {
   id: ID!
   name: String!
-  skills: [Skill!]
+  skills: [Skill!]!
   totalSp: Int
 }
 
@@ -20,6 +23,7 @@ type Character {
   birthday: DateTime!
   securityStatus: Float!
   skillGroups: [SkillGroup!]!
+  skillGroup(id: ID!): SkillGroup
   totalSp: Int
 }
 

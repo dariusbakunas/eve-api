@@ -30,7 +30,13 @@ export type Character = {
   birthday: Scalars['DateTime'],
   securityStatus: Scalars['Float'],
   skillGroups: Array<SkillGroup>,
+  skillGroup?: Maybe<SkillGroup>,
   totalSp?: Maybe<Scalars['Int']>,
+};
+
+
+export type CharacterSkillGroupArgs = {
+  id: Scalars['ID']
 };
 
 export type Client = {
@@ -564,6 +570,7 @@ export type CharacterResolvers<ContextType = any, ParentType extends ResolversPa
   birthday?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
   securityStatus?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
   skillGroups?: Resolver<Array<ResolversTypes['SkillGroup']>, ParentType, ContextType>,
+  skillGroup?: Resolver<Maybe<ResolversTypes['SkillGroup']>, ParentType, ContextType, RequireFields<CharacterSkillGroupArgs, 'id'>>,
   totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
 };
 
