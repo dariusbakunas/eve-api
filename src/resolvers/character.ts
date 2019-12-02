@@ -18,7 +18,7 @@ import { InvGroup } from '../services/db/models/invGroup';
 import { InventoryItem } from '../services/db/models/InventoryItem';
 import { SkillMultiplier } from '../services/db/models/skillMultiplier';
 import { JoinClause } from 'knex';
-import { QueryBuilder } from 'objection';
+import { QueryBuilder, raw } from 'objection';
 import { CharacterSkill } from '../services/db/models/characterSkill';
 
 interface SkillGroupWithCharacterId extends SkillGroup {
@@ -193,11 +193,10 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
     skills: async ({ id, characterId }, args, { dataSources }) => {
       const skills: Array<Skill> = await dataSources.db.InventoryItem.query()
         .select('*')
-        .leftJoin('characterSkills as characterSkill', 'invTypes.typeID', 'characterSkill.skillId')
-        .where((builder: QueryBuilder<CharacterSkill>) => {
-          builder.where('characterSkill.characterId', characterId).orWhereNull('characterSkill.characterId');
+        .leftJoin('characterSkills as characterSkill', function(this: JoinClause) {
+          this.on('invTypes.typeID', 'characterSkill.skillId').andOn('characterSkill.skillId', raw(characterId));
         })
-        .andWhere('groupID', id)
+        .where('groupID', id)
         .andWhere('published', true)
         .orderBy('typeName');
 
