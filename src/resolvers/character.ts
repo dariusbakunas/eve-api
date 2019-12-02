@@ -194,7 +194,7 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
       const skills: Array<Skill> = await dataSources.db.InventoryItem.query()
         .select('*')
         .leftJoin('characterSkills as characterSkill', function(this: JoinClause) {
-          this.on('invTypes.typeID', 'characterSkill.skillId').andOn('characterSkill.skillId', raw(characterId));
+          this.on('invTypes.typeID', 'characterSkill.skillId').andOn('characterSkill.characterId', raw(characterId));
         })
         .where('groupID', id)
         .andWhere('published', true)
