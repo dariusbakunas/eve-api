@@ -18,6 +18,8 @@ import { InvGroup } from '../services/db/models/invGroup';
 import { InventoryItem } from '../services/db/models/InventoryItem';
 import { SkillMultiplier } from '../services/db/models/skillMultiplier';
 import { JoinClause } from 'knex';
+import { QueryBuilder } from 'objection';
+import { CharacterSkill } from '../services/db/models/characterSkill';
 
 interface SkillGroupWithCharacterId extends SkillGroup {
   characterId: number;
@@ -192,7 +194,9 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
       const skills: Array<Skill> = await dataSources.db.InventoryItem.query()
         .select('*')
         .leftJoin('characterSkills as characterSkill', 'invTypes.typeID', 'characterSkill.skillId')
-        .where('characterSkill.characterId', characterId)
+        .where((builder: QueryBuilder<CharacterSkill>) => {
+          builder.where('characterSkill.characterId', characterId).orWhereNull('characterSkill.characterId');
+        })
         .andWhere('groupID', id)
         .andWhere('published', true)
         .orderBy('typeName');
