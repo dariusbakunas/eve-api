@@ -12,6 +12,7 @@ type SkillGroup {
   name: String!
   skills: [Skill!]!
   totalSp: Int
+  trainedSp: Int
 }
 
 type Character {

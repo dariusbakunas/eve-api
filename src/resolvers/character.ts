@@ -44,12 +44,13 @@ interface ICharacterResolvers<Context> {
   Character: {
     corporation: Resolver<Partial<Corporation>, Character, Context>;
     scopes: Resolver<Maybe<Array<ResolversTypes['String']>>, Character, Context>;
-    skillGroups: Resolver<Array<SkillGroupWithCharacterId>, Character, Context>;
-    skillGroup: Resolver<Maybe<SkillGroupWithCharacterId>, Character, Context, RequireFields<CharacterSkillGroupArgs, 'id'>>;
+    skillGroups: Resolver<Array<Partial<SkillGroupWithCharacterId>>, Character, Context>;
+    skillGroup: Resolver<Maybe<Partial<SkillGroupWithCharacterId>>, Character, Context, RequireFields<CharacterSkillGroupArgs, 'id'>>;
   };
   SkillGroup: {
     skills: Resolver<Maybe<Array<ResolversTypes['Skill']>>, SkillGroupWithCharacterId, Context>;
     totalSp: Resolver<Maybe<ResolversTypes['Int']>, SkillGroupWithCharacterId, Context>;
+    trainedSp: Resolver<Maybe<ResolversTypes['Int']>, SkillGroupWithCharacterId, Context>;
   };
 }
 
@@ -230,6 +231,19 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
         .pluck('totalSp')
         .first();
       return totalSp * LEVEL_V_SP;
+    },
+    trainedSp: async ({ id, characterId }, args, { dataSources }) => {
+      return dataSources.db.InventoryItem.query()
+        .sum('characterSkill.skillPointsInSkill as trainedSp')
+        .as('trainedSp')
+        .rightJoin('characterSkills as characterSkill', function(this: JoinClause) {
+          this.on('invTypes.typeID', 'characterSkill.skillId').andOn('characterSkill.characterId', raw(characterId));
+        })
+        .where('groupID', id)
+        .andWhere('published', true)
+        .orderBy('typeName')
+        .pluck('trainedSp')
+        .first();
     },
   },
 };

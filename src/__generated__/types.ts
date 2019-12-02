@@ -301,14 +301,18 @@ export type Skill = {
   id: Scalars['ID'],
   name: Scalars['String'],
   multiplier?: Maybe<Scalars['Int']>,
+  activeSkillLevel?: Maybe<Scalars['Int']>,
+  trainedSkillLevel?: Maybe<Scalars['Int']>,
+  skillPointsInSkill?: Maybe<Scalars['Int']>,
 };
 
 export type SkillGroup = {
    __typename?: 'SkillGroup',
   id: Scalars['ID'],
   name: Scalars['String'],
-  skills?: Maybe<Array<Skill>>,
+  skills: Array<Skill>,
   totalSp?: Maybe<Scalars['Int']>,
+  trainedSp?: Maybe<Scalars['Int']>,
 };
 
 
@@ -683,13 +687,17 @@ export type SkillResolvers<ContextType = any, ParentType extends ResolversParent
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
   multiplier?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  activeSkillLevel?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  trainedSkillLevel?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  skillPointsInSkill?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
 };
 
 export type SkillGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['SkillGroup'] = ResolversParentTypes['SkillGroup']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  skills?: Resolver<Maybe<Array<ResolversTypes['Skill']>>, ParentType, ContextType>,
+  skills?: Resolver<Array<ResolversTypes['Skill']>, ParentType, ContextType>,
   totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  trainedSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
 };
 
 export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Time'], any> {
