@@ -208,6 +208,9 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
         id: `${skill.typeID}`,
         name: skill.typeName,
         multiplier: multiplierMap[skill.typeID],
+        trainedSkillLevel: skill.trainedSkillLevel,
+        activeSkillLevel: skill.activeSkillLevel,
+        skillPointsInSkill: skill.skillPointsInSkill,
       }));
     },
     totalSp: async ({ id }, args, { dataSources }) => {
