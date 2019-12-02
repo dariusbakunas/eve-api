@@ -85,14 +85,34 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
+        <li  title="MarketOrderOrderBy">
+            <a href="marketorderorderby.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                MarketOrderOrderBy
+            </a>
+        </li>
         <li  title="Order">
             <a href="order.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Order
             </a>
         </li>
+        <li  title="OrderState">
+            <a href="orderstate.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                OrderState
+            </a>
+        </li>
         <li  title="OrderType">
             <a href="ordertype.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 OrderType
+            </a>
+        </li>
+        <li  title="ProcessingCategory">
+            <a href="processingcategory.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ProcessingCategory
+            </a>
+        </li>
+        <li  title="ProcessingStatus">
+            <a href="processingstatus.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ProcessingStatus
             </a>
         </li>
         <li  title="UserStatus">
@@ -165,9 +185,34 @@
                 Location
             </a>
         </li>
+        <li  title="MarketOrder">
+            <a href="marketorder.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                MarketOrder
+            </a>
+        </li>
+        <li  title="MarketOrders">
+            <a href="marketorders.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                MarketOrders
+            </a>
+        </li>
+        <li  title="ProcessingLogEntry">
+            <a href="processinglogentry.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ProcessingLogEntry
+            </a>
+        </li>
         <li  title="Scope">
             <a href="scope.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 Scope
+            </a>
+        </li>
+        <li  title="Skill">
+            <a href="skill.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                Skill
+            </a>
+        </li>
+        <li  title="SkillGroup">
+            <a href="skillgroup.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                SkillGroup
             </a>
         </li>
         <li  title="User">
@@ -220,9 +265,29 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Input Objects</h4>
     <ul>
+        <li  title="MarketOrderFilter">
+            <a href="marketorderfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                MarketOrderFilter
+            </a>
+        </li>
+        <li  title="MarketOrderOrderByInput">
+            <a href="marketorderorderbyinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                MarketOrderOrderByInput
+            </a>
+        </li>
+        <li  title="OrderStateFilter">
+            <a href="orderstatefilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                OrderStateFilter
+            </a>
+        </li>
         <li  title="PageInput">
             <a href="pageinput.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 PageInput
+            </a>
+        </li>
+        <li  title="ProcessingLogFilter">
+            <a href="processinglogfilter.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
+                ProcessingLogFilter
             </a>
         </li>
         <li  title="RegistrationInput">
@@ -298,7 +363,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">JournalEntry</span> {</li><li></li><li><span class="tab"><span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>! </span></li><li></li><li><span class="tab"><span class="meta">amount</span>: <a class="support type" href="float.doc.html">Float</a>! </span></li><li></li><li><span class="tab"><span class="meta">balance</span>: <a class="support type" href="float.doc.html">Float</a>! </span></li><li></li><li><span class="tab"><span class="meta">character</span>: <a class="support type" href="character.doc.html">Character</a> </span></li><li></li><li><span class="tab"><span class="meta">date</span>: <a class="support type" href="datetime.doc.html">DateTime</a>! </span></li><li></li><li><span class="tab"><span class="meta">description</span>: <a class="support type" href="string.doc.html">String</a> </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">JournalEntry</span> {</li><li></li><li><span class="tab"><span class="meta">id</span>: <a class="support type" href="id.doc.html">ID</a>! </span></li><li></li><li><span class="tab"><span class="meta">amount</span>: <a class="support type" href="float.doc.html">Float</a>! </span></li><li></li><li><span class="tab"><span class="meta">balance</span>: <a class="support type" href="float.doc.html">Float</a>! </span></li><li></li><li><span class="tab"><span class="meta">character</span>: <a class="support type" href="character.doc.html">Character</a>! </span></li><li></li><li><span class="tab"><span class="meta">date</span>: <a class="support type" href="datetime.doc.html">DateTime</a>! </span></li><li></li><li><span class="tab"><span class="meta">description</span>: <a class="support type" href="string.doc.html">String</a> </span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link type="text/css" rel="stylesheet" href="./styles/graphdoc.css" />
-    <title>__Schema</title>
+    <title>MarketOrderOrderBy</title>
     <link href="https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700" rel="stylesheet"><link type="text/css" rel="stylesheet" href="./assets/code.css" /><link type="text/css" rel="stylesheet" href="./assets/require-by.css" />
 </head>
 <body class="slds-scrollable--y">
@@ -85,7 +85,7 @@
 <div class="slds-grid slds-grid--vertical slds-navigation-list--vertical">
     <h4 class="slds-text-title--caps slds-p-around--medium">Enums</h4>
     <ul>
-        <li  title="MarketOrderOrderBy">
+        <li class="slds-is-active" title="MarketOrderOrderBy">
             <a href="marketorderorderby.doc.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 MarketOrderOrderBy
             </a>
@@ -250,7 +250,7 @@
                 __InputValue
             </a>
         </li>
-        <li class="slds-is-active" title="__Schema">
+        <li  title="__Schema">
             <a href="schema.spec.html" class="slds-navigation-list--vertical__action slds-text-link--reset slds-truncate">
                 __Schema
             </a>
@@ -350,10 +350,9 @@
         </div>
     </div>
     <div class="container">
-        <p class="slds-text-title--caps slds-text-color--weak">OBJECT</p>
-        <h1 class="slds-text-heading--large">__Schema</h1>
-        <div class="slds-text-body--regular"><p>A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.</p>
-</div>
+        <p class="slds-text-title--caps slds-text-color--weak">ENUM</p>
+        <h1 class="slds-text-heading--large">MarketOrderOrderBy</h1>
+        <div class="slds-text-body--regular"></div>
     </div>
 </section>
 <section>
@@ -364,7 +363,7 @@
             </a>
             GraphQL Schema definition
         </h2>
-        <code class="highlight"><ul class="code" style="padding-left:42px"><li><span class="keyword operator ts">type</span> <span class="identifier">__Schema</span> {</li><li></li><li><span class="tab"><span class="comment line">#   A list of all types supported by this server.</span></span></li><li><span class="tab"><span class="meta">types</span>: [<a class="support type" href="type.spec.html">__Type</a>!]! </span></li><li></li><li><span class="tab"><span class="comment line">#   The type that query operations will be rooted at.</span></span></li><li><span class="tab"><span class="meta">queryType</span>: <a class="support type" href="type.spec.html">__Type</a>! </span></li><li></li><li><span class="tab"><span class="comment line">#   If this server supports mutation, the type that mutation operations will be </span></span></li><li><span class="tab"><span class="comment line">#   rooted at.</span></span></li><li><span class="tab"><span class="meta">mutationType</span>: <a class="support type" href="type.spec.html">__Type</a> </span></li><li></li><li><span class="tab"><span class="comment line">#   If this server support subscription, the type that subscription operations will </span></span></li><li><span class="tab"><span class="comment line">#   be rooted at.</span></span></li><li><span class="tab"><span class="meta">subscriptionType</span>: <a class="support type" href="type.spec.html">__Type</a> </span></li><li></li><li><span class="tab"><span class="comment line">#   A list of all directives supported by this server.</span></span></li><li><span class="tab"><span class="meta">directives</span>: [<a class="support type" href="directive.spec.html">__Directive</a>!]! </span></li><li>}</li></ul></code>
+        <code class="highlight"><ul class="code" style="padding-left:28px"><li><span class="keyword operator ts">enum</span> <span class="identifier">MarketOrderOrderBy</span> {</li><li><span class="tab"></span></li><li><span class="tab"><span class="meta">issued</span></span></li><li>}</li></ul></code>
     </div>
 </section>
 <section>
@@ -375,7 +374,7 @@
             </a>
             Require by
         </h2>
-        <div class="require-by anyone">This element is not required by anyone</div>
+        <ul class="require-by"><li><a href="marketorderorderbyinput.doc.html" title="MarketOrderOrderByInput - ">MarketOrderOrderByInput<em></em></a><li></ul>
     </div>
 </section>
 <footer>
