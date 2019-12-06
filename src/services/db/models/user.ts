@@ -2,6 +2,7 @@ import { Model, RelationMappings } from 'objection';
 import { Character } from './character';
 import { Maybe } from '../../../types';
 import BaseModel from './base';
+import { Warehouse } from './warehouse';
 
 export enum UserStatus {
   Active = 'ACTIVE',
@@ -27,6 +28,14 @@ export class User extends BaseModel {
       join: {
         from: 'users.id',
         to: 'characters.ownerId',
+      },
+    },
+    warehouses: {
+      relation: Model.HasManyRelation,
+      modelClass: Warehouse,
+      join: {
+        from: 'users.id',
+        to: 'warehouses.ownerId',
       },
     },
   };

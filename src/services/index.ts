@@ -21,6 +21,7 @@ import { Alliance } from './db/models/alliance';
 import { CharacterSkill } from './db/models/characterSkill';
 import { InvGroup } from './db/models/invGroup';
 import { SkillMultiplier } from './db/models/skillMultiplier';
+import { Warehouse } from './db/models/warehouse';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -46,6 +47,7 @@ export interface IDataSources {
     Station: typeof Station;
     CitadelCacheItem: typeof CitadelCacheItem;
     WalletTransaction: typeof WalletTransaction;
+    Warehouse: typeof Warehouse;
   };
   loaders: Loaders;
   esiAuth: EsiAuth;

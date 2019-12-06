@@ -22,6 +22,7 @@ import { Alliance } from './models/alliance';
 import { CharacterSkill } from './models/characterSkill';
 import { InvGroup } from './models/invGroup';
 import { SkillMultiplier } from './models/skillMultiplier';
+import { Warehouse } from './models/warehouse';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
@@ -46,6 +47,7 @@ const db: IDataSources['db'] = {
   Station,
   CitadelCacheItem,
   WalletTransaction,
+  Warehouse,
 };
 
 export default db;

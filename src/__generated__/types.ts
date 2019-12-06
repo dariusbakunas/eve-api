@@ -147,6 +147,9 @@ export type Mutation = {
   updateCharacter: Character,
   removeCharacter: Scalars['ID'],
   register: User,
+  addWarehouse: Warehouse,
+  removeWarehouse: Scalars['ID'],
+  updateWarehouse: Warehouse,
 };
 
 
@@ -168,6 +171,22 @@ export type MutationRemoveCharacterArgs = {
 
 export type MutationRegisterArgs = {
   input: RegistrationInput
+};
+
+
+export type MutationAddWarehouseArgs = {
+  name: Scalars['String']
+};
+
+
+export type MutationRemoveWarehouseArgs = {
+  id: Scalars['ID']
+};
+
+
+export type MutationUpdateWarehouseArgs = {
+  id: Scalars['ID'],
+  name: Scalars['String']
 };
 
 export enum Order {
@@ -244,6 +263,7 @@ export type Query = {
   marketOrders: MarketOrders,
   walletJournal: JournalEntries,
   walletTransactions: WalletTransactions,
+  warehouses?: Maybe<Array<Warehouse>>,
 };
 
 
@@ -312,6 +332,7 @@ export type SkillGroup = {
   name: Scalars['String'],
   skills: Array<Skill>,
   totalSp?: Maybe<Scalars['Int']>,
+  totalLevels?: Maybe<Scalars['Int']>,
   trainedSp?: Maybe<Scalars['Int']>,
 };
 
@@ -388,6 +409,12 @@ export type WalletTransactions = {
    __typename?: 'WalletTransactions',
   total: Scalars['Int'],
   transactions: Array<WalletTransaction>,
+};
+
+export type Warehouse = {
+   __typename?: 'Warehouse',
+  id: Scalars['ID'],
+  name: Scalars['String'],
 };
 
 
@@ -503,6 +530,7 @@ export type ResolversTypes = {
   WalletTransactions: ResolverTypeWrapper<Partial<WalletTransactions>>,
   WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>,
   Client: ResolverTypeWrapper<Partial<Client>>,
+  Warehouse: ResolverTypeWrapper<Partial<Warehouse>>,
   Mutation: ResolverTypeWrapper<{}>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
   Date: ResolverTypeWrapper<Partial<Scalars['Date']>>,
@@ -553,6 +581,7 @@ export type ResolversParentTypes = {
   WalletTransactions: Partial<WalletTransactions>,
   WalletTransaction: Partial<WalletTransaction>,
   Client: Partial<Client>,
+  Warehouse: Partial<Warehouse>,
   Mutation: {},
   RegistrationInput: Partial<RegistrationInput>,
   Date: Partial<Scalars['Date']>,
@@ -655,6 +684,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>,
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
   register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
+  addWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationAddWarehouseArgs, 'name'>>,
+  removeWarehouse?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveWarehouseArgs, 'id'>>,
+  updateWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationUpdateWarehouseArgs, 'id' | 'name'>>,
 };
 
 export type ProcessingLogEntryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProcessingLogEntry'] = ResolversParentTypes['ProcessingLogEntry']> = {
@@ -676,6 +708,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   marketOrders?: Resolver<ResolversTypes['MarketOrders'], ParentType, ContextType, QueryMarketOrdersArgs>,
   walletJournal?: Resolver<ResolversTypes['JournalEntries'], ParentType, ContextType, QueryWalletJournalArgs>,
   walletTransactions?: Resolver<ResolversTypes['WalletTransactions'], ParentType, ContextType, QueryWalletTransactionsArgs>,
+  warehouses?: Resolver<Maybe<Array<ResolversTypes['Warehouse']>>, ParentType, ContextType>,
 };
 
 export type ScopeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Scope'] = ResolversParentTypes['Scope']> = {
@@ -697,6 +730,7 @@ export type SkillGroupResolvers<ContextType = any, ParentType extends ResolversP
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
   skills?: Resolver<Array<ResolversTypes['Skill']>, ParentType, ContextType>,
   totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  totalLevels?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
   trainedSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
 };
 
@@ -731,6 +765,11 @@ export type WalletTransactionsResolvers<ContextType = any, ParentType extends Re
   transactions?: Resolver<Array<ResolversTypes['WalletTransaction']>, ParentType, ContextType>,
 };
 
+export type WarehouseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Warehouse'] = ResolversParentTypes['Warehouse']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
 export type Resolvers<ContextType = any> = {
   Alliance?: AllianceResolvers<ContextType>,
   Character?: CharacterResolvers<ContextType>,
@@ -754,6 +793,7 @@ export type Resolvers<ContextType = any> = {
   User?: UserResolvers<ContextType>,
   WalletTransaction?: WalletTransactionResolvers<ContextType>,
   WalletTransactions?: WalletTransactionsResolvers<ContextType>,
+  Warehouse?: WarehouseResolvers<ContextType>,
 };
 
 

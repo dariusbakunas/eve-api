@@ -39,6 +39,7 @@ const shieldMiddleware = shield(
       processingLogs: isActiveUser,
       walletJournal: isActiveUser,
       walletTransactions: isActiveUser,
+      warehouses: isActiveUser,
     },
     Mutation: {
       '*': deny,

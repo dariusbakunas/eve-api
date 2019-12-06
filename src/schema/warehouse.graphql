@@ -1,0 +1,14 @@
+type Warehouse {
+  id: ID!
+  name: String!
+}
+
+extend type Query {
+  warehouses: [Warehouse!]
+}
+
+extend type Mutation {
+  addWarehouse(name: String!): Warehouse!
+  removeWarehouse(id: ID!): ID!
+  updateWarehouse(id: ID!, name: String!): Warehouse!
+}

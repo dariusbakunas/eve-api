@@ -2,6 +2,7 @@ import Mock = jest.Mock;
 import FunctionPropertyNames = jest.FunctionPropertyNames;
 import { Character } from '../services/db/models/character';
 import { User } from '../services/db/models/user';
+import { Warehouse } from '../services/db/models/warehouse';
 
 export class QueryMock {
   public deleteByIdFn: Mock;
@@ -53,6 +54,7 @@ export const getTestContext = (userId: number) => {
       db: {
         Character,
         User,
+        Warehouse,
       },
       esiAuth: {
         getCharacterTokens: jest.fn().mockReturnValue({
