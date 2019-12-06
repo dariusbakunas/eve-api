@@ -50,6 +50,7 @@ interface ICharacterResolvers<Context> {
   SkillGroup: {
     skills: Resolver<Maybe<Array<ResolversTypes['Skill']>>, SkillGroupWithCharacterId, Context>;
     totalSp: Resolver<Maybe<ResolversTypes['Int']>, SkillGroupWithCharacterId, Context>;
+    totalLevels: Resolver<Maybe<ResolversTypes['Int']>, SkillGroupWithCharacterId, Context>;
     trainedSp: Resolver<Maybe<ResolversTypes['Int']>, SkillGroupWithCharacterId, Context>;
   };
 }
@@ -216,6 +217,14 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
         activeSkillLevel: skill.activeSkillLevel,
         skillPointsInSkill: skill.skillPointsInSkill,
       }));
+    },
+    totalLevels: async ({ id }, args, { dataSources }) => {
+      const skills = await dataSources.db.InventoryItem.query()
+        .select('typeID')
+        .where('groupID', id)
+        .andWhere('published', true)
+        .as('skills');
+      return skills.length * 5;
     },
     totalSp: async ({ id }, args, { dataSources }) => {
       const skillSubquery = dataSources.db.InventoryItem.query()
