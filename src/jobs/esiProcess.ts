@@ -1,20 +1,20 @@
-import EsiAPI from '../services/esi/api';
-import db from '../services/db';
 import { Character } from '../services/db/models/character';
+import { cleanup } from './cleanup';
 import { getAccessToken } from '../resolvers/common';
+import { InMemoryLRUCache } from 'apollo-server-caching';
+import { processAlliances } from './processAlliances';
+import { processBookmarks } from './processBookmarks';
+import { processCorporations } from './processCorporations';
+import { processJournalEntries } from './processJournalEntries';
+import { processMarketOrders } from './processMarketOrders';
+import { processSkills } from './processSkills';
+import { processWalletTransactions } from './processWalletTransactions';
+import { updateNameCache } from './updateNameCache';
 import Crypt from '../services/crypt';
+import db from '../services/db';
+import EsiAPI from '../services/esi/api';
 import EsiAuth from '../services/esi/auth';
 import logger from '../utils/logger';
-import { InMemoryLRUCache } from 'apollo-server-caching';
-import { processWalletTransactions } from './processWalletTransactions';
-import { processJournalEntries } from './processJournalEntries';
-import { updateNameCache } from './updateNameCache';
-import { processBookmarks } from './processBookmarks';
-import { processMarketOrders } from './processMarketOrders';
-import { cleanup } from './cleanup';
-import { processCorporations } from './processCorporations';
-import { processAlliances } from './processAlliances';
-import { processSkills } from './processSkills';
 
 const initDataSources = () => {
   const dataSources = {

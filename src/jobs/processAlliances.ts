@@ -1,8 +1,8 @@
-import logger from '../utils/logger';
-import { IDataSources } from '../services';
-import moment from 'moment';
-import { PartialUpdate } from 'objection';
 import { Alliance } from '../services/db/models/alliance';
+import { IDataSources } from '../services';
+import { PartialUpdate } from 'objection';
+import logger from '../utils/logger';
+import moment from 'moment';
 
 export const processAlliances = async (db: IDataSources['db'], esiApi: IDataSources['esiApi']) => {
   logger.info('Updating corporations');

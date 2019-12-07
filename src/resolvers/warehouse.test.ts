@@ -1,10 +1,10 @@
-import { loadSchema } from '../schema/loadSchema';
-import { graphql, GraphQLError, GraphQLSchema } from 'graphql';
-import { makeExecutableSchema } from 'graphql-tools';
-import { IResolverContext } from '../types';
-import resolvers from './index';
 import { getTestContext, QueryMock } from '../utils/testUtils';
+import { graphql, GraphQLError, GraphQLSchema } from 'graphql';
+import { IResolverContext } from '../types';
+import { loadSchema } from '../schema/loadSchema';
+import { makeExecutableSchema } from 'graphql-tools';
 import { Warehouse } from '../services/db/models/warehouse';
+import resolvers from './index';
 
 const EVE_CLIENT_ID = 'TEST_CLIENT_ID';
 const EVE_CLIENT_SECRET = 'TEST_CLIENT_SECRET';

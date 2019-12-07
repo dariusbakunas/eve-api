@@ -1,8 +1,8 @@
 import { Character } from '../services/db/models/character';
-import { IDataSources } from '../services';
-import logger from '../utils/logger';
-import { PartialUpdate, transaction } from 'objection';
 import { CharacterSkill } from '../services/db/models/characterSkill';
+import { IDataSources } from '../services';
+import { PartialUpdate, transaction } from 'objection';
+import logger from '../utils/logger';
 
 export const processSkills = async (character: Character, token: string, db: IDataSources['db'], esiApi: IDataSources['esiApi']) => {
   logger.info(`Getting skills for character: ${character.name}`);

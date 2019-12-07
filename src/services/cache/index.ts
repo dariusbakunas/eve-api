@@ -1,6 +1,6 @@
-import Redis from 'ioredis';
-import logger from '../../utils/logger';
 import * as IORedis from 'ioredis';
+import logger from '../../utils/logger';
+import Redis from 'ioredis';
 
 class Cache {
   private client: IORedis.Redis;

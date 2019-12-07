@@ -1,7 +1,7 @@
 import { IDataSources } from '../services';
-import logger from '../utils/logger';
-import { raw } from 'objection';
 import { JoinClause } from 'knex';
+import { raw } from 'objection';
+import logger from '../utils/logger';
 
 export const cleanup = async (db: IDataSources['db']) => {
   logger.info('Starting cleanup job');

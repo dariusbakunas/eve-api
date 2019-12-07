@@ -1,7 +1,7 @@
-import property from 'lodash.property';
 import { Alliance, Maybe, Resolver, ResolversTypes } from '../__generated__/types';
-import { IResolverContext } from '../types';
 import { Corporation } from '../services/db/models/corporation';
+import { IResolverContext } from '../types';
+import property from 'lodash.property';
 
 //TODO: add esiApi type definitions
 interface IResolvers<Context> {

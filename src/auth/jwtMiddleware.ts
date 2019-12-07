@@ -1,5 +1,5 @@
-import jwt from 'express-jwt';
 import jwks from 'jwks-rsa';
+import jwt from 'express-jwt';
 
 const jwtMiddleware = jwt({
   secret: jwks.expressJwtSecret({

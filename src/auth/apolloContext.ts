@@ -1,12 +1,12 @@
+import { ApolloContext, ContextUser } from '../types';
 import { ContextFunction } from 'apollo-server-core';
 import { ExpressContext } from 'apollo-server-express/dist/ApolloServer';
-import { ApolloContext, ContextUser } from '../types';
 import Cache from 'node-cache';
-import request from '../utils/request';
 import db from '../services/db/index';
+import request from '../utils/request';
 //import * as Sentry from '@sentry/node';
-import mockUser from './userMock';
 import logger from '../utils/logger';
+import mockUser from './userMock';
 
 const cache = new Cache({
   stdTTL: 100,

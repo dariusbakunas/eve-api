@@ -1,6 +1,6 @@
-import { AuthenticationError, UserInputError } from 'apollo-server-express';
 import { Resolvers } from '../__generated__/types';
 import { User, UserStatus } from '../services/db/models/user';
+import { UserInputError } from 'apollo-server-express';
 
 const resolvers: Resolvers = {
   Query: {

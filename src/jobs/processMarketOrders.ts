@@ -1,8 +1,8 @@
 import { Character } from '../services/db/models/character';
 import { IDataSources } from '../services';
-import logger from '../utils/logger';
 import { MarketOrder } from '../services/db/models/marketOrder';
 import { PartialUpdate, transaction } from 'objection';
+import logger from '../utils/logger';
 import moment = require('moment');
 
 export const processMarketOrders = async (character: Character, token: string, db: IDataSources['db'], esiApi: IDataSources['esiApi']) => {

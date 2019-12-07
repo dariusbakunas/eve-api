@@ -1,8 +1,8 @@
 import { Character } from '../services/db/models/character';
 import { IDataSources } from '../services';
+import { IEsiBookmark } from '../services/esi/esiTypes';
 import logger from '../utils/logger';
 import moment from 'moment';
-import { IEsiBookmark } from '../services/esi/esiTypes';
 
 const CITADEL_GROUP_ID = 1657;
 

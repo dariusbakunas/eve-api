@@ -1,8 +1,8 @@
-import logger from '../utils/logger';
 import { Character } from '../services/db/models/character';
-import { transaction } from 'objection';
-import { JournalEntry } from '../services/db/models/journalEntry';
 import { IDataSources } from '../services';
+import { JournalEntry } from '../services/db/models/journalEntry';
+import { transaction } from 'objection';
+import logger from '../utils/logger';
 import moment from 'moment';
 
 export const processJournalEntries = async (character: Character, token: string, db: IDataSources['db'], esiApi: IDataSources['esiApi']) => {

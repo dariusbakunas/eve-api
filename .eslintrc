@@ -13,8 +13,13 @@
       "jsx": true // Allows for the parsing of JSX
     }
   },
-  "plugins": ["@typescript-eslint/eslint-plugin"],
+  "plugins": ["@typescript-eslint/eslint-plugin", "sort-imports-es6-autofix"],
   "rules": {
+    "sort-imports-es6-autofix/sort-imports-es6": [2, {
+      "ignoreCase": true,
+      "ignoreMemberSort": false,
+      "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+    }],
     "@typescript-eslint/no-non-null-assertion": 0,
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/interface-name-prefix": 0,

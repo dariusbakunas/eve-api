@@ -1,3 +1,4 @@
+import { IResolverContext } from '../types';
 import {
   Maybe,
   MutationAddWarehouseArgs,
@@ -8,7 +9,6 @@ import {
   ResolversParentTypes,
   ResolversTypes,
 } from '../__generated__/types';
-import { IResolverContext } from '../types';
 
 interface IResolvers<Context> {
   Query: {

@@ -1,5 +1,5 @@
-import logger from '../utils/logger';
 import { IDataSources } from '../services';
+import logger from '../utils/logger';
 
 export const updateNameCache = async (db: IDataSources['db'], esiApi: IDataSources['esiApi']) => {
   logger.info(`Updating item name cache`);

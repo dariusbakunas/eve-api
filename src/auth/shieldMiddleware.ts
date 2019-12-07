@@ -1,7 +1,7 @@
-import { rule, shield, and, or } from 'graphql-shield';
+import { and, rule, shield } from 'graphql-shield';
 import { ApolloContext } from '../types';
-import { MutationRegisterArgs } from '../__generated__/types';
 import { IDataSources } from '../services';
+import { MutationRegisterArgs } from '../__generated__/types';
 
 const allow = rule()(() => true);
 const deny = rule()(() => false);

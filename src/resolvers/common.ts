@@ -1,8 +1,8 @@
-import logger from '../utils/logger';
-import { PartialUpdate } from 'objection';
 import { Character } from '../services/db/models/character';
 import { IDataSources } from '../services';
 import { Loaders } from '../services/db/loaders';
+import { PartialUpdate } from 'objection';
+import logger from '../utils/logger';
 
 export const getAccessToken = async (
   characterId: number,

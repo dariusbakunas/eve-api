@@ -1,9 +1,9 @@
-import { Maybe, QueryProcessingLogsArgs, Resolver, ResolversTypes } from '../__generated__/types';
-import { JobLogEntry } from '../services/db/models/jobLogEntry';
-import { IResolverContext } from '../types';
-import { UserInputError } from 'apollo-server-errors';
-import { getCharacter } from './common';
 import { Character } from '../services/db/models/character';
+import { getCharacter } from './common';
+import { IResolverContext } from '../types';
+import { JobLogEntry } from '../services/db/models/jobLogEntry';
+import { Maybe, QueryProcessingLogsArgs, Resolver, ResolversTypes } from '../__generated__/types';
+import { UserInputError } from 'apollo-server-errors';
 
 interface IProcessingResolvers<Context> {
   Query: {

@@ -1,11 +1,11 @@
-import { makeExecutableSchema } from 'graphql-tools';
-import { graphql, GraphQLError, GraphQLSchema } from 'graphql';
-import resolvers from './index';
-import { IResolverContext } from '../types';
-import { loadSchema } from '../schema/loadSchema';
 import { Character } from '../services/db/models/character';
 import { getTestContext, QueryMock } from '../utils/testUtils';
+import { graphql, GraphQLError, GraphQLSchema } from 'graphql';
+import { IResolverContext } from '../types';
+import { loadSchema } from '../schema/loadSchema';
+import { makeExecutableSchema } from 'graphql-tools';
 import { User } from '../services/db/models/user';
+import resolvers from './index';
 import moment = require('moment');
 
 const EVE_CLIENT_ID = 'TEST_CLIENT_ID';

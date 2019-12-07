@@ -1,3 +1,4 @@
+import { Character } from '../services/db/models/character';
 import {
   CharacterSkillGroupArgs,
   MutationAddCharacterArgs,
@@ -9,17 +10,15 @@ import {
   ResolversTypes,
   SkillGroup,
 } from '../__generated__/types';
+import { Corporation } from '../services/db/models/corporation';
+import { InventoryItem } from '../services/db/models/InventoryItem';
+import { InvGroup } from '../services/db/models/invGroup';
 import { IResolverContext, Maybe } from '../types';
-import { Character } from '../services/db/models/character';
+import { JoinClause } from 'knex';
+import { raw } from 'objection';
+import { SkillMultiplier } from '../services/db/models/skillMultiplier';
 import { UserInputError } from 'apollo-server-errors';
 import moment from 'moment';
-import { Corporation } from '../services/db/models/corporation';
-import { InvGroup } from '../services/db/models/invGroup';
-import { InventoryItem } from '../services/db/models/InventoryItem';
-import { SkillMultiplier } from '../services/db/models/skillMultiplier';
-import { JoinClause } from 'knex';
-import { QueryBuilder, raw } from 'objection';
-import { CharacterSkill } from '../services/db/models/characterSkill';
 
 interface SkillGroupWithCharacterId extends SkillGroup {
   characterId: number;
