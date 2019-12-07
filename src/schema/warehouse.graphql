@@ -4,7 +4,7 @@ type Warehouse {
 }
 
 extend type Query {
-  warehouses: [Warehouse!]
+  warehouses: [Warehouse!]!
 }
 
 extend type Mutation {
