@@ -1,18 +1,18 @@
-import express, { Request, Response } from 'express';
+import * as Sentry from '@sentry/node';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import { applyMiddleware } from 'graphql-middleware';
-import { RedisCache } from 'apollo-server-cache-redis';
-import { loadSchema } from './schema/loadSchema';
-import resolvers from './resolvers';
-import logger from './utils/logger';
-import jwtMiddleware from './auth/jwtMiddleware';
-import apolloContext from './auth/apolloContext';
-import shieldMiddleware from './auth/shieldMiddleware';
-import * as Sentry from '@sentry/node';
-import pJson from '../package.json';
-import morgan from 'morgan';
-import helmet from 'helmet';
 import { dataSources } from './services';
+import { loadSchema } from './schema/loadSchema';
+import { RedisCache } from 'apollo-server-cache-redis';
+import apolloContext from './auth/apolloContext';
+import express, { Request, Response } from 'express';
+import helmet from 'helmet';
+import jwtMiddleware from './auth/jwtMiddleware';
+import logger from './utils/logger';
+import morgan from 'morgan';
+import pJson from '../package.json';
+import resolvers from './resolvers';
+import shieldMiddleware from './auth/shieldMiddleware';
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
@@ -32,15 +32,7 @@ export interface IUserProfile {
   email_verified: boolean;
 }
 
-const requiredEnv = [
-  'AUTH0_AUDIENCE',
-  'AUTH0_DOMAIN',
-  'EVE_LOGIN_URL',
-  'EVE_ESI_URL',
-  'TOKEN_SECRET',
-  'EVE_CLIENT_ID',
-  'EVE_CLIENT_SECRET',
-];
+const requiredEnv = ['AUTH0_AUDIENCE', 'AUTH0_DOMAIN', 'EVE_LOGIN_URL', 'EVE_ESI_URL', 'TOKEN_SECRET', 'EVE_CLIENT_ID', 'EVE_CLIENT_SECRET'];
 
 requiredEnv.forEach(env => {
   if (!process.env[env]) {
@@ -82,10 +74,7 @@ app.use(
   })
 );
 
-if (
-  process.env.NODE_ENV === 'production' ||
-  (process.env.NODE_ENV === 'development' && process.env.USE_TEST_USER !== 'true')
-) {
+if (process.env.NODE_ENV === 'production' || (process.env.NODE_ENV === 'development' && process.env.USE_TEST_USER !== 'true')) {
   app.use('/graphql*', jwtMiddleware);
 } else {
   logger.warn('Token authentication is disabled!!!');
@@ -108,6 +97,15 @@ const server = new ApolloServer({
     password: process.env.REDIS_PASSWORD,
   }),
   dataSources,
+  formatError: err => {
+    // Don't give the specific errors to the client.
+    Sentry.captureException(err);
+    logger.error(err.message);
+
+    // Otherwise return the original error.  The error can also
+    // be manipulated in other ways, so long as it's returned.
+    return err;
+  },
   schema: applyMiddleware(schema, shieldMiddleware),
 });
 
