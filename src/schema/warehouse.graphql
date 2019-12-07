@@ -3,6 +3,13 @@ type Warehouse {
   name: String!
 }
 
+type WarehouseItem {
+  id: ID!
+  name: String!
+  quantity: Int!
+  unitCost: Float!
+}
+
 extend type Query {
   warehouses: [Warehouse!]!
 }

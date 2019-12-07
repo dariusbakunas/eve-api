@@ -1,28 +1,28 @@
-import { Model } from 'objection';
-import Knex from 'knex';
-import { Scope } from './models/scope';
-import { User } from './models/user';
+import { Alliance } from './models/alliance';
 import { Character } from './models/character';
-import { Invitation } from './models/invitation';
+import { CharacterSkill } from './models/characterSkill';
+import { CitadelCacheItem } from './models/citadelCacheItem';
+import { Corporation } from './models/corporation';
+import { IDataSources } from '../index';
 import { InventoryItem } from './models/InventoryItem';
+import { InvGroup } from './models/invGroup';
+import { Invitation } from './models/invitation';
+import { JobLogEntry } from './models/jobLogEntry';
+import { JournalEntry } from './models/journalEntry';
+import { MarketOrder } from './models/marketOrder';
+import { Model } from 'objection';
+import { NameCacheItem } from './models/nameCacheItem';
+import { Scope } from './models/scope';
+import { SkillMultiplier } from './models/skillMultiplier';
+import { Station } from './models/station';
+import { User } from './models/user';
+import { WalletTransaction } from './models/walletTransaction';
+import { Warehouse } from './models/warehouse';
+import { WarehouseItem } from './models/warehouseItem';
+import Knex from 'knex';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import config from '../../../knexfile';
-import { WalletTransaction } from './models/walletTransaction';
-
-import { JournalEntry } from './models/journalEntry';
-import { IDataSources } from '../index';
-import { Station } from './models/station';
-import { NameCacheItem } from './models/nameCacheItem';
-import { CitadelCacheItem } from './models/citadelCacheItem';
-import { MarketOrder } from './models/marketOrder';
-import { JobLogEntry } from './models/jobLogEntry';
-import { Corporation } from './models/corporation';
-import { Alliance } from './models/alliance';
-import { CharacterSkill } from './models/characterSkill';
-import { InvGroup } from './models/invGroup';
-import { SkillMultiplier } from './models/skillMultiplier';
-import { Warehouse } from './models/warehouse';
 
 const knex = Knex(config[process.env.NODE_ENV]);
 
@@ -48,6 +48,7 @@ const db: IDataSources['db'] = {
   CitadelCacheItem,
   WalletTransaction,
   Warehouse,
+  WarehouseItem,
 };
 
 export default db;

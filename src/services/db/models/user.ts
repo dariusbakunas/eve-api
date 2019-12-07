@@ -1,8 +1,8 @@
-import { Model, RelationMappings } from 'objection';
 import { Character } from './character';
 import { Maybe } from '../../../types';
-import BaseModel from './base';
+import { Model, RelationMappings } from 'objection';
 import { Warehouse } from './warehouse';
+import BaseModel from './base';
 
 export enum UserStatus {
   Active = 'ACTIVE',

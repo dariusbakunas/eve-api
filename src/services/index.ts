@@ -18,6 +18,7 @@ import { Station } from './db/models/station';
 import { User } from './db/models/user';
 import { WalletTransaction } from './db/models/walletTransaction';
 import { Warehouse } from './db/models/warehouse';
+import { WarehouseItem } from './db/models/warehouseItem';
 import Crypt from './crypt';
 import db from './db';
 import EsiAPI from './esi/api';
@@ -48,6 +49,7 @@ export interface IDataSources {
     CitadelCacheItem: typeof CitadelCacheItem;
     WalletTransaction: typeof WalletTransaction;
     Warehouse: typeof Warehouse;
+    WarehouseItem: typeof WarehouseItem;
   };
   loaders: Loaders;
   esiAuth: EsiAuth;

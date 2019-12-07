@@ -1,6 +1,7 @@
-import BaseModel from './base';
 import { Model } from 'objection';
 import { User } from './user';
+import { WarehouseItem } from './warehouseItem';
+import BaseModel from './base';
 
 export class Warehouse extends BaseModel {
   static tableName = 'warehouses';
@@ -12,6 +13,14 @@ export class Warehouse extends BaseModel {
       join: {
         from: 'warehouses.ownerId',
         to: 'users.id',
+      },
+    },
+    items: {
+      relation: Model.HasManyRelation,
+      modelClass: WarehouseItem,
+      join: {
+        from: 'warehouses.id',
+        to: 'warehouseItems.warehouseId',
       },
     },
   };
