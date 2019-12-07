@@ -18,6 +18,18 @@ const isCharacterOwner = rule()(async (parent, { id }, { user, dataSources }: Ap
   return count === 1;
 });
 
+const isWarehouseOwner = rule()(async (parent, { id }, { user, dataSources }: ApolloContext & { dataSources: IDataSources }) => {
+  const result = await dataSources.db.Warehouse.query()
+    .where('id', '=', id)
+    .andWhere('ownerId', '=', user!.id)
+    .count('*')
+    .pluck('count(*)')
+    .first();
+
+  const count = (result as unknown) as number;
+  return count === 1;
+});
+
 const isActiveUser = rule({ cache: 'contextual' })((parent, args, { user }: ApolloContext) => !!user && user.status === 'ACTIVE');
 
 // current user email should match the one requested
@@ -44,6 +56,9 @@ const shieldMiddleware = shield(
     Mutation: {
       '*': deny,
       addCharacter: isActiveUser,
+      addWarehouse: isActiveUser,
+      removeWarehouse: and(isActiveUser, isWarehouseOwner),
+      updateWarehouse: and(isActiveUser, isWarehouseOwner),
       removeCharacter: and(isActiveUser, isCharacterOwner),
       updateCharacter: and(isActiveUser, isCharacterOwner),
       register: and(isGuest, canRegister),
