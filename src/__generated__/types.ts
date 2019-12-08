@@ -147,6 +147,7 @@ export type Mutation = {
   updateCharacter: Character,
   removeCharacter: Scalars['ID'],
   register: User,
+  addWarehouseItem: WarehouseItem,
   addWarehouse: Warehouse,
   removeWarehouse: Scalars['ID'],
   updateWarehouse: Warehouse,
@@ -174,6 +175,12 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationAddWarehouseItemArgs = {
+  id: Scalars['ID'],
+  input: NewWarehouseItemInput
+};
+
+
 export type MutationAddWarehouseArgs = {
   name: Scalars['String']
 };
@@ -187,6 +194,12 @@ export type MutationRemoveWarehouseArgs = {
 export type MutationUpdateWarehouseArgs = {
   id: Scalars['ID'],
   name: Scalars['String']
+};
+
+export type NewWarehouseItemInput = {
+  id: Scalars['ID'],
+  quantity: Scalars['Int'],
+  unitCost: Scalars['Float'],
 };
 
 export enum Order {
@@ -263,7 +276,7 @@ export type Query = {
   marketOrders: MarketOrders,
   walletJournal: JournalEntries,
   walletTransactions: WalletTransactions,
-  warehouses?: Maybe<Array<Warehouse>>,
+  warehouses: Array<Warehouse>,
 };
 
 
@@ -415,6 +428,15 @@ export type Warehouse = {
    __typename?: 'Warehouse',
   id: Scalars['ID'],
   name: Scalars['String'],
+  items: Array<WarehouseItem>,
+};
+
+export type WarehouseItem = {
+   __typename?: 'WarehouseItem',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+  quantity: Scalars['Int'],
+  unitCost: Scalars['Float'],
 };
 
 
@@ -531,8 +553,10 @@ export type ResolversTypes = {
   WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>,
   Client: ResolverTypeWrapper<Partial<Client>>,
   Warehouse: ResolverTypeWrapper<Partial<Warehouse>>,
+  WarehouseItem: ResolverTypeWrapper<Partial<WarehouseItem>>,
   Mutation: ResolverTypeWrapper<{}>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
+  NewWarehouseItemInput: ResolverTypeWrapper<Partial<NewWarehouseItemInput>>,
   Date: ResolverTypeWrapper<Partial<Scalars['Date']>>,
   Time: ResolverTypeWrapper<Partial<Scalars['Time']>>,
 };
@@ -582,8 +606,10 @@ export type ResolversParentTypes = {
   WalletTransaction: Partial<WalletTransaction>,
   Client: Partial<Client>,
   Warehouse: Partial<Warehouse>,
+  WarehouseItem: Partial<WarehouseItem>,
   Mutation: {},
   RegistrationInput: Partial<RegistrationInput>,
+  NewWarehouseItemInput: Partial<NewWarehouseItemInput>,
   Date: Partial<Scalars['Date']>,
   Time: Partial<Scalars['Time']>,
 };
@@ -684,6 +710,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>,
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
   register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
+  addWarehouseItem?: Resolver<ResolversTypes['WarehouseItem'], ParentType, ContextType, RequireFields<MutationAddWarehouseItemArgs, 'id' | 'input'>>,
   addWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationAddWarehouseArgs, 'name'>>,
   removeWarehouse?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveWarehouseArgs, 'id'>>,
   updateWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationUpdateWarehouseArgs, 'id' | 'name'>>,
@@ -708,7 +735,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   marketOrders?: Resolver<ResolversTypes['MarketOrders'], ParentType, ContextType, QueryMarketOrdersArgs>,
   walletJournal?: Resolver<ResolversTypes['JournalEntries'], ParentType, ContextType, QueryWalletJournalArgs>,
   walletTransactions?: Resolver<ResolversTypes['WalletTransactions'], ParentType, ContextType, QueryWalletTransactionsArgs>,
-  warehouses?: Resolver<Maybe<Array<ResolversTypes['Warehouse']>>, ParentType, ContextType>,
+  warehouses?: Resolver<Array<ResolversTypes['Warehouse']>, ParentType, ContextType>,
 };
 
 export type ScopeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Scope'] = ResolversParentTypes['Scope']> = {
@@ -768,6 +795,14 @@ export type WalletTransactionsResolvers<ContextType = any, ParentType extends Re
 export type WarehouseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Warehouse'] = ResolversParentTypes['Warehouse']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  items?: Resolver<Array<ResolversTypes['WarehouseItem']>, ParentType, ContextType>,
+};
+
+export type WarehouseItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['WarehouseItem'] = ResolversParentTypes['WarehouseItem']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  unitCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
 };
 
 export type Resolvers<ContextType = any> = {
@@ -794,6 +829,7 @@ export type Resolvers<ContextType = any> = {
   WalletTransaction?: WalletTransactionResolvers<ContextType>,
   WalletTransactions?: WalletTransactionsResolvers<ContextType>,
   Warehouse?: WarehouseResolvers<ContextType>,
+  WarehouseItem?: WarehouseItemResolvers<ContextType>,
 };
 
 

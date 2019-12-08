@@ -57,6 +57,7 @@ const shieldMiddleware = shield(
       '*': deny,
       addCharacter: isActiveUser,
       addWarehouse: isActiveUser,
+      addWarehouseItem: and(isActiveUser, isWarehouseOwner),
       removeWarehouse: and(isActiveUser, isWarehouseOwner),
       updateWarehouse: and(isActiveUser, isWarehouseOwner),
       removeCharacter: and(isActiveUser, isCharacterOwner),

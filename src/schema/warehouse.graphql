@@ -1,11 +1,18 @@
-type Warehouse {
-  id: ID!
-  name: String!
-}
-
 type WarehouseItem {
   id: ID!
   name: String!
+  quantity: Int!
+  unitCost: Float!
+}
+
+type Warehouse {
+  id: ID!
+  name: String!
+  items: [WarehouseItem!]!
+}
+
+input NewWarehouseItemInput {
+  id: ID!
   quantity: Int!
   unitCost: Float!
 }
@@ -15,6 +22,7 @@ extend type Query {
 }
 
 extend type Mutation {
+  addWarehouseItem(id: ID!, input: NewWarehouseItemInput!): WarehouseItem!
   addWarehouse(name: String!): Warehouse!
   removeWarehouse(id: ID!): ID!
   updateWarehouse(id: ID!, name: String!): Warehouse!

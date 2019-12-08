@@ -11,4 +11,6 @@ export class InventoryItem extends BaseModel {
   groupID!: number;
   description?: string;
   typeName?: string;
+  mass?: number;
+  marketGroupID?: number;
 }
