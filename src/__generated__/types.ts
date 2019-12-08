@@ -147,7 +147,8 @@ export type Mutation = {
   updateCharacter: Character,
   removeCharacter: Scalars['ID'],
   register: User,
-  addWarehouseItem: WarehouseItem,
+  addItemsToWarehouse: WarehouseItem,
+  removeItemsFromWarehouse?: Maybe<WarehouseItem>,
   addWarehouse: Warehouse,
   removeWarehouse: Scalars['ID'],
   updateWarehouse: Warehouse,
@@ -175,9 +176,16 @@ export type MutationRegisterArgs = {
 };
 
 
-export type MutationAddWarehouseItemArgs = {
+export type MutationAddItemsToWarehouseArgs = {
   id: Scalars['ID'],
   input: NewWarehouseItemInput
+};
+
+
+export type MutationRemoveItemsFromWarehouseArgs = {
+  id: Scalars['ID'],
+  itemId: Scalars['ID'],
+  quantity: Scalars['Int']
 };
 
 
@@ -710,7 +718,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>,
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
   register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
-  addWarehouseItem?: Resolver<ResolversTypes['WarehouseItem'], ParentType, ContextType, RequireFields<MutationAddWarehouseItemArgs, 'id' | 'input'>>,
+  addItemsToWarehouse?: Resolver<ResolversTypes['WarehouseItem'], ParentType, ContextType, RequireFields<MutationAddItemsToWarehouseArgs, 'id' | 'input'>>,
+  removeItemsFromWarehouse?: Resolver<Maybe<ResolversTypes['WarehouseItem']>, ParentType, ContextType, RequireFields<MutationRemoveItemsFromWarehouseArgs, 'id' | 'itemId' | 'quantity'>>,
   addWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationAddWarehouseArgs, 'name'>>,
   removeWarehouse?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveWarehouseArgs, 'id'>>,
   updateWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationUpdateWarehouseArgs, 'id' | 'name'>>,

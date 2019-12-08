@@ -2,8 +2,9 @@ import { InventoryItem } from '../services/db/models/InventoryItem';
 import { IResolverContext } from '../types';
 import {
   Maybe,
+  MutationAddItemsToWarehouseArgs,
   MutationAddWarehouseArgs,
-  MutationAddWarehouseItemArgs,
+  MutationRemoveItemsFromWarehouseArgs,
   MutationRemoveWarehouseArgs,
   MutationUpdateWarehouseArgs,
   RequireFields,
@@ -13,6 +14,7 @@ import {
   WarehouseItem,
 } from '../__generated__/types';
 import { transaction } from 'objection';
+import { UserInputError } from 'apollo-server-express';
 import { Warehouse } from '../services/db/models/warehouse';
 import { WarehouseItem as WarehouseItemDB } from '../services/db/models/warehouseItem';
 
@@ -24,11 +26,17 @@ interface IResolvers<Context> {
   };
   Mutation: {
     addWarehouse: Resolver<ResolversTypes['Warehouse'], ResolversParentTypes['Mutation'], Context, RequireFields<MutationAddWarehouseArgs, 'name'>>;
-    addWarehouseItem: Resolver<
+    addItemsToWarehouse: Resolver<
       ResolversTypes['WarehouseItem'],
       ResolversParentTypes['Mutation'],
       Context,
-      RequireFields<MutationAddWarehouseItemArgs, 'id' | 'input'>
+      RequireFields<MutationAddItemsToWarehouseArgs, 'id' | 'input'>
+    >;
+    removeItemsFromWarehouse: Resolver<
+      Maybe<ResolversTypes['WarehouseItem']>,
+      ResolversParentTypes['Mutation'],
+      Context,
+      RequireFields<MutationRemoveItemsFromWarehouseArgs, 'id' | 'itemId' | 'quantity'>
     >;
     removeWarehouse: Resolver<ResolversTypes['ID'], ResolversParentTypes['Mutation'], Context, RequireFields<MutationRemoveWarehouseArgs, 'id'>>;
     updateWarehouse?: Resolver<
@@ -62,7 +70,7 @@ const resolverMap: IResolvers<IResolverContext> = {
         name: name,
       });
     },
-    addWarehouseItem: async (_, { id, input }, { dataSources: { db }, user: { id: userId } }) => {
+    addItemsToWarehouse: async (_, { id, input }, { dataSources: { db } }) => {
       const knex = WarehouseItemDB.knex();
 
       return transaction(knex, async trx => {
@@ -79,7 +87,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           const update: Partial<WarehouseItemDB> = {
             warehouseId: +id,
             typeId: +input.id,
-            quantity: existingItem.quantity + input.quantity,
+            quantity: newQuantity,
             unitPrice: newCost,
           };
 
@@ -108,6 +116,48 @@ const resolverMap: IResolvers<IResolverContext> = {
             quantity: item.quantity,
             unitCost: item.unitPrice,
           };
+        }
+      });
+    },
+    removeItemsFromWarehouse: async (_, { id, itemId, quantity }, { dataSources: { db } }) => {
+      const knex = WarehouseItemDB.knex();
+
+      return transaction(knex, async trx => {
+        const existingItem: WarehouseItemDB = await db.WarehouseItem.query(trx)
+          .where('typeId', itemId)
+          .andWhere('warehouseId', id)
+          .first();
+
+        if (!existingItem || existingItem.quantity < quantity) {
+          throw new UserInputError('Insufficient quantity remaining');
+        }
+
+        const remainingQuantity = existingItem.quantity - quantity;
+
+        if (remainingQuantity > 0) {
+          const update: Partial<WarehouseItemDB> = {
+            warehouseId: +id,
+            typeId: +itemId,
+            quantity: existingItem.quantity - quantity,
+          };
+
+          await db.WarehouseItem.query(trx)
+            .patch(update)
+            .where('typeId', itemId)
+            .andWhere('warehouseId', id);
+
+          return {
+            id: `${update.typeId}`,
+            quantity: update.quantity,
+            unitCost: existingItem.unitPrice,
+          };
+        } else {
+          await db.WarehouseItem.query(trx)
+            .delete()
+            .where('typeId', itemId)
+            .andWhere('warehouseId', id);
+
+          return null;
         }
       });
     },

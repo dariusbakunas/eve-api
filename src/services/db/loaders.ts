@@ -1,12 +1,11 @@
-import { IDataSources } from '../index';
-import DataLoader from 'dataloader';
-import { InventoryItem } from './models/InventoryItem';
-import logger from '../../utils/logger';
 import { Character } from './models/character';
+import { IDataSources } from '../index';
+import { InventoryItem } from './models/InventoryItem';
+import { InvGroup } from './models/invGroup';
 import { Maybe } from '../../types';
 import { Station } from './models/station';
-import { InvGroup } from './models/invGroup';
-import { SkillMultiplier } from './models/skillMultiplier';
+import DataLoader from 'dataloader';
+import logger from '../../utils/logger';
 
 export class Loaders {
   private db: IDataSources['db'];
