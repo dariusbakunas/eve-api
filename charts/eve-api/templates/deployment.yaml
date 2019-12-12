@@ -13,6 +13,7 @@ spec:
   template:
     metadata:
       labels:
+        app: "eve-api"
         app.kubernetes.io/name: {{ include "eve-api.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
