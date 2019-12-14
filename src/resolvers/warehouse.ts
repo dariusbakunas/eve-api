@@ -30,7 +30,7 @@ interface IResolvers<Context> {
   Mutation: {
     addWarehouse: Resolver<ResolversTypes['Warehouse'], ResolversParentTypes['Mutation'], Context, RequireFields<MutationAddWarehouseArgs, 'name'>>;
     addItemsToWarehouse: Resolver<
-      ResolversTypes['WarehouseItem'],
+      Array<ResolversTypes['WarehouseItem']>,
       ResolversParentTypes['Mutation'],
       Context,
       RequireFields<MutationAddItemsToWarehouseArgs, 'id' | 'input'>
@@ -87,51 +87,64 @@ const resolverMap: IResolvers<IResolverContext> = {
     },
     addItemsToWarehouse: async (_, { id, input }, { dataSources: { db } }) => {
       const knex = WarehouseItemDB.knex();
+      const newItemIds = input.map(item => item.id);
+
+      const result: Partial<WarehouseItem>[] = [];
 
       return transaction(knex, async trx => {
-        const existingItem: WarehouseItemDB = await db.WarehouseItem.query(trx)
-          .where('typeId', input.id)
-          .andWhere('warehouseId', id)
-          .first();
+        const existingItems: WarehouseItemDB[] = await db.WarehouseItem.query(trx)
+          .whereIn('typeId', newItemIds)
+          .andWhere('warehouseId', id);
 
-        if (existingItem) {
-          // update
-          const newQuantity = existingItem.quantity + input.quantity;
-          const newCost = (existingItem.quantity * existingItem.unitPrice + input.quantity * input.unitCost) / newQuantity;
+        const existingItemMap = existingItems.reduce<{ [key: string]: WarehouseItemDB }>((acc, item) => {
+          acc[item.typeId] = item;
+          return acc;
+        }, {});
 
-          const update: Partial<WarehouseItemDB> = {
-            warehouseId: +id,
-            typeId: +input.id,
-            quantity: newQuantity,
-            unitPrice: newCost,
-          };
+        for (let i = 0; i < input.length; i++) {
+          const inputItem = input[i];
+          const existingItem = existingItemMap[inputItem.id];
 
-          await db.WarehouseItem.query(trx)
-            .patch(update)
-            .where('typeId', input.id)
-            .andWhere('warehouseId', id);
+          if (existingItem) {
+            const newQuantity = existingItem.quantity + inputItem.quantity;
+            const newCost = (existingItem.quantity * existingItem.unitPrice + inputItem.quantity * inputItem.unitCost) / newQuantity;
 
-          return {
-            id: `${update.typeId}`,
-            quantity: update.quantity,
-            unitCost: update.unitPrice,
-          };
-        } else {
-          const newItem: Partial<WarehouseItemDB> = {
-            warehouseId: +id,
-            typeId: +input.id,
-            quantity: input.quantity,
-            unitPrice: input.unitCost,
-          };
+            const update: Partial<WarehouseItemDB> = {
+              warehouseId: +id,
+              typeId: +inputItem.id,
+              quantity: newQuantity,
+              unitPrice: newCost,
+            };
 
-          const item: WarehouseItemDB = await db.WarehouseItem.query(trx).insertAndFetch(newItem);
+            await db.WarehouseItem.query(trx)
+              .patch(update)
+              .where('typeId', inputItem.id)
+              .andWhere('warehouseId', id);
 
-          return {
-            id: `${item.typeId}`,
-            quantity: item.quantity,
-            unitCost: item.unitPrice,
-          };
+            result.push({
+              id: `${update.typeId}`,
+              quantity: update.quantity,
+              unitCost: update.unitPrice,
+            });
+          } else {
+            const newItem: Partial<WarehouseItemDB> = {
+              warehouseId: +id,
+              typeId: +inputItem.id,
+              quantity: inputItem.quantity,
+              unitPrice: inputItem.unitCost,
+            };
+
+            const item: WarehouseItemDB = await db.WarehouseItem.query(trx).insertAndFetch(newItem);
+
+            result.push({
+              id: `${item.typeId}`,
+              quantity: item.quantity,
+              unitCost: item.unitPrice,
+            });
+          }
         }
+
+        return result;
       });
     },
     removeItemsFromWarehouse: async (_, { id, itemId, quantity }, { dataSources: { db } }) => {
