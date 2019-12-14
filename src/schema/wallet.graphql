@@ -148,6 +148,7 @@ type JournalEntry {
 
 type WalletTransactions {
   total: Int!
+  lastUpdate: DateTime
   transactions: [WalletTransaction!]!
 }
 
@@ -162,6 +163,7 @@ type MarketOrders {
 }
 
 input WalletTransactionFilter {
+  ids: [ID!]
   item: String
   characterId: ID
   orderType: OrderType
@@ -182,8 +184,21 @@ input MarketOrderFilter {
   state: OrderStateFilter
 }
 
+type WalletTransactionSummaryItem {
+  id: ID!
+  name: String!
+  quantity: Int!
+  credit: Float!
+}
+
+type WalletTransactionSummary {
+  items: [WalletTransactionSummaryItem!]!
+}
+
 extend type Query {
   marketOrders(page: PageInput, filter: MarketOrderFilter, orderBy: MarketOrderOrderByInput): MarketOrders!
   walletJournal(page: PageInput, filter: WalletJournalFilter, orderBy: WalletJournalOrderByInput): JournalEntries!
   walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions!
+  walletTransactionSummary(ids: [ID!]!): WalletTransactionSummary!
+  walletTransactionIds(filter: WalletTransactionFilter): [ID!]!
 }

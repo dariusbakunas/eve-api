@@ -18,6 +18,7 @@ input NewWarehouseItemInput {
 }
 
 extend type Query {
+  warehouse(id: ID!): Warehouse
   warehouses: [Warehouse!]!
 }
 

@@ -7,22 +7,25 @@ import {
   MutationRemoveItemsFromWarehouseArgs,
   MutationRemoveWarehouseArgs,
   MutationUpdateWarehouseArgs,
+  QueryWarehouseArgs,
   RequireFields,
   Resolver,
   ResolversParentTypes,
   ResolversTypes,
+  Warehouse,
   WarehouseItem,
 } from '../__generated__/types';
 import { transaction } from 'objection';
 import { UserInputError } from 'apollo-server-express';
-import { Warehouse } from '../services/db/models/warehouse';
+import { Warehouse as WarehouseDB } from '../services/db/models/warehouse';
 import { WarehouseItem as WarehouseItemDB } from '../services/db/models/warehouseItem';
 
 interface ICombinedWarehouseItem extends WarehouseItemDB, InventoryItem {}
 
 interface IResolvers<Context> {
   Query: {
-    warehouses: Resolver<Maybe<Array<Warehouse>>, ResolversParentTypes['Query'], Context>;
+    warehouse: Resolver<Maybe<ResolversTypes['Warehouse']>, ResolversParentTypes['Query'], Context, RequireFields<QueryWarehouseArgs, 'id'>>;
+    warehouses: Resolver<Maybe<Array<WarehouseDB>>, ResolversParentTypes['Query'], Context>;
   };
   Mutation: {
     addWarehouse: Resolver<ResolversTypes['Warehouse'], ResolversParentTypes['Mutation'], Context, RequireFields<MutationAddWarehouseArgs, 'name'>>;
@@ -47,7 +50,7 @@ interface IResolvers<Context> {
     >;
   };
   Warehouse: {
-    items: Resolver<Array<ResolversTypes['WarehouseItem']>, Warehouse, Context>;
+    items: Resolver<Array<ResolversTypes['WarehouseItem']>, WarehouseDB, Context>;
   };
   WarehouseItem: {
     name: Resolver<ResolversTypes['String'], { id: string }, Context>;
@@ -56,6 +59,18 @@ interface IResolvers<Context> {
 
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
+    warehouse: async (_parent, { id }, { dataSources }): Promise<Maybe<Partial<Warehouse>>> => {
+      const warehouse: WarehouseDB = await dataSources.db.Warehouse.query().findById(id);
+
+      if (warehouse) {
+        return {
+          ...warehouse,
+          id: `${warehouse.id}`,
+        };
+      } else {
+        return null;
+      }
+    },
     warehouses: async (_parent, args, { dataSources, user: { id } }) => {
       return dataSources.db.Warehouse.query()
         .where('ownerId', id)

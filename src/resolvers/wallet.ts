@@ -7,7 +7,10 @@ import {
   OrderType,
   QueryMarketOrdersArgs,
   QueryWalletJournalArgs,
+  QueryWalletTransactionIdsArgs,
   QueryWalletTransactionsArgs,
+  QueryWalletTransactionSummaryArgs,
+  RequireFields,
   Resolver,
   ResolversParentTypes,
   ResolversTypes,
@@ -15,6 +18,7 @@ import {
   WalletTransactionOrderBy,
 } from '../__generated__/types';
 import { IResolverContext } from '../types';
+import { JoinClause } from 'knex';
 import { JournalEntry } from '../services/db/models/journalEntry';
 import { Loaders } from '../services/db/loaders';
 import { MarketOrder } from '../services/db/models/marketOrder';
@@ -27,6 +31,13 @@ interface IResolvers<Context> {
     marketOrders: Resolver<Maybe<ResolversTypes['MarketOrders']>, ResolversParentTypes['Query'], Context, QueryMarketOrdersArgs>;
     walletJournal: Resolver<Maybe<ResolversTypes['JournalEntries']>, ResolversParentTypes['Query'], Context, QueryWalletJournalArgs>;
     walletTransactions: Resolver<Maybe<ResolversTypes['WalletTransactions']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionsArgs>;
+    walletTransactionIds: Resolver<Array<ResolversTypes['ID']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionIdsArgs>;
+    walletTransactionSummary: Resolver<
+      ResolversTypes['WalletTransactionSummary'],
+      ResolversParentTypes['Query'],
+      Context,
+      RequireFields<QueryWalletTransactionSummaryArgs, 'ids'>
+    >;
   };
   MarketOrder: {
     item: Resolver<ResolversTypes['InventoryItem'], MarketOrder, Context>;
@@ -38,6 +49,9 @@ interface IResolvers<Context> {
     character: Resolver<Character, WalletTransaction, Context>;
     client: Resolver<ResolversTypes['Client'], WalletTransaction, Context>;
     location: Resolver<Maybe<ResolversTypes['Location']>, WalletTransaction, Context>;
+  };
+  WalletTransactions: {
+    lastUpdate: Resolver<Maybe<ResolversTypes['DateTime']>, Resolver<Maybe<ResolversTypes['WalletTransactions']>>, Context>;
   };
   JournalEntry: {
     character: Resolver<Character, JournalEntry, Context>;
@@ -183,6 +197,79 @@ const resolverMap: IResolvers<IResolverContext> = {
         entries: [],
       };
     },
+    walletTransactionIds: async (_parent, { filter }, { dataSources, user }) => {
+      const characterIds = await dataSources.db.Character.query()
+        .select('id')
+        .where('ownerId', user.id)
+        .pluck('id');
+
+      if (characterIds.length) {
+        const query = dataSources.db.WalletTransaction.query()
+          .select('walletTransactions.id')
+          .join('invTypes as item', 'item.typeID', 'walletTransactions.typeId');
+
+        if (filter) {
+          if (filter.orderType) {
+            if (filter.orderType === OrderType.Buy) {
+              query.where('walletTransactions.isBuy', 1);
+            } else {
+              query.where('walletTransactions.isBuy', 0);
+            }
+          }
+
+          if (filter.item) {
+            query.where('item.typeName', 'like', `%${filter.item}%`);
+          }
+
+          if (filter.characterId) {
+            if (characterIds.includes(+filter.characterId)) {
+              query.where('walletTransactions.characterId', filter.characterId);
+            } else {
+              throw new UserInputError('Invalid character id');
+            }
+          } else {
+            query.where('walletTransactions.characterId', 'in', characterIds);
+          }
+        }
+
+        return query.pluck('id');
+      }
+
+      return [];
+    },
+    walletTransactionSummary: async (_parent, { ids }, { dataSources, user }) => {
+      const characterIds = await dataSources.db.Character.query()
+        .select('id')
+        .where('ownerId', user.id)
+        .pluck('id');
+
+      const transactions = dataSources.db.WalletTransaction.query()
+        .select(
+          'walletTransactions.id',
+          'item.typeID',
+          'item.typeName',
+          'walletTransactions.isBuy',
+          raw('(walletTransactions.quantity * walletTransactions.unitPrice) * if(walletTransactions.isBuy, -1, 1) as credit')
+        )
+        .join('invTypes as item', 'item.typeID', 'walletTransactions.typeId')
+        .whereIn('walletTransactions.id', ids)
+        .whereIn('walletTransactions.characterId', characterIds)
+        .as('transactions');
+
+      const result: Array<{ id: string; name: string; quantity: number; credit: number }> = await dataSources.db.WalletTransaction.query()
+        .select('transactions.typeID as id', 'transactions.typeName as name')
+        .sum('walletTransactions.quantity as quantity')
+        .sum('transactions.credit as credit')
+        .innerJoin(transactions, function(this: JoinClause) {
+          this.on('transactions.id', 'walletTransactions.id');
+        })
+        .groupBy('transactions.typeID', 'transactions.typeName', 'walletTransactions.isBuy')
+        .orderBy('transactions.typeName');
+
+      return {
+        items: result,
+      };
+    },
     walletTransactions: async (_parent, { filter, page, orderBy }, { dataSources, user }) => {
       const { index, size } = page || { index: 0, size: 10 };
 
@@ -203,6 +290,10 @@ const resolverMap: IResolvers<IResolverContext> = {
           .join('invTypes as item', 'item.typeID', 'walletTransactions.typeId');
 
         if (filter) {
+          if (filter.ids) {
+            query.whereIn('walletTransactions.id', filter.ids);
+          }
+
           if (filter.orderType) {
             if (filter.orderType === OrderType.Buy) {
               query.where('walletTransactions.isBuy', 1);
@@ -315,6 +406,26 @@ const resolverMap: IResolvers<IResolverContext> = {
         id: `${parent.locationId}`,
         name: parent.locationName || 'Unknown Station',
       };
+    },
+  },
+  WalletTransactions: {
+    lastUpdate: async (parent, args, { dataSources, user: { id } }) => {
+      const characterIds = await dataSources.db.Character.query()
+        .select('id')
+        .where('ownerId', id)
+        .pluck('id');
+
+      if (characterIds.length) {
+        const lastUpdate = await dataSources.db.JobLogEntry.query()
+          .where('category', 'WALLET_TRANSACTIONS')
+          .where('status', 'SUCCESS')
+          .orderBy('createdAt', 'desc')
+          .first();
+
+        return lastUpdate.createdAt;
+      }
+
+      return null;
     },
   },
 };
