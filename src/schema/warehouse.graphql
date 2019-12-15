@@ -24,7 +24,7 @@ extend type Query {
 
 extend type Mutation {
   addItemsToWarehouse(id: ID!, input: [NewWarehouseItemInput!]!): [WarehouseItem!]!
-  removeItemsFromWarehouse(id: ID!, itemId: ID!, quantity: Int!): WarehouseItem
+  removeItemsFromWarehouse(id: ID!, itemIds: [ID!]!): [ID!]!
   addWarehouse(name: String!): Warehouse!
   removeWarehouse(id: ID!): ID!
   updateWarehouse(id: ID!, name: String!): Warehouse!

@@ -148,7 +148,7 @@ export type Mutation = {
   removeCharacter: Scalars['ID'],
   register: User,
   addItemsToWarehouse: Array<WarehouseItem>,
-  removeItemsFromWarehouse?: Maybe<WarehouseItem>,
+  removeItemsFromWarehouse: Array<Scalars['ID']>,
   addWarehouse: Warehouse,
   removeWarehouse: Scalars['ID'],
   updateWarehouse: Warehouse,
@@ -184,8 +184,7 @@ export type MutationAddItemsToWarehouseArgs = {
 
 export type MutationRemoveItemsFromWarehouseArgs = {
   id: Scalars['ID'],
-  itemId: Scalars['ID'],
-  quantity: Scalars['Int']
+  itemIds: Array<Scalars['ID']>
 };
 
 
@@ -756,7 +755,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
   register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
   addItemsToWarehouse?: Resolver<Array<ResolversTypes['WarehouseItem']>, ParentType, ContextType, RequireFields<MutationAddItemsToWarehouseArgs, 'id' | 'input'>>,
-  removeItemsFromWarehouse?: Resolver<Maybe<ResolversTypes['WarehouseItem']>, ParentType, ContextType, RequireFields<MutationRemoveItemsFromWarehouseArgs, 'id' | 'itemId' | 'quantity'>>,
+  removeItemsFromWarehouse?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationRemoveItemsFromWarehouseArgs, 'id' | 'itemIds'>>,
   addWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationAddWarehouseArgs, 'name'>>,
   removeWarehouse?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveWarehouseArgs, 'id'>>,
   updateWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationUpdateWarehouseArgs, 'id' | 'name'>>,

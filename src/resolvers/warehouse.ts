@@ -36,10 +36,10 @@ interface IResolvers<Context> {
       RequireFields<MutationAddItemsToWarehouseArgs, 'id' | 'input'>
     >;
     removeItemsFromWarehouse: Resolver<
-      Maybe<ResolversTypes['WarehouseItem']>,
+      Array<ResolversTypes['ID']>,
       ResolversParentTypes['Mutation'],
       Context,
-      RequireFields<MutationRemoveItemsFromWarehouseArgs, 'id' | 'itemId' | 'quantity'>
+      RequireFields<MutationRemoveItemsFromWarehouseArgs, 'id' | 'itemIds'>
     >;
     removeWarehouse: Resolver<ResolversTypes['ID'], ResolversParentTypes['Mutation'], Context, RequireFields<MutationRemoveWarehouseArgs, 'id'>>;
     updateWarehouse?: Resolver<
@@ -147,47 +147,12 @@ const resolverMap: IResolvers<IResolverContext> = {
         return result;
       });
     },
-    removeItemsFromWarehouse: async (_, { id, itemId, quantity }, { dataSources: { db } }) => {
-      const knex = WarehouseItemDB.knex();
-
-      return transaction(knex, async trx => {
-        const existingItem: WarehouseItemDB = await db.WarehouseItem.query(trx)
-          .where('typeId', itemId)
-          .andWhere('warehouseId', id)
-          .first();
-
-        if (!existingItem || existingItem.quantity < quantity) {
-          throw new UserInputError('Insufficient quantity remaining');
-        }
-
-        const remainingQuantity = existingItem.quantity - quantity;
-
-        if (remainingQuantity > 0) {
-          const update: Partial<WarehouseItemDB> = {
-            warehouseId: +id,
-            typeId: +itemId,
-            quantity: existingItem.quantity - quantity,
-          };
-
-          await db.WarehouseItem.query(trx)
-            .patch(update)
-            .where('typeId', itemId)
-            .andWhere('warehouseId', id);
-
-          return {
-            id: `${update.typeId}`,
-            quantity: update.quantity,
-            unitCost: existingItem.unitPrice,
-          };
-        } else {
-          await db.WarehouseItem.query(trx)
-            .delete()
-            .where('typeId', itemId)
-            .andWhere('warehouseId', id);
-
-          return null;
-        }
-      });
+    removeItemsFromWarehouse: async (_, { id, itemIds }, { dataSources: { db } }) => {
+      await db.WarehouseItem.query()
+        .delete()
+        .whereIn('typeId', itemIds)
+        .andWhere('warehouseId', id);
+      return itemIds;
     },
     removeWarehouse: async (_, { id }, { dataSources: { db } }) => {
       await db.Warehouse.query().deleteById(id);
