@@ -9,7 +9,7 @@ export class InvGroup extends BaseModel {
 
   readonly groupID!: number;
   categoryID!: number;
-  groupName?: string;
+  groupName!: string;
   iconID?: number;
   useBasePrice!: boolean;
   anchored!: boolean;

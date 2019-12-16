@@ -2,6 +2,8 @@ import { Character } from '../services/db/models/character';
 import { getCharacter } from './common';
 import {
   InventoryItem,
+  InvGroup,
+  MarketGroup,
   MarketOrderOrderBy,
   Maybe,
   OrderType,
@@ -24,7 +26,7 @@ import { Loaders } from '../services/db/loaders';
 import { MarketOrder } from '../services/db/models/marketOrder';
 import { QueryBuilder, raw } from 'objection';
 import { UserInputError } from 'apollo-server-express';
-import { WalletTransaction } from '../services/db/models/walletTransaction';
+import { WalletTransaction as WalletTransactionDB } from '../services/db/models/walletTransaction';
 
 interface IResolvers<Context> {
   Query: {
@@ -45,10 +47,12 @@ interface IResolvers<Context> {
     location: Resolver<Maybe<ResolversTypes['Location']>, MarketOrder, Context>;
   };
   WalletTransaction: {
-    item: Resolver<ResolversTypes['InventoryItem'], WalletTransaction, Context>;
-    character: Resolver<Character, WalletTransaction, Context>;
-    client: Resolver<ResolversTypes['Client'], WalletTransaction, Context>;
-    location: Resolver<Maybe<ResolversTypes['Location']>, WalletTransaction, Context>;
+    item: Resolver<ResolversTypes['InventoryItem'], WalletTransactionDB, Context>;
+    marketGroup: Resolver<Maybe<ResolversTypes['MarketGroup']>, WalletTransactionDB, Context>;
+    invGroup: Resolver<ResolversTypes['InvGroup'], WalletTransactionDB, Context>;
+    character: Resolver<Character, WalletTransactionDB, Context>;
+    client: Resolver<ResolversTypes['Client'], WalletTransactionDB, Context>;
+    location: Resolver<Maybe<ResolversTypes['Location']>, WalletTransactionDB, Context>;
   };
   WalletTransactions: {
     lastUpdate: Resolver<Maybe<ResolversTypes['DateTime']>, Resolver<Maybe<ResolversTypes['WalletTransactions']>>, Context>;
@@ -282,6 +286,9 @@ const resolverMap: IResolvers<IResolverContext> = {
         const query = dataSources.db.WalletTransaction.query()
           .select(
             'walletTransactions.*',
+            'item.groupID',
+            'item.typeName',
+            'item.marketGroupID',
             raw('coalesce(citadel.name, station.stationName) as locationName'),
             raw('(walletTransactions.quantity * walletTransactions.unitPrice) * if(walletTransactions.isBuy, -1, 1) as credit')
           )
@@ -399,13 +406,42 @@ const resolverMap: IResolvers<IResolverContext> = {
       return client;
     },
     item: async (parent, args, { dataSources }) => {
-      return getItem(parent.typeId, dataSources.loaders);
+      return {
+        id: `${parent.typeId}`,
+        name: parent.typeName,
+      };
     },
     location: parent => {
       return {
         id: `${parent.locationId}`,
         name: parent.locationName || 'Unknown Station',
       };
+    },
+    invGroup: async (parent, args, { dataSources: { loaders } }) => {
+      const group = await loaders.invGroupLoader.load(parent.groupID);
+
+      const invGroup: InvGroup = {
+        id: `${group!.groupID}`,
+        name: group!.groupName,
+      };
+
+      return invGroup;
+    },
+    marketGroup: async (parent, args, { dataSources: { loaders } }) => {
+      if (parent.marketGroupID) {
+        const group = await loaders.marketGroupLoader.load(parent.marketGroupID);
+
+        if (group) {
+          const result: MarketGroup = {
+            id: `${group.marketGroupID}`,
+            name: group.marketGroupName,
+          };
+
+          return result;
+        }
+      }
+
+      return null;
     },
   },
   WalletTransactions: {

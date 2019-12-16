@@ -124,6 +124,16 @@ type MarketOrder {
   state: OrderState!
 }
 
+type MarketGroup {
+  id: ID!
+  name: String!
+}
+
+type InvGroup {
+  id: ID!
+  name: String!
+}
+
 type WalletTransaction {
   id: ID!
   credit: Float!
@@ -133,6 +143,8 @@ type WalletTransaction {
   isBuy: Boolean!
   item: InventoryItem!
   location: Location!
+  invGroup: InvGroup!
+  marketGroup: MarketGroup
   quantity: Int!
   unitPrice: Float!
 }

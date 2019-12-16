@@ -66,6 +66,12 @@ export type InventoryItem = {
   description?: Maybe<Scalars['String']>,
 };
 
+export type InvGroup = {
+   __typename?: 'InvGroup',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+};
+
 export type JournalEntries = {
    __typename?: 'JournalEntries',
   total: Scalars['Int'],
@@ -84,6 +90,12 @@ export type JournalEntry = {
 
 export type Location = {
    __typename?: 'Location',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+};
+
+export type MarketGroup = {
+   __typename?: 'MarketGroup',
   id: Scalars['ID'],
   name: Scalars['String'],
 };
@@ -417,6 +429,8 @@ export type WalletTransaction = {
   isBuy: Scalars['Boolean'],
   item: InventoryItem,
   location: Location,
+  invGroup: InvGroup,
+  marketGroup?: Maybe<MarketGroup>,
   quantity: Scalars['Int'],
   unitPrice: Scalars['Float'],
 };
@@ -592,6 +606,8 @@ export type ResolversTypes = {
   WalletTransactions: ResolverTypeWrapper<Partial<WalletTransactions>>,
   WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>,
   Client: ResolverTypeWrapper<Partial<Client>>,
+  InvGroup: ResolverTypeWrapper<Partial<InvGroup>>,
+  MarketGroup: ResolverTypeWrapper<Partial<MarketGroup>>,
   WalletTransactionSummary: ResolverTypeWrapper<Partial<WalletTransactionSummary>>,
   WalletTransactionSummaryItem: ResolverTypeWrapper<Partial<WalletTransactionSummaryItem>>,
   Warehouse: ResolverTypeWrapper<Partial<Warehouse>>,
@@ -647,6 +663,8 @@ export type ResolversParentTypes = {
   WalletTransactions: Partial<WalletTransactions>,
   WalletTransaction: Partial<WalletTransaction>,
   Client: Partial<Client>,
+  InvGroup: Partial<InvGroup>,
+  MarketGroup: Partial<MarketGroup>,
   WalletTransactionSummary: Partial<WalletTransactionSummary>,
   WalletTransactionSummaryItem: Partial<WalletTransactionSummaryItem>,
   Warehouse: Partial<Warehouse>,
@@ -707,6 +725,11 @@ export type InventoryItemResolvers<ContextType = any, ParentType extends Resolve
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 };
 
+export type InvGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvGroup'] = ResolversParentTypes['InvGroup']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
 export type JournalEntriesResolvers<ContextType = any, ParentType extends ResolversParentTypes['JournalEntries'] = ResolversParentTypes['JournalEntries']> = {
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   entries?: Resolver<Array<ResolversTypes['JournalEntry']>, ParentType, ContextType>,
@@ -722,6 +745,11 @@ export type JournalEntryResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
+export type MarketGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['MarketGroup'] = ResolversParentTypes['MarketGroup']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
 };
@@ -831,6 +859,8 @@ export type WalletTransactionResolvers<ContextType = any, ParentType extends Res
   isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
   item?: Resolver<ResolversTypes['InventoryItem'], ParentType, ContextType>,
   location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>,
+  invGroup?: Resolver<ResolversTypes['InvGroup'], ParentType, ContextType>,
+  marketGroup?: Resolver<Maybe<ResolversTypes['MarketGroup']>, ParentType, ContextType>,
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   unitPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
 };
@@ -873,9 +903,11 @@ export type Resolvers<ContextType = any> = {
   Date?: GraphQLScalarType,
   DateTime?: GraphQLScalarType,
   InventoryItem?: InventoryItemResolvers<ContextType>,
+  InvGroup?: InvGroupResolvers<ContextType>,
   JournalEntries?: JournalEntriesResolvers<ContextType>,
   JournalEntry?: JournalEntryResolvers<ContextType>,
   Location?: LocationResolvers<ContextType>,
+  MarketGroup?: MarketGroupResolvers<ContextType>,
   MarketOrder?: MarketOrderResolvers<ContextType>,
   MarketOrders?: MarketOrdersResolvers<ContextType>,
   Mutation?: MutationResolvers<ContextType>,

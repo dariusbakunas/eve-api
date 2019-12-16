@@ -23,6 +23,7 @@ import Crypt from './crypt';
 import db from './db';
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
+import { MarketGroup } from './db/models/marketGroup';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -39,6 +40,7 @@ export interface IDataSources {
     MarketOrder: typeof MarketOrder;
     JournalEntry: typeof JournalEntry;
     JobLogEntry: typeof JobLogEntry;
+    MarketGroup: typeof MarketGroup;
     User: typeof User;
     Scope: typeof Scope;
     Invitation: typeof Invitation;
