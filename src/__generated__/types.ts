@@ -72,6 +72,16 @@ export type InvGroup = {
   name: Scalars['String'],
 };
 
+export type InvItem = {
+   __typename?: 'InvItem',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+};
+
+export type InvItemFilter = {
+  name?: Maybe<Scalars['String']>,
+};
+
 export type JournalEntries = {
    __typename?: 'JournalEntries',
   total: Scalars['Int'],
@@ -289,6 +299,7 @@ export type Query = {
    __typename?: 'Query',
   character?: Maybe<Character>,
   characters: Array<Character>,
+  invItems: Array<InvItem>,
   processingLogs: Array<ProcessingLogEntry>,
   scopes: Array<Scope>,
   userByEmail?: Maybe<User>,
@@ -304,6 +315,11 @@ export type Query = {
 
 export type QueryCharacterArgs = {
   id: Scalars['ID']
+};
+
+
+export type QueryInvItemsArgs = {
+  filter?: Maybe<InvItemFilter>
 };
 
 
@@ -576,6 +592,8 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<Partial<Scalars['Float']>>,
   SkillGroup: ResolverTypeWrapper<Partial<SkillGroup>>,
   Skill: ResolverTypeWrapper<Partial<Skill>>,
+  InvItemFilter: ResolverTypeWrapper<Partial<InvItemFilter>>,
+  InvItem: ResolverTypeWrapper<Partial<InvItem>>,
   ProcessingLogFilter: ResolverTypeWrapper<Partial<ProcessingLogFilter>>,
   ProcessingLogEntry: ResolverTypeWrapper<Partial<ProcessingLogEntry>>,
   ProcessingCategory: ResolverTypeWrapper<Partial<ProcessingCategory>>,
@@ -633,6 +651,8 @@ export type ResolversParentTypes = {
   Float: Partial<Scalars['Float']>,
   SkillGroup: Partial<SkillGroup>,
   Skill: Partial<Skill>,
+  InvItemFilter: Partial<InvItemFilter>,
+  InvItem: Partial<InvItem>,
   ProcessingLogFilter: Partial<ProcessingLogFilter>,
   ProcessingLogEntry: Partial<ProcessingLogEntry>,
   ProcessingCategory: Partial<ProcessingCategory>,
@@ -731,6 +751,11 @@ export type InvGroupResolvers<ContextType = any, ParentType extends ResolversPar
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
 };
 
+export type InvItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvItem'] = ResolversParentTypes['InvItem']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
 export type JournalEntriesResolvers<ContextType = any, ParentType extends ResolversParentTypes['JournalEntries'] = ResolversParentTypes['JournalEntries']> = {
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   entries?: Resolver<Array<ResolversTypes['JournalEntry']>, ParentType, ContextType>,
@@ -803,6 +828,7 @@ export type ProcessingLogEntryResolvers<ContextType = any, ParentType extends Re
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>,
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
+  invItems?: Resolver<Array<ResolversTypes['InvItem']>, ParentType, ContextType, QueryInvItemsArgs>,
   processingLogs?: Resolver<Array<ResolversTypes['ProcessingLogEntry']>, ParentType, ContextType, QueryProcessingLogsArgs>,
   scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
   userByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>,
@@ -905,6 +931,7 @@ export type Resolvers<ContextType = any> = {
   DateTime?: GraphQLScalarType,
   InventoryItem?: InventoryItemResolvers<ContextType>,
   InvGroup?: InvGroupResolvers<ContextType>,
+  InvItem?: InvItemResolvers<ContextType>,
   JournalEntries?: JournalEntriesResolvers<ContextType>,
   JournalEntry?: JournalEntryResolvers<ContextType>,
   Location?: LocationResolvers<ContextType>,

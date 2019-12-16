@@ -1,0 +1,12 @@
+input InvItemFilter {
+  name: String
+}
+
+type InvItem {
+  id: ID!
+  name: String!
+}
+
+extend type Query {
+  invItems(filter: InvItemFilter): [InvItem!]!
+}

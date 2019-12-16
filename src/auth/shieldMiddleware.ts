@@ -47,6 +47,7 @@ const shieldMiddleware = shield(
       characters: isActiveUser,
       scopes: isActiveUser,
       userByEmail: hasSameEmail,
+      invItems: isActiveUser,
       marketOrders: isActiveUser,
       processingLogs: isActiveUser,
       walletJournal: isActiveUser,
