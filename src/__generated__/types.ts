@@ -447,6 +447,7 @@ export enum WalletTransactionOrderBy {
   Client = 'client',
   Character = 'character',
   Credit = 'credit',
+  InvGroup = 'invGroup',
   Item = 'item',
   Quantity = 'quantity',
   Station = 'station',

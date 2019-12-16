@@ -3,6 +3,7 @@ enum WalletTransactionOrderBy {
   client
   character
   credit
+  invGroup
   item
   quantity
   station

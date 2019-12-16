@@ -289,12 +289,14 @@ const resolverMap: IResolvers<IResolverContext> = {
             'item.groupID',
             'item.typeName',
             'item.marketGroupID',
+            'invGroup.groupName',
             raw('coalesce(citadel.name, station.stationName) as locationName'),
             raw('(walletTransactions.quantity * walletTransactions.unitPrice) * if(walletTransactions.isBuy, -1, 1) as credit')
           )
           .leftJoin('citadelCache as citadel', 'citadel.id', 'walletTransactions.locationId')
           .leftJoin('staStations as station', 'station.stationID', 'walletTransactions.locationId')
-          .join('invTypes as item', 'item.typeID', 'walletTransactions.typeId');
+          .join('invTypes as item', 'item.typeID', 'walletTransactions.typeId')
+          .join('invGroups as invGroup', 'item.groupID', 'invGroup.groupID');
 
         if (filter) {
           if (filter.ids) {
@@ -340,6 +342,9 @@ const resolverMap: IResolvers<IResolverContext> = {
               break;
             case WalletTransactionOrderBy.Item:
               orderByCol = 'item.typeName';
+              break;
+            case WalletTransactionOrderBy.InvGroup:
+              orderByCol = 'invGroup.groupName';
               break;
             case WalletTransactionOrderBy.Client:
               query.join('nameCache as client', 'client.id', 'walletTransactions.clientId');
@@ -417,12 +422,10 @@ const resolverMap: IResolvers<IResolverContext> = {
         name: parent.locationName || 'Unknown Station',
       };
     },
-    invGroup: async (parent, args, { dataSources: { loaders } }) => {
-      const group = await loaders.invGroupLoader.load(parent.groupID);
-
+    invGroup: async parent => {
       const invGroup: InvGroup = {
-        id: `${group!.groupID}`,
-        name: group!.groupName,
+        id: `${parent.groupID}`,
+        name: parent.groupName,
       };
 
       return invGroup;
