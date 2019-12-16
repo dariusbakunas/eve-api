@@ -2,9 +2,15 @@ input InvItemFilter {
   name: String
 }
 
+type InvGroup {
+  id: ID!
+  name: String!
+}
+
 type InvItem {
   id: ID!
   name: String!
+  invGroup: InvGroup!
 }
 
 extend type Query {

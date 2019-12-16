@@ -130,11 +130,6 @@ type MarketGroup {
   name: String!
 }
 
-type InvGroup {
-  id: ID!
-  name: String!
-}
-
 type WalletTransaction {
   id: ID!
   credit: Float!

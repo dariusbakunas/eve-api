@@ -1,6 +1,6 @@
+import { InventoryItem } from '../services/db/models/InventoryItem';
 import { IResolverContext } from '../types';
 import { QueryInvItemsArgs, Resolver, ResolversParentTypes, ResolversTypes } from '../__generated__/types';
-import { InventoryItem } from '../services/db/models/InventoryItem';
 
 interface IResolvers<Context> {
   Query: {
@@ -11,7 +11,10 @@ interface IResolvers<Context> {
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
     invItems: async (_parent, { filter }, { dataSources }) => {
-      const query = dataSources.db.InventoryItem.query().where('published', true);
+      const query = dataSources.db.InventoryItem.query()
+        .select('invTypes.*', 'invGroup.groupName')
+        .joinRelation('invGroup')
+        .where('invTypes.published', true);
 
       if (filter) {
         if (filter.name) {
@@ -19,11 +22,15 @@ const resolverMap: IResolvers<IResolverContext> = {
         }
       }
 
-      const items = await query.orderBy('typeName');
+      const items = await query.orderBy(['groupName', 'typeName']);
 
       return items.map((item: InventoryItem) => ({
         id: item.typeID,
         name: item.typeName,
+        invGroup: {
+          id: item.groupID,
+          name: item.groupName,
+        },
       }));
     },
   },
