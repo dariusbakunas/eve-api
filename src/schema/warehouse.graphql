@@ -11,7 +11,7 @@ type Warehouse {
   items: [WarehouseItem!]!
 }
 
-input NewWarehouseItemInput {
+input WarehouseItemInput {
   id: ID!
   quantity: Int!
   unitCost: Float!
@@ -23,7 +23,8 @@ extend type Query {
 }
 
 extend type Mutation {
-  addItemsToWarehouse(id: ID!, input: [NewWarehouseItemInput!]!): [WarehouseItem!]!
+  addItemsToWarehouse(id: ID!, input: [WarehouseItemInput!]!): [WarehouseItem!]!
+  updateItemsInWarehouse(id: ID!, input: [WarehouseItemInput!]!): [WarehouseItem!]!
   removeItemsFromWarehouse(id: ID!, itemIds: [ID!]!): [ID!]!
   addWarehouse(name: String!): Warehouse!
   removeWarehouse(id: ID!): ID!

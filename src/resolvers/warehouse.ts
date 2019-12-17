@@ -6,6 +6,7 @@ import {
   MutationAddWarehouseArgs,
   MutationRemoveItemsFromWarehouseArgs,
   MutationRemoveWarehouseArgs,
+  MutationUpdateItemsInWarehouseArgs,
   MutationUpdateWarehouseArgs,
   QueryWarehouseArgs,
   RequireFields,
@@ -16,7 +17,6 @@ import {
   WarehouseItem,
 } from '../__generated__/types';
 import { transaction } from 'objection';
-import { UserInputError } from 'apollo-server-express';
 import { Warehouse as WarehouseDB } from '../services/db/models/warehouse';
 import { WarehouseItem as WarehouseItemDB } from '../services/db/models/warehouseItem';
 
@@ -34,6 +34,12 @@ interface IResolvers<Context> {
       ResolversParentTypes['Mutation'],
       Context,
       RequireFields<MutationAddItemsToWarehouseArgs, 'id' | 'input'>
+    >;
+    updateItemsInWarehouse: Resolver<
+      Array<ResolversTypes['WarehouseItem']>,
+      ResolversParentTypes['Mutation'],
+      Context,
+      RequireFields<MutationUpdateItemsInWarehouseArgs, 'id' | 'input'>
     >;
     removeItemsFromWarehouse: Resolver<
       Array<ResolversTypes['ID']>,
@@ -83,6 +89,36 @@ const resolverMap: IResolvers<IResolverContext> = {
 
       return user.$relatedQuery('warehouses').insert({
         name: name,
+      });
+    },
+    updateItemsInWarehouse: async (_, { id, input }, { dataSources: { db } }) => {
+      const knex = WarehouseItemDB.knex();
+      const result: Partial<WarehouseItem>[] = [];
+
+      return transaction(knex, async trx => {
+        for (let i = 0; i < input.length; i++) {
+          const item = input[i];
+
+          const update: Partial<WarehouseItemDB> = {
+            warehouseId: +id,
+            typeId: +item.id,
+            quantity: +item.quantity,
+            unitPrice: +item.unitCost,
+          };
+
+          await db.WarehouseItem.query(trx)
+            .patch(update)
+            .where('typeId', item.id)
+            .andWhere('warehouseId', id);
+
+          result.push({
+            id: `${update.typeId}`,
+            quantity: update.quantity,
+            unitCost: update.unitPrice,
+          });
+        }
+
+        return result;
       });
     },
     addItemsToWarehouse: async (_, { id, input }, { dataSources: { db } }) => {
