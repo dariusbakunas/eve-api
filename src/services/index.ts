@@ -1,4 +1,5 @@
 import { Alliance } from './db/models/alliance';
+import { Blueprint } from './db/models/blueprint';
 import { Character } from './db/models/character';
 import { CharacterSkill } from './db/models/characterSkill';
 import { CitadelCacheItem } from './db/models/citadelCacheItem';
@@ -9,6 +10,7 @@ import { Invitation } from './db/models/invitation';
 import { JobLogEntry } from './db/models/jobLogEntry';
 import { JournalEntry } from './db/models/journalEntry';
 import { Loaders } from './db/loaders';
+import { MarketGroup } from './db/models/marketGroup';
 import { MarketOrder } from './db/models/marketOrder';
 import { NameCacheItem } from './db/models/nameCacheItem';
 import { RedisCache } from 'apollo-server-cache-redis';
@@ -23,7 +25,6 @@ import Crypt from './crypt';
 import db from './db';
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
-import { MarketGroup } from './db/models/marketGroup';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -33,6 +34,7 @@ const redisCache = new RedisCache({
 export interface IDataSources {
   db: {
     Alliance: typeof Alliance;
+    Blueprint: typeof Blueprint;
     Character: typeof Character;
     CharacterSkill: typeof CharacterSkill;
     Corporation: typeof Corporation;

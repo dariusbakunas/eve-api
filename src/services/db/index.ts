@@ -22,6 +22,7 @@ import { WarehouseItem } from './models/warehouseItem';
 import Knex from 'knex';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
+import { Blueprint } from './models/blueprint';
 import { MarketGroup } from './models/marketGroup';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('../../../knexfile');
@@ -33,6 +34,7 @@ Model.knex(knex);
 
 const db: IDataSources['db'] = {
   Alliance,
+  Blueprint,
   Character,
   CharacterSkill,
   Corporation,

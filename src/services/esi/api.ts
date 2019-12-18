@@ -1,9 +1,6 @@
-import { Request, Response, RESTDataSource } from 'apollo-datasource-rest';
-import { RequestOptions } from 'apollo-datasource-rest/src/RESTDataSource';
-import logger from '../../utils/logger';
-import { KeyValueCache } from 'apollo-server-caching';
 import {
   IEsiAllianceInfo,
+  IEsiBlueprint,
   IEsiBookmark,
   IEsiCharacterInfo,
   IEsiCharacterSkills,
@@ -12,6 +9,10 @@ import {
   IEsiMarketOrder,
   IEsiWalletTransaction,
 } from './esiTypes';
+import { KeyValueCache } from 'apollo-server-caching';
+import { Request, Response, RESTDataSource } from 'apollo-datasource-rest';
+import { RequestOptions } from 'apollo-datasource-rest/src/RESTDataSource';
+import logger from '../../utils/logger';
 
 class EsiAPI extends RESTDataSource {
   private cache: KeyValueCache;
@@ -77,6 +78,15 @@ class EsiAPI extends RESTDataSource {
 
   async getBookmarks(characterId: number, token: string): Promise<IEsiBookmark[]> {
     return this.get(`/characters/${characterId}/bookmarks`, undefined, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
+  async getBlueprints(characterId: number, token: string): Promise<IEsiBlueprint[]> {
+    return this.get(`/characters/${characterId}/blueprints`, undefined, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',

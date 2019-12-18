@@ -15,6 +15,7 @@ import db from '../services/db';
 import EsiAPI from '../services/esi/api';
 import EsiAuth from '../services/esi/auth';
 import logger from '../utils/logger';
+import { processBlueprints } from './processBlueprints';
 
 const initDataSources = () => {
   const dataSources = {
@@ -56,6 +57,10 @@ export const processData = async () => {
 
       if (scopes.includes('esi-skills.read_skills.v1')) {
         await processSkills(character, token, db, esiApi);
+      }
+
+      if (scopes.includes('esi-characters.read_blueprints.v1')) {
+        await processBlueprints(character, token, db, esiApi);
       }
     } catch (e) {
       logger.error(e);
