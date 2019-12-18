@@ -142,7 +142,7 @@ const resolverMap: IResolvers<IResolverContext> = {
 
       return {
         total: 0,
-        entries: [],
+        orders: [],
       };
     },
     walletJournal: async (_parent, { filter, orderBy, page }, { dataSources, user }) => {
@@ -231,9 +231,11 @@ const resolverMap: IResolvers<IResolverContext> = {
             } else {
               throw new UserInputError('Invalid character id');
             }
-          } else {
-            query.where('walletTransactions.characterId', 'in', characterIds);
           }
+        }
+
+        if (!filter || !filter.characterId) {
+          query.where('walletTransactions.characterId', 'in', characterIds);
         }
 
         return query.pluck('id');
@@ -321,9 +323,11 @@ const resolverMap: IResolvers<IResolverContext> = {
             } else {
               throw new UserInputError('Invalid character id');
             }
-          } else {
-            query.where('walletTransactions.characterId', 'in', characterIds);
           }
+        }
+
+        if (!filter || !filter.characterId) {
+          query.where('walletTransactions.characterId', 'in', characterIds);
         }
 
         if (orderBy) {

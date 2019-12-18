@@ -1,4 +1,5 @@
 import Alliance from './alliance';
+import Blueprint from './blueprint';
 import Character from './character';
 import Corporation from './corporation';
 import CustomScalars from './customScalars';
@@ -11,4 +12,4 @@ import User from './user';
 import Wallet from './wallet';
 import Warehouse from './warehouse';
 
-export default merge(Query, Alliance, Character, Corporation, InvItems, Mutation, CustomScalars, User, Wallet, Processing, Warehouse);
+export default merge(Query, Alliance, Blueprint, Character, Corporation, InvItems, Mutation, CustomScalars, User, Wallet, Processing, Warehouse);

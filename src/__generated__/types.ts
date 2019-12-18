@@ -20,6 +20,35 @@ export type Alliance = {
   ticker: Scalars['String'],
 };
 
+export type Blueprint = {
+   __typename?: 'Blueprint',
+  id: Scalars['ID'],
+  character: Character,
+  name: Scalars['String'],
+  isCopy: Scalars['Boolean'],
+  maxRuns: Scalars['Int'],
+  materialEfficiency: Scalars['Int'],
+  timeEfficiency: Scalars['Int'],
+};
+
+export type BlueprintFilter = {
+  characterId?: Maybe<Scalars['ID']>,
+};
+
+export enum BlueprintsOrderBy {
+  Character = 'character',
+  Name = 'name',
+  MaxRuns = 'maxRuns',
+  MaterialEfficiency = 'materialEfficiency',
+  TimeEfficiency = 'timeEfficiency'
+}
+
+export type BlueprintsResponse = {
+   __typename?: 'BlueprintsResponse',
+  total: Scalars['Int'],
+  entries: Array<Blueprint>,
+};
+
 export type Character = {
    __typename?: 'Character',
   id: Scalars['ID'],
@@ -299,6 +328,7 @@ export enum ProcessingStatus {
 
 export type Query = {
    __typename?: 'Query',
+  blueprints: BlueprintsResponse,
   character?: Maybe<Character>,
   characters: Array<Character>,
   invItems: Array<InvItem>,
@@ -312,6 +342,12 @@ export type Query = {
   walletTransactionIds: Array<Scalars['ID']>,
   warehouse?: Maybe<Warehouse>,
   warehouses: Array<Warehouse>,
+};
+
+
+export type QueryBlueprintsArgs = {
+  page?: Maybe<PageInput>,
+  filter?: Maybe<BlueprintFilter>
 };
 
 
@@ -590,16 +626,21 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>,
+  PageInput: ResolverTypeWrapper<Partial<PageInput>>,
+  Int: ResolverTypeWrapper<Partial<Scalars['Int']>>,
+  BlueprintFilter: ResolverTypeWrapper<Partial<BlueprintFilter>>,
   ID: ResolverTypeWrapper<Partial<Scalars['ID']>>,
+  BlueprintsResponse: ResolverTypeWrapper<Partial<BlueprintsResponse>>,
+  Blueprint: ResolverTypeWrapper<Partial<Blueprint>>,
   Character: ResolverTypeWrapper<Partial<Character>>,
   Corporation: ResolverTypeWrapper<Partial<Corporation>>,
   Alliance: ResolverTypeWrapper<Partial<Alliance>>,
   String: ResolverTypeWrapper<Partial<Scalars['String']>>,
   DateTime: ResolverTypeWrapper<Partial<Scalars['DateTime']>>,
-  Int: ResolverTypeWrapper<Partial<Scalars['Int']>>,
   Float: ResolverTypeWrapper<Partial<Scalars['Float']>>,
   SkillGroup: ResolverTypeWrapper<Partial<SkillGroup>>,
   Skill: ResolverTypeWrapper<Partial<Skill>>,
+  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   InvItemFilter: ResolverTypeWrapper<Partial<InvItemFilter>>,
   InvItem: ResolverTypeWrapper<Partial<InvItem>>,
   InvGroup: ResolverTypeWrapper<Partial<InvGroup>>,
@@ -610,10 +651,8 @@ export type ResolversTypes = {
   Scope: ResolverTypeWrapper<Partial<Scope>>,
   User: ResolverTypeWrapper<Partial<User>>,
   UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
-  PageInput: ResolverTypeWrapper<Partial<PageInput>>,
   MarketOrderFilter: ResolverTypeWrapper<Partial<MarketOrderFilter>>,
   OrderStateFilter: ResolverTypeWrapper<Partial<OrderStateFilter>>,
-  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   MarketOrderOrderByInput: ResolverTypeWrapper<Partial<MarketOrderOrderByInput>>,
   MarketOrderOrderBy: ResolverTypeWrapper<Partial<MarketOrderOrderBy>>,
   Order: ResolverTypeWrapper<Partial<Order>>,
@@ -642,6 +681,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
   WarehouseItemInput: ResolverTypeWrapper<Partial<WarehouseItemInput>>,
+  BlueprintsOrderBy: ResolverTypeWrapper<Partial<BlueprintsOrderBy>>,
   Date: ResolverTypeWrapper<Partial<Scalars['Date']>>,
   Time: ResolverTypeWrapper<Partial<Scalars['Time']>>,
 };
@@ -649,16 +689,21 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Query: {},
+  PageInput: Partial<PageInput>,
+  Int: Partial<Scalars['Int']>,
+  BlueprintFilter: Partial<BlueprintFilter>,
   ID: Partial<Scalars['ID']>,
+  BlueprintsResponse: Partial<BlueprintsResponse>,
+  Blueprint: Partial<Blueprint>,
   Character: Partial<Character>,
   Corporation: Partial<Corporation>,
   Alliance: Partial<Alliance>,
   String: Partial<Scalars['String']>,
   DateTime: Partial<Scalars['DateTime']>,
-  Int: Partial<Scalars['Int']>,
   Float: Partial<Scalars['Float']>,
   SkillGroup: Partial<SkillGroup>,
   Skill: Partial<Skill>,
+  Boolean: Partial<Scalars['Boolean']>,
   InvItemFilter: Partial<InvItemFilter>,
   InvItem: Partial<InvItem>,
   InvGroup: Partial<InvGroup>,
@@ -669,10 +714,8 @@ export type ResolversParentTypes = {
   Scope: Partial<Scope>,
   User: Partial<User>,
   UserStatus: Partial<UserStatus>,
-  PageInput: Partial<PageInput>,
   MarketOrderFilter: Partial<MarketOrderFilter>,
   OrderStateFilter: Partial<OrderStateFilter>,
-  Boolean: Partial<Scalars['Boolean']>,
   MarketOrderOrderByInput: Partial<MarketOrderOrderByInput>,
   MarketOrderOrderBy: Partial<MarketOrderOrderBy>,
   Order: Partial<Order>,
@@ -701,6 +744,7 @@ export type ResolversParentTypes = {
   Mutation: {},
   RegistrationInput: Partial<RegistrationInput>,
   WarehouseItemInput: Partial<WarehouseItemInput>,
+  BlueprintsOrderBy: Partial<BlueprintsOrderBy>,
   Date: Partial<Scalars['Date']>,
   Time: Partial<Scalars['Time']>,
 };
@@ -709,6 +753,21 @@ export type AllianceResolvers<ContextType = any, ParentType extends ResolversPar
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
   ticker?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
+export type BlueprintResolvers<ContextType = any, ParentType extends ResolversParentTypes['Blueprint'] = ResolversParentTypes['Blueprint']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  isCopy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  maxRuns?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  materialEfficiency?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  timeEfficiency?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+};
+
+export type BlueprintsResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['BlueprintsResponse'] = ResolversParentTypes['BlueprintsResponse']> = {
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  entries?: Resolver<Array<ResolversTypes['Blueprint']>, ParentType, ContextType>,
 };
 
 export type CharacterResolvers<ContextType = any, ParentType extends ResolversParentTypes['Character'] = ResolversParentTypes['Character']> = {
@@ -836,6 +895,7 @@ export type ProcessingLogEntryResolvers<ContextType = any, ParentType extends Re
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  blueprints?: Resolver<ResolversTypes['BlueprintsResponse'], ParentType, ContextType, QueryBlueprintsArgs>,
   character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>,
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
   invItems?: Resolver<Array<ResolversTypes['InvItem']>, ParentType, ContextType, QueryInvItemsArgs>,
@@ -934,6 +994,8 @@ export type WarehouseItemResolvers<ContextType = any, ParentType extends Resolve
 
 export type Resolvers<ContextType = any> = {
   Alliance?: AllianceResolvers<ContextType>,
+  Blueprint?: BlueprintResolvers<ContextType>,
+  BlueprintsResponse?: BlueprintsResponseResolvers<ContextType>,
   Character?: CharacterResolvers<ContextType>,
   Client?: ClientResolvers<ContextType>,
   Corporation?: CorporationResolvers<ContextType>,

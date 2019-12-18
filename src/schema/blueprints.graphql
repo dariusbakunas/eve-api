@@ -1,0 +1,30 @@
+type Blueprint {
+  id: ID!
+  character: Character!
+  name: String!
+  isCopy: Boolean!
+  maxRuns: Int!
+  materialEfficiency: Int!
+  timeEfficiency: Int!
+}
+
+enum BlueprintsOrderBy {
+  character
+  name
+  maxRuns
+  materialEfficiency
+  timeEfficiency
+}
+
+input BlueprintFilter {
+  characterId: ID
+}
+
+type BlueprintsResponse {
+  total: Int!
+  entries: [Blueprint!]!
+}
+
+extend type Query {
+  blueprints(page: PageInput, filter: BlueprintFilter, orderBy: BlueprintsOrderBy): BlueprintsResponse!
+}
