@@ -30,7 +30,10 @@ const resolverMap: IResolvers<IResolverContext> = {
         .pluck('id');
 
       if (characterIds.length) {
-        const query = dataSources.db.Blueprint.query().join('invTypes as item', 'item.typeID', 'blueprints.typeId');
+        const query = dataSources.db.Blueprint.query()
+          .select('blueprints.*', 'group.groupName as groupName')
+          .join('invTypes as item', 'item.typeID', 'blueprints.typeId')
+          .join('invGroups as group', 'item.groupID', 'group.groupID');
 
         if (filter) {
           if (filter.characterId) {
@@ -61,6 +64,7 @@ const resolverMap: IResolvers<IResolverContext> = {
               query.join('characters as character', 'character.id', 'blueprints.characterId');
               orderByCol = 'character.name';
               break;
+            case BlueprintsOrderBy.GroupName:
             case BlueprintsOrderBy.MaterialEfficiency:
             case BlueprintsOrderBy.TimeEfficiency:
             case BlueprintsOrderBy.MaxRuns:
@@ -70,6 +74,10 @@ const resolverMap: IResolvers<IResolverContext> = {
 
           if (orderByCol) {
             query.orderBy(orderByCol, order);
+
+            if (orderByCol != 'item.typeName') {
+              query.orderBy('item.typeName');
+            }
           }
         }
 

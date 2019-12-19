@@ -25,6 +25,7 @@ export type Blueprint = {
   id: Scalars['ID'],
   character: Character,
   name: Scalars['String'],
+  groupName: Scalars['String'],
   isCopy: Scalars['Boolean'],
   maxRuns: Scalars['Int'],
   materialEfficiency: Scalars['Int'],
@@ -38,6 +39,7 @@ export type BlueprintFilter = {
 export enum BlueprintsOrderBy {
   Character = 'character',
   Name = 'name',
+  GroupName = 'groupName',
   MaxRuns = 'maxRuns',
   MaterialEfficiency = 'materialEfficiency',
   TimeEfficiency = 'timeEfficiency'
@@ -767,6 +769,7 @@ export type BlueprintResolvers<ContextType = any, ParentType extends ResolversPa
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  groupName?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
   isCopy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
   maxRuns?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   materialEfficiency?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
