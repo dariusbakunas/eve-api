@@ -30,7 +30,7 @@ const resolverMap: IResolvers<IResolverContext> = {
         .pluck('id');
 
       if (characterIds.length) {
-        const query = dataSources.db.Blueprint.query();
+        const query = dataSources.db.Blueprint.query().join('invTypes as item', 'item.typeID', 'blueprints.typeId');
 
         if (filter) {
           if (filter.characterId) {
@@ -46,13 +46,15 @@ const resolverMap: IResolvers<IResolverContext> = {
           query.where('characterId', 'in', characterIds);
         }
 
+        // TODO: is there better way? categoryId still maps to Blueprints
+        query.whereNot('item.typeName', 'like', '%reaction%');
+
         if (orderBy) {
           let orderByCol;
           const { column, order } = orderBy;
 
           switch (column) {
             case BlueprintsOrderBy.Name:
-              query.join('invTypes as item', 'item.typeID', 'blueprints.typeId');
               orderByCol = 'item.typeName';
               break;
             case BlueprintsOrderBy.Character:
