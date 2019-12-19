@@ -1,5 +1,5 @@
-import { Blueprint, QueryBlueprintsArgs, Resolver, ResolversParentTypes, ResolversTypes, Scalars } from '../__generated__/types';
 import { Blueprint as BlueprintDB } from '../services/db/models/blueprint';
+import { BlueprintsOrderBy, QueryBlueprintsArgs, Resolver, ResolversParentTypes, ResolversTypes } from '../__generated__/types';
 import { Character as CharacterDB } from '../services/db/models/character';
 import { getCharacter } from './common';
 import { IResolverContext } from '../types';
@@ -22,7 +22,7 @@ interface IResolvers<Context> {
 
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
-    blueprints: async (_parent, { filter, page }, { dataSources, user }) => {
+    blueprints: async (_parent, { filter, orderBy, page }, { dataSources, user }) => {
       const { index, size } = page || { index: 0, size: 10 };
       const characterIds = await dataSources.db.Character.query()
         .select('id')
@@ -44,6 +44,31 @@ const resolverMap: IResolvers<IResolverContext> = {
 
         if (!filter || !filter.characterId) {
           query.where('characterId', 'in', characterIds);
+        }
+
+        if (orderBy) {
+          let orderByCol;
+          const { column, order } = orderBy;
+
+          switch (column) {
+            case BlueprintsOrderBy.Name:
+              query.join('invTypes as item', 'item.typeID', 'blueprints.typeId');
+              orderByCol = 'item.typeName';
+              break;
+            case BlueprintsOrderBy.Character:
+              query.join('characters as character', 'character.id', 'blueprints.characterId');
+              orderByCol = 'character.name';
+              break;
+            case BlueprintsOrderBy.MaterialEfficiency:
+            case BlueprintsOrderBy.TimeEfficiency:
+            case BlueprintsOrderBy.MaxRuns:
+              orderByCol = column;
+              break;
+          }
+
+          if (orderByCol) {
+            query.orderBy(orderByCol, order);
+          }
         }
 
         const blueprints = await query.page(index, size);

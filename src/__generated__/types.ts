@@ -43,6 +43,11 @@ export enum BlueprintsOrderBy {
   TimeEfficiency = 'timeEfficiency'
 }
 
+export type BlueprintsOrderByInput = {
+  column: BlueprintsOrderBy,
+  order: Order,
+};
+
 export type BlueprintsResponse = {
    __typename?: 'BlueprintsResponse',
   total: Scalars['Int'],
@@ -347,7 +352,8 @@ export type Query = {
 
 export type QueryBlueprintsArgs = {
   page?: Maybe<PageInput>,
-  filter?: Maybe<BlueprintFilter>
+  filter?: Maybe<BlueprintFilter>,
+  orderBy?: Maybe<BlueprintsOrderByInput>
 };
 
 
@@ -630,6 +636,9 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Partial<Scalars['Int']>>,
   BlueprintFilter: ResolverTypeWrapper<Partial<BlueprintFilter>>,
   ID: ResolverTypeWrapper<Partial<Scalars['ID']>>,
+  BlueprintsOrderByInput: ResolverTypeWrapper<Partial<BlueprintsOrderByInput>>,
+  BlueprintsOrderBy: ResolverTypeWrapper<Partial<BlueprintsOrderBy>>,
+  Order: ResolverTypeWrapper<Partial<Order>>,
   BlueprintsResponse: ResolverTypeWrapper<Partial<BlueprintsResponse>>,
   Blueprint: ResolverTypeWrapper<Partial<Blueprint>>,
   Character: ResolverTypeWrapper<Partial<Character>>,
@@ -655,7 +664,6 @@ export type ResolversTypes = {
   OrderStateFilter: ResolverTypeWrapper<Partial<OrderStateFilter>>,
   MarketOrderOrderByInput: ResolverTypeWrapper<Partial<MarketOrderOrderByInput>>,
   MarketOrderOrderBy: ResolverTypeWrapper<Partial<MarketOrderOrderBy>>,
-  Order: ResolverTypeWrapper<Partial<Order>>,
   MarketOrders: ResolverTypeWrapper<Partial<MarketOrders>>,
   MarketOrder: ResolverTypeWrapper<Partial<MarketOrder>>,
   InventoryItem: ResolverTypeWrapper<Partial<InventoryItem>>,
@@ -681,7 +689,6 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
   WarehouseItemInput: ResolverTypeWrapper<Partial<WarehouseItemInput>>,
-  BlueprintsOrderBy: ResolverTypeWrapper<Partial<BlueprintsOrderBy>>,
   Date: ResolverTypeWrapper<Partial<Scalars['Date']>>,
   Time: ResolverTypeWrapper<Partial<Scalars['Time']>>,
 };
@@ -693,6 +700,9 @@ export type ResolversParentTypes = {
   Int: Partial<Scalars['Int']>,
   BlueprintFilter: Partial<BlueprintFilter>,
   ID: Partial<Scalars['ID']>,
+  BlueprintsOrderByInput: Partial<BlueprintsOrderByInput>,
+  BlueprintsOrderBy: Partial<BlueprintsOrderBy>,
+  Order: Partial<Order>,
   BlueprintsResponse: Partial<BlueprintsResponse>,
   Blueprint: Partial<Blueprint>,
   Character: Partial<Character>,
@@ -718,7 +728,6 @@ export type ResolversParentTypes = {
   OrderStateFilter: Partial<OrderStateFilter>,
   MarketOrderOrderByInput: Partial<MarketOrderOrderByInput>,
   MarketOrderOrderBy: Partial<MarketOrderOrderBy>,
-  Order: Partial<Order>,
   MarketOrders: Partial<MarketOrders>,
   MarketOrder: Partial<MarketOrder>,
   InventoryItem: Partial<InventoryItem>,
@@ -744,7 +753,6 @@ export type ResolversParentTypes = {
   Mutation: {},
   RegistrationInput: Partial<RegistrationInput>,
   WarehouseItemInput: Partial<WarehouseItemInput>,
-  BlueprintsOrderBy: Partial<BlueprintsOrderBy>,
   Date: Partial<Scalars['Date']>,
   Time: Partial<Scalars['Time']>,
 };

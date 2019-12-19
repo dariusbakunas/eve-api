@@ -16,6 +16,11 @@ enum BlueprintsOrderBy {
   timeEfficiency
 }
 
+input BlueprintsOrderByInput {
+  column: BlueprintsOrderBy!
+  order: Order!
+}
+
 input BlueprintFilter {
   characterId: ID
 }
@@ -26,5 +31,5 @@ type BlueprintsResponse {
 }
 
 extend type Query {
-  blueprints(page: PageInput, filter: BlueprintFilter, orderBy: BlueprintsOrderBy): BlueprintsResponse!
+  blueprints(page: PageInput, filter: BlueprintFilter, orderBy: BlueprintsOrderByInput): BlueprintsResponse!
 }
