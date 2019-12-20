@@ -3,6 +3,7 @@ import { cleanup } from './cleanup';
 import { getAccessToken } from '../resolvers/common';
 import { InMemoryLRUCache } from 'apollo-server-caching';
 import { processAlliances } from './processAlliances';
+import { processBlueprints } from './processBlueprints';
 import { processBookmarks } from './processBookmarks';
 import { processCorporations } from './processCorporations';
 import { processJournalEntries } from './processJournalEntries';
@@ -15,7 +16,6 @@ import db from '../services/db';
 import EsiAPI from '../services/esi/api';
 import EsiAuth from '../services/esi/auth';
 import logger from '../utils/logger';
-import { processBlueprints } from './processBlueprints';
 
 const initDataSources = () => {
   const dataSources = {

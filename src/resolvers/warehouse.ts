@@ -58,9 +58,6 @@ interface IResolvers<Context> {
   Warehouse: {
     items: Resolver<Array<ResolversTypes['WarehouseItem']>, WarehouseDB, Context>;
   };
-  WarehouseItem: {
-    name: Resolver<ResolversTypes['String'], { id: string }, Context>;
-  };
 }
 
 const resolverMap: IResolvers<IResolverContext> = {
@@ -203,19 +200,18 @@ const resolverMap: IResolvers<IResolverContext> = {
   },
   Warehouse: {
     items: async ({ id }, args, { dataSources: { db } }): Promise<Array<Partial<WarehouseItem>>> => {
-      const items: Array<ICombinedWarehouseItem> = await db.WarehouseItem.query().where('warehouseId', id);
+      const items: Array<ICombinedWarehouseItem> = await db.WarehouseItem.query()
+        .select('warehouseItems.*', 'item.typeName as typeName')
+        .where('warehouseId', id)
+        .join('invTypes as item', 'item.typeID', 'warehouseItems.typeId')
+        .orderBy('typeName');
 
       return items.map(item => ({
         id: `${item.typeId}`,
+        name: item.typeName,
         quantity: item.quantity,
         unitCost: item.unitPrice,
       }));
-    },
-  },
-  WarehouseItem: {
-    name: async ({ id }, args, { dataSources: { loaders } }): Promise<string> => {
-      const invItem = await loaders.invItemLoader.load(+id);
-      return invItem!.typeName!; // unlikely for it to not exist or not have name
     },
   },
 };
