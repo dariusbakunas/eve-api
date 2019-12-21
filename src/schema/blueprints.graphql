@@ -1,8 +1,7 @@
 type Blueprint {
   id: ID!
   character: Character!
-  name: String!
-  groupName: String!
+  item: InvItem!
   isCopy: Boolean!
   maxRuns: Int!
   materialEfficiency: Int!

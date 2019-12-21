@@ -6,6 +6,7 @@ export class Blueprint extends BaseModel {
   readonly id!: number;
   locationType!: string;
   locationId!: number;
+  groupName!: string;
   materialEfficiency!: number;
   isCopy!: boolean;
   maxRuns!: number;

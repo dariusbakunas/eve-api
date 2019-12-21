@@ -13,16 +13,19 @@ const resolverMap: IResolvers<IResolverContext> = {
     invItems: async (_parent, { filter }, { dataSources }) => {
       const query = dataSources.db.InventoryItem.query()
         .select('invTypes.*', 'invGroup.groupName')
-        .joinRelation('invGroup')
-        .where('invTypes.published', true);
+        .joinRelation('invGroup');
 
       if (filter) {
         if (filter.name) {
           query.where('typeName', 'like', `%${filter.name}%`);
         }
+
+        if (filter.categoryIds) {
+          query.where('invGroup.categoryID', 'in', filter.categoryIds);
+        }
       }
 
-      const items = await query.orderBy(['groupName', 'typeName']);
+      const items = await query.where('invTypes.published', true).orderBy(['groupName', 'typeName']);
 
       return items.map((item: InventoryItem) => ({
         id: item.typeID,

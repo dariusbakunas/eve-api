@@ -16,7 +16,7 @@ interface IResolvers<Context> {
   };
   Blueprint: {
     character: Resolver<CharacterDB, BlueprintDB, Context>;
-    name: Resolver<ResolversTypes['String'], BlueprintDB, Context>;
+    item: Resolver<ResolversTypes['InvItem'], BlueprintDB, Context>;
   };
 }
 
@@ -96,14 +96,21 @@ const resolverMap: IResolvers<IResolverContext> = {
     },
   },
   Blueprint: {
-    name: async (blueprint, args, { dataSources }) => {
+    item: async (blueprint, args, { dataSources }) => {
       const item = await dataSources.loaders.invItemLoader.load(blueprint.typeId);
 
       if (!item) {
         throw new Error(`Item id: ${blueprint.typeId} not found`);
       }
 
-      return item.typeName!;
+      return {
+        id: `${item.typeID}`,
+        name: item.typeName,
+        invGroup: {
+          id: `${item.groupID}`,
+          name: blueprint.groupName,
+        },
+      };
     },
     character: async (blueprint, args, { dataSources }) => {
       return getCharacter(blueprint.characterId, dataSources.loaders);

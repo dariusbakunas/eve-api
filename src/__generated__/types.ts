@@ -24,8 +24,7 @@ export type Blueprint = {
    __typename?: 'Blueprint',
   id: Scalars['ID'],
   character: Character,
-  name: Scalars['String'],
-  groupName: Scalars['String'],
+  item: InvItem,
   isCopy: Scalars['Boolean'],
   maxRuns: Scalars['Int'],
   materialEfficiency: Scalars['Int'],
@@ -117,6 +116,7 @@ export type InvItem = {
 
 export type InvItemFilter = {
   name?: Maybe<Scalars['String']>,
+  categoryIds?: Maybe<Array<Scalars['ID']>>,
 };
 
 export type JournalEntries = {
@@ -651,10 +651,10 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<Partial<Scalars['Float']>>,
   SkillGroup: ResolverTypeWrapper<Partial<SkillGroup>>,
   Skill: ResolverTypeWrapper<Partial<Skill>>,
-  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
-  InvItemFilter: ResolverTypeWrapper<Partial<InvItemFilter>>,
   InvItem: ResolverTypeWrapper<Partial<InvItem>>,
   InvGroup: ResolverTypeWrapper<Partial<InvGroup>>,
+  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
+  InvItemFilter: ResolverTypeWrapper<Partial<InvItemFilter>>,
   ProcessingLogFilter: ResolverTypeWrapper<Partial<ProcessingLogFilter>>,
   ProcessingLogEntry: ResolverTypeWrapper<Partial<ProcessingLogEntry>>,
   ProcessingCategory: ResolverTypeWrapper<Partial<ProcessingCategory>>,
@@ -715,10 +715,10 @@ export type ResolversParentTypes = {
   Float: Partial<Scalars['Float']>,
   SkillGroup: Partial<SkillGroup>,
   Skill: Partial<Skill>,
-  Boolean: Partial<Scalars['Boolean']>,
-  InvItemFilter: Partial<InvItemFilter>,
   InvItem: Partial<InvItem>,
   InvGroup: Partial<InvGroup>,
+  Boolean: Partial<Scalars['Boolean']>,
+  InvItemFilter: Partial<InvItemFilter>,
   ProcessingLogFilter: Partial<ProcessingLogFilter>,
   ProcessingLogEntry: Partial<ProcessingLogEntry>,
   ProcessingCategory: Partial<ProcessingCategory>,
@@ -768,8 +768,7 @@ export type AllianceResolvers<ContextType = any, ParentType extends ResolversPar
 export type BlueprintResolvers<ContextType = any, ParentType extends ResolversParentTypes['Blueprint'] = ResolversParentTypes['Blueprint']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  groupName?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
   isCopy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
   maxRuns?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   materialEfficiency?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,

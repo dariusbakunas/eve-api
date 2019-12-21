@@ -1,5 +1,6 @@
 input InvItemFilter {
   name: String
+  categoryIds: [ID!]
 }
 
 type InvGroup {
