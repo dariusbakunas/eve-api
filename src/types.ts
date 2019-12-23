@@ -1,5 +1,6 @@
-import { IUserProfile } from './index';
 import { IDataSources } from './services';
+import { InventoryItem } from './services/db/models/InventoryItem';
+import { IUserProfile } from './index';
 
 export type Maybe<T> = T | null;
 
@@ -17,3 +18,5 @@ export interface ContextUser {
 export interface ApolloContext {
   user?: ContextUser;
 }
+
+export type InvItemPartial = Pick<InventoryItem, 'typeID' | 'typeName' | 'groupID' | 'groupName'>;

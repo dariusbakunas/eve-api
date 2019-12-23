@@ -2,7 +2,7 @@ import { Blueprint as BlueprintDB } from '../services/db/models/blueprint';
 import { BlueprintsOrderBy, QueryBlueprintsArgs, Resolver, ResolversParentTypes, ResolversTypes } from '../__generated__/types';
 import { Character as CharacterDB } from '../services/db/models/character';
 import { getCharacter } from './common';
-import { IResolverContext } from '../types';
+import { InvItemPartial, IResolverContext } from '../types';
 import { UserInputError } from 'apollo-server-errors';
 
 interface BlueprintsResponseDB {
@@ -16,7 +16,7 @@ interface IResolvers<Context> {
   };
   Blueprint: {
     character: Resolver<CharacterDB, BlueprintDB, Context>;
-    item: Resolver<ResolversTypes['InvItem'], BlueprintDB, Context>;
+    item: Resolver<InvItemPartial, BlueprintDB, Context>;
   };
 }
 
@@ -103,14 +103,7 @@ const resolverMap: IResolvers<IResolverContext> = {
         throw new Error(`Item id: ${blueprint.typeId} not found`);
       }
 
-      return {
-        id: `${item.typeID}`,
-        name: item.typeName,
-        invGroup: {
-          id: `${item.groupID}`,
-          name: blueprint.groupName,
-        },
-      };
+      return item;
     },
     character: async (blueprint, args, { dataSources }) => {
       return getCharacter(blueprint.characterId, dataSources.loaders);

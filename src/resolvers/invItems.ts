@@ -1,10 +1,15 @@
-import { InventoryItem } from '../services/db/models/InventoryItem';
-import { IResolverContext } from '../types';
+import { InvItemPartial, IResolverContext } from '../types';
 import { QueryInvItemsArgs, Resolver, ResolversParentTypes, ResolversTypes } from '../__generated__/types';
+import property from 'lodash.property';
 
 interface IResolvers<Context> {
   Query: {
-    invItems: Resolver<Array<ResolversTypes['InvItem']>, ResolversParentTypes['Query'], Context, QueryInvItemsArgs>;
+    invItems: Resolver<Array<InvItemPartial>, ResolversParentTypes['Query'], Context, QueryInvItemsArgs>;
+  };
+  InvItem: {
+    id?: Resolver<ResolversTypes['ID'], InvItemPartial, Context>;
+    name?: Resolver<ResolversTypes['String'], InvItemPartial, Context>;
+    invGroup?: Resolver<ResolversTypes['InvGroup'], InvItemPartial, Context>;
   };
 }
 
@@ -25,16 +30,30 @@ const resolverMap: IResolvers<IResolverContext> = {
         }
       }
 
-      const items = await query.where('invTypes.published', true).orderBy(['groupName', 'typeName']);
+      return query.where('invTypes.published', true).orderBy(['groupName', 'typeName']);
+    },
+  },
+  InvItem: {
+    id: property('typeID'),
+    name: property('typeName'),
+    invGroup: async (invItem, args, { dataSources: { loaders } }) => {
+      if (invItem.groupName) {
+        return {
+          id: `${invItem.groupID}`,
+          name: invItem.groupName,
+        };
+      } else {
+        const group = await loaders.invGroupLoader.load(invItem.groupID);
 
-      return items.map((item: InventoryItem) => ({
-        id: item.typeID,
-        name: item.typeName,
-        invGroup: {
-          id: item.groupID,
-          name: item.groupName,
-        },
-      }));
+        if (group) {
+          return {
+            id: `${group.groupID}`,
+            name: group.groupName,
+          };
+        }
+
+        throw new Error(`Could not load invGroup ID: ${invItem.groupID}`);
+      }
     },
   },
 };

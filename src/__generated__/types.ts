@@ -94,13 +94,6 @@ export type Corporation = {
 
 
 
-export type InventoryItem = {
-   __typename?: 'InventoryItem',
-  id: Scalars['ID'],
-  name?: Maybe<Scalars['String']>,
-  description?: Maybe<Scalars['String']>,
-};
-
 export type InvGroup = {
    __typename?: 'InvGroup',
   id: Scalars['ID'],
@@ -157,7 +150,7 @@ export type MarketOrder = {
   /** For buy orders, the amount of ISK in escrow */
   escrow?: Maybe<Scalars['Float']>,
   /** Item transacted in this order */
-  item: InventoryItem,
+  item: InvItem,
   /** True if this is buy order */
   isBuy: Scalars['Boolean'],
   /** Signifies whether the buy/sell order was placed on behalf of a corporation */
@@ -489,9 +482,8 @@ export type WalletTransaction = {
   character: Character,
   date: Scalars['DateTime'],
   isBuy: Scalars['Boolean'],
-  item: InventoryItem,
+  item: InvItem,
   location: Location,
-  invGroup: InvGroup,
   marketGroup?: Maybe<MarketGroup>,
   quantity: Scalars['Int'],
   unitPrice: Scalars['Float'],
@@ -668,7 +660,6 @@ export type ResolversTypes = {
   MarketOrderOrderBy: ResolverTypeWrapper<Partial<MarketOrderOrderBy>>,
   MarketOrders: ResolverTypeWrapper<Partial<MarketOrders>>,
   MarketOrder: ResolverTypeWrapper<Partial<MarketOrder>>,
-  InventoryItem: ResolverTypeWrapper<Partial<InventoryItem>>,
   Location: ResolverTypeWrapper<Partial<Location>>,
   OrderState: ResolverTypeWrapper<Partial<OrderState>>,
   WalletJournalFilter: ResolverTypeWrapper<Partial<WalletJournalFilter>>,
@@ -732,7 +723,6 @@ export type ResolversParentTypes = {
   MarketOrderOrderBy: Partial<MarketOrderOrderBy>,
   MarketOrders: Partial<MarketOrders>,
   MarketOrder: Partial<MarketOrder>,
-  InventoryItem: Partial<InventoryItem>,
   Location: Partial<Location>,
   OrderState: Partial<OrderState>,
   WalletJournalFilter: Partial<WalletJournalFilter>,
@@ -817,12 +807,6 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime'
 }
 
-export type InventoryItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['InventoryItem'] = ResolversParentTypes['InventoryItem']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
-  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
-};
-
 export type InvGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvGroup'] = ResolversParentTypes['InvGroup']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
@@ -863,7 +847,7 @@ export type MarketOrderResolvers<ContextType = any, ParentType extends Resolvers
   character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
   duration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   escrow?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
-  item?: Resolver<ResolversTypes['InventoryItem'], ParentType, ContextType>,
+  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
   isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
   isCorporation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
   location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>,
@@ -964,9 +948,8 @@ export type WalletTransactionResolvers<ContextType = any, ParentType extends Res
   character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
   date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
   isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
-  item?: Resolver<ResolversTypes['InventoryItem'], ParentType, ContextType>,
+  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
   location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>,
-  invGroup?: Resolver<ResolversTypes['InvGroup'], ParentType, ContextType>,
   marketGroup?: Resolver<Maybe<ResolversTypes['MarketGroup']>, ParentType, ContextType>,
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   unitPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
@@ -1011,7 +994,6 @@ export type Resolvers<ContextType = any> = {
   Corporation?: CorporationResolvers<ContextType>,
   Date?: GraphQLScalarType,
   DateTime?: GraphQLScalarType,
-  InventoryItem?: InventoryItemResolvers<ContextType>,
   InvGroup?: InvGroupResolvers<ContextType>,
   InvItem?: InvItemResolvers<ContextType>,
   JournalEntries?: JournalEntriesResolvers<ContextType>,

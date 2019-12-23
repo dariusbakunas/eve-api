@@ -1,7 +1,6 @@
 import { Character } from '../services/db/models/character';
 import { getCharacter } from './common';
 import {
-  InventoryItem,
   InvGroup,
   MarketGroup,
   MarketOrderOrderBy,
@@ -19,7 +18,7 @@ import {
   WalletJournalOrderBy,
   WalletTransactionOrderBy,
 } from '../__generated__/types';
-import { IResolverContext } from '../types';
+import { InvItemPartial, IResolverContext } from '../types';
 import { JoinClause } from 'knex';
 import { JournalEntry } from '../services/db/models/journalEntry';
 import { Loaders } from '../services/db/loaders';
@@ -42,14 +41,13 @@ interface IResolvers<Context> {
     >;
   };
   MarketOrder: {
-    item: Resolver<ResolversTypes['InventoryItem'], MarketOrder, Context>;
+    item: Resolver<InvItemPartial, MarketOrder, Context>;
     character: Resolver<Character, MarketOrder, Context>;
     location: Resolver<Maybe<ResolversTypes['Location']>, MarketOrder, Context>;
   };
   WalletTransaction: {
-    item: Resolver<ResolversTypes['InventoryItem'], WalletTransactionDB, Context>;
+    item: Resolver<InvItemPartial, WalletTransactionDB, Context>;
     marketGroup: Resolver<Maybe<ResolversTypes['MarketGroup']>, WalletTransactionDB, Context>;
-    invGroup: Resolver<ResolversTypes['InvGroup'], WalletTransactionDB, Context>;
     character: Resolver<Character, WalletTransactionDB, Context>;
     client: Resolver<ResolversTypes['Client'], WalletTransactionDB, Context>;
     location: Resolver<Maybe<ResolversTypes['Location']>, WalletTransactionDB, Context>;
@@ -62,18 +60,14 @@ interface IResolvers<Context> {
   };
 }
 
-const getItem: (typeId: number, loaders: Loaders) => Promise<InventoryItem> = async (typeId, loaders) => {
+const getItem: (typeId: number, loaders: Loaders) => Promise<InvItemPartial> = async (typeId, loaders) => {
   const item = await loaders.invItemLoader.load(typeId);
 
   if (!item) {
     throw new Error(`Item id: ${typeId} not found`);
   }
 
-  return {
-    ...item,
-    id: `${item.typeID}`,
-    name: item.typeName,
-  };
+  return item;
 };
 
 const resolverMap: IResolvers<IResolverContext> = {
@@ -416,8 +410,10 @@ const resolverMap: IResolvers<IResolverContext> = {
     },
     item: async (parent, args, { dataSources }) => {
       return {
-        id: `${parent.typeId}`,
-        name: parent.typeName,
+        typeID: parent.typeId,
+        typeName: parent.typeName,
+        groupID: parent.groupID,
+        groupName: parent.groupName,
       };
     },
     location: parent => {
@@ -425,14 +421,6 @@ const resolverMap: IResolvers<IResolverContext> = {
         id: `${parent.locationId}`,
         name: parent.locationName || 'Unknown Station',
       };
-    },
-    invGroup: async parent => {
-      const invGroup: InvGroup = {
-        id: `${parent.groupID}`,
-        name: parent.groupName,
-      };
-
-      return invGroup;
     },
     marketGroup: async (parent, args, { dataSources: { loaders } }) => {
       if (parent.marketGroupID) {

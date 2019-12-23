@@ -42,12 +42,6 @@ input MarketOrderOrderByInput {
   order: Order!
 }
 
-type InventoryItem {
-  id: ID!
-  name: String
-  description: String
-}
-
 type Location {
   id: ID!
   name: String!
@@ -82,7 +76,7 @@ type MarketOrder {
   """
   Item transacted in this order
   """
-  item: InventoryItem!
+  item: InvItem!
   """
   True if this is buy order
   """
@@ -137,9 +131,8 @@ type WalletTransaction {
   character: Character!
   date: DateTime!
   isBuy: Boolean!
-  item: InventoryItem!
+  item: InvItem!
   location: Location!
-  invGroup: InvGroup!
   marketGroup: MarketGroup
   quantity: Int!
   unitPrice: Float!
