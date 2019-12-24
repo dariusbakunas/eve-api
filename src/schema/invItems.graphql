@@ -3,9 +3,15 @@ input InvItemFilter {
   categoryIds: [ID!]
 }
 
+type InvCategory {
+  id: ID!
+  name: String!
+}
+
 type InvGroup {
   id: ID!
   name: String!
+  category: InvCategory!
 }
 
 type InvItem {

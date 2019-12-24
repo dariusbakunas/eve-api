@@ -94,10 +94,17 @@ export type Corporation = {
 
 
 
+export type InvCategory = {
+   __typename?: 'InvCategory',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+};
+
 export type InvGroup = {
    __typename?: 'InvGroup',
   id: Scalars['ID'],
   name: Scalars['String'],
+  category: InvCategory,
 };
 
 export type InvItem = {
@@ -645,6 +652,7 @@ export type ResolversTypes = {
   Skill: ResolverTypeWrapper<Partial<Skill>>,
   InvItem: ResolverTypeWrapper<Partial<InvItem>>,
   InvGroup: ResolverTypeWrapper<Partial<InvGroup>>,
+  InvCategory: ResolverTypeWrapper<Partial<InvCategory>>,
   Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   InvItemFilter: ResolverTypeWrapper<Partial<InvItemFilter>>,
   ProcessingLogFilter: ResolverTypeWrapper<Partial<ProcessingLogFilter>>,
@@ -708,6 +716,7 @@ export type ResolversParentTypes = {
   Skill: Partial<Skill>,
   InvItem: Partial<InvItem>,
   InvGroup: Partial<InvGroup>,
+  InvCategory: Partial<InvCategory>,
   Boolean: Partial<Scalars['Boolean']>,
   InvItemFilter: Partial<InvItemFilter>,
   ProcessingLogFilter: Partial<ProcessingLogFilter>,
@@ -807,9 +816,15 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime'
 }
 
+export type InvCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvCategory'] = ResolversParentTypes['InvCategory']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
 export type InvGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvGroup'] = ResolversParentTypes['InvGroup']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  category?: Resolver<ResolversTypes['InvCategory'], ParentType, ContextType>,
 };
 
 export type InvItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvItem'] = ResolversParentTypes['InvItem']> = {
@@ -994,6 +1009,7 @@ export type Resolvers<ContextType = any> = {
   Corporation?: CorporationResolvers<ContextType>,
   Date?: GraphQLScalarType,
   DateTime?: GraphQLScalarType,
+  InvCategory?: InvCategoryResolvers<ContextType>,
   InvGroup?: InvGroupResolvers<ContextType>,
   InvItem?: InvItemResolvers<ContextType>,
   JournalEntries?: JournalEntriesResolvers<ContextType>,

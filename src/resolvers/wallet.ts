@@ -286,6 +286,7 @@ const resolverMap: IResolvers<IResolverContext> = {
             'item.typeName',
             'item.marketGroupID',
             'invGroup.groupName',
+            'invGroup.categoryID',
             raw('coalesce(citadel.name, station.stationName) as locationName'),
             raw('(walletTransactions.quantity * walletTransactions.unitPrice) * if(walletTransactions.isBuy, -1, 1) as credit')
           )

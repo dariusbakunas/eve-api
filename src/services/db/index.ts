@@ -4,6 +4,7 @@ import { CharacterSkill } from './models/characterSkill';
 import { CitadelCacheItem } from './models/citadelCacheItem';
 import { Corporation } from './models/corporation';
 import { IDataSources } from '../index';
+import { InvCategory } from './models/InvCategory';
 import { InventoryItem } from './models/InventoryItem';
 import { InvGroup } from './models/invGroup';
 import { Invitation } from './models/invitation';
@@ -40,6 +41,7 @@ const db: IDataSources['db'] = {
   Corporation,
   NameCacheItem,
   MarketOrder,
+  InvCategory,
   JournalEntry,
   JobLogEntry,
   User,

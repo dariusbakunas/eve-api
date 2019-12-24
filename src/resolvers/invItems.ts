@@ -1,4 +1,4 @@
-import { InvItemPartial, IResolverContext } from '../types';
+import { InvGroupPartial, InvItemPartial, IResolverContext } from '../types';
 import { QueryInvItemsArgs, Resolver, ResolversParentTypes, ResolversTypes } from '../__generated__/types';
 import property from 'lodash.property';
 
@@ -9,7 +9,7 @@ interface IResolvers<Context> {
   InvItem: {
     id?: Resolver<ResolversTypes['ID'], InvItemPartial, Context>;
     name?: Resolver<ResolversTypes['String'], InvItemPartial, Context>;
-    invGroup?: Resolver<ResolversTypes['InvGroup'], InvItemPartial, Context>;
+    invGroup?: Resolver<InvGroupPartial, InvItemPartial, Context>;
   };
 }
 
@@ -37,19 +37,17 @@ const resolverMap: IResolvers<IResolverContext> = {
     id: property('typeID'),
     name: property('typeName'),
     invGroup: async (invItem, args, { dataSources: { loaders } }) => {
-      if (invItem.groupName) {
+      if (invItem.groupName && invItem.categoryID) {
         return {
-          id: `${invItem.groupID}`,
-          name: invItem.groupName,
+          groupID: invItem.groupID,
+          groupName: invItem.groupName,
+          categoryID: invItem.categoryID,
         };
       } else {
         const group = await loaders.invGroupLoader.load(invItem.groupID);
 
         if (group) {
-          return {
-            id: `${group.groupID}`,
-            name: group.groupName,
-          };
+          return group;
         }
 
         throw new Error(`Could not load invGroup ID: ${invItem.groupID}`);

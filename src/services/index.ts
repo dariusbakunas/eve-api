@@ -4,6 +4,7 @@ import { Character } from './db/models/character';
 import { CharacterSkill } from './db/models/characterSkill';
 import { CitadelCacheItem } from './db/models/citadelCacheItem';
 import { Corporation } from './db/models/corporation';
+import { InvCategory } from './db/models/InvCategory';
 import { InventoryItem } from './db/models/InventoryItem';
 import { InvGroup } from './db/models/invGroup';
 import { Invitation } from './db/models/invitation';
@@ -43,6 +44,7 @@ export interface IDataSources {
     JournalEntry: typeof JournalEntry;
     JobLogEntry: typeof JobLogEntry;
     MarketGroup: typeof MarketGroup;
+    InvCategory: typeof InvCategory;
     User: typeof User;
     Scope: typeof Scope;
     Invitation: typeof Invitation;

@@ -1,5 +1,6 @@
 import { Character } from './models/character';
 import { IDataSources } from '../index';
+import { InvCategory } from './models/InvCategory';
 import { InventoryItem } from './models/InventoryItem';
 import { InvGroup } from './models/invGroup';
 import { MarketGroup } from './models/marketGroup';
@@ -13,12 +14,14 @@ export class Loaders {
   public invGroupLoader: DataLoader<number, Maybe<InvGroup>>;
   public marketGroupLoader: DataLoader<number, Maybe<MarketGroup>>;
   public invItemLoader: DataLoader<number, Maybe<InventoryItem>>;
+  public invCategoryLoader: DataLoader<number, Maybe<InvCategory>>;
   public characterLoader: DataLoader<number, Maybe<Character>>;
   public stationLoader: DataLoader<number, Maybe<Station>>;
 
   constructor(db: IDataSources['db']) {
     this.db = db;
     this.invItemLoader = new DataLoader(ids => this.loadInvItems(ids));
+    this.invCategoryLoader = new DataLoader(ids => this.loadInvCategories(ids));
     this.characterLoader = new DataLoader(ids => this.loadCharacters(ids));
     this.stationLoader = new DataLoader(ids => this.loadStations(ids));
     this.invGroupLoader = new DataLoader(ids => this.loadInvGroups(ids));
@@ -52,6 +55,11 @@ export class Loaders {
     return this.mapItems<InvGroup>(ids, invGroups, invGroup => invGroup.groupID);
   }
 
+  private async loadInvCategories(ids: number[]) {
+    const invCategories: Array<InvCategory> = await this.db.InvCategory.query().where('categoryID', 'in', ids);
+    return this.mapItems<InvCategory>(ids, invCategories, invCategory => invCategory.categoryID);
+  }
+
   private async loadMarketGroups(ids: number[]) {
     const marketGroups: Array<MarketGroup> = await this.db.MarketGroup.query().where('marketGroupID', 'in', ids);
     return this.mapItems<MarketGroup>(ids, marketGroups, marketGroup => marketGroup.marketGroupID);
@@ -59,7 +67,10 @@ export class Loaders {
 
   private async loadInvItems(ids: number[]) {
     logger.debug(`loaders.loadInvItems, ids: ${ids.join(',')}`);
-    const invItems: Array<InventoryItem> = await this.db.InventoryItem.query().where('typeID', 'in', ids);
+    const invItems: Array<InventoryItem> = await this.db.InventoryItem.query()
+      .select('invTypes.*', 'invGroup.categoryID')
+      .join('invGroups as invGroup', 'invTypes.groupID', 'invGroup.groupID')
+      .where('typeID', 'in', ids);
     return this.mapItems<InventoryItem>(ids, invItems, item => item.typeID);
   }
 }

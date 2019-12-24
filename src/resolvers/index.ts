@@ -3,6 +3,8 @@ import Blueprint from './blueprint';
 import Character from './character';
 import Corporation from './corporation';
 import CustomScalars from './customScalars';
+import InvCategory from './invCategory';
+import InvGroup from './invGroup';
 import InvItems from './invItems';
 import merge from 'lodash.merge';
 import Mutation from './mutation';
@@ -12,4 +14,19 @@ import User from './user';
 import Wallet from './wallet';
 import Warehouse from './warehouse';
 
-export default merge(Query, Alliance, Blueprint, Character, Corporation, InvItems, Mutation, CustomScalars, User, Wallet, Processing, Warehouse);
+export default merge(
+  Query,
+  Alliance,
+  Blueprint,
+  Character,
+  Corporation,
+  InvCategory,
+  InvItems,
+  InvGroup,
+  Mutation,
+  CustomScalars,
+  User,
+  Wallet,
+  Processing,
+  Warehouse
+);
