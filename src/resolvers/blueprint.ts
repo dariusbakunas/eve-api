@@ -1,8 +1,18 @@
 import { Blueprint as BlueprintDB } from '../services/db/models/blueprint';
-import { BlueprintsOrderBy, QueryBlueprintsArgs, Resolver, ResolversParentTypes, ResolversTypes } from '../__generated__/types';
+import {
+  BlueprintsOrderBy,
+  Maybe,
+  QueryBlueprintsArgs,
+  QueryBuildInfoArgs,
+  RequireFields,
+  Resolver,
+  ResolversParentTypes,
+  ResolverTypeWrapper,
+} from '../__generated__/types';
+import { BuildInfo, InvItemPartial, IResolverContext } from '../types';
 import { Character as CharacterDB } from '../services/db/models/character';
 import { getCharacter } from './common';
-import { InvItemPartial, IResolverContext } from '../types';
+import { IndustryActivityMaterial } from '../services/db/models/industryActivityMaterial';
 import { UserInputError } from 'apollo-server-errors';
 
 interface BlueprintsResponseDB {
@@ -10,13 +20,25 @@ interface BlueprintsResponseDB {
   entries: BlueprintDB[];
 }
 
+const BUILD_ACTIVITY_ID = 1;
+const RESEARCH_ACTIVITY_ID = 8;
+
 interface IResolvers<Context> {
   Query: {
     blueprints: Resolver<BlueprintsResponseDB, ResolversParentTypes['Query'], Context, QueryBlueprintsArgs>;
+    buildInfo: Resolver<
+      Maybe<ResolverTypeWrapper<Partial<BuildInfo>>>,
+      ResolversParentTypes['Query'],
+      Context,
+      RequireFields<QueryBuildInfoArgs, 'blueprintId'>
+    >;
   };
   Blueprint: {
     character: Resolver<CharacterDB, BlueprintDB, Context>;
     item: Resolver<InvItemPartial, BlueprintDB, Context>;
+  };
+  BuildMaterial: {
+    item: Resolver<InvItemPartial, { typeID: number; quantity: number }, Context>;
   };
 }
 
@@ -94,6 +116,36 @@ const resolverMap: IResolvers<IResolverContext> = {
         entries: [],
       };
     },
+    buildInfo: async (_parent, { blueprintId }, { dataSources }) => {
+      const product = await dataSources.db.IndustryActivityProduct.query()
+        .where('typeID', blueprintId)
+        .where('activityID', BUILD_ACTIVITY_ID)
+        .first();
+
+      if (product) {
+        const { productTypeID, quantity } = product;
+        const item = await dataSources.loaders.invItemLoader.load(productTypeID);
+        const activity = await dataSources.db.IndustryActivity.query()
+          .where('typeID', blueprintId)
+          .where('activityID', BUILD_ACTIVITY_ID)
+          .first();
+        const materials = await dataSources.db.IndustryActivityMaterial.query()
+          .where('typeID', blueprintId)
+          .where('activityID', BUILD_ACTIVITY_ID);
+
+        return {
+          materials: materials.map((material: IndustryActivityMaterial) => ({
+            typeID: material.materialTypeID,
+            quantity: material.quantity,
+          })),
+          product: item!,
+          quantity: quantity,
+          time: activity.time,
+        };
+      }
+
+      return null;
+    },
   },
   Blueprint: {
     item: async (blueprint, args, { dataSources }) => {
@@ -107,6 +159,17 @@ const resolverMap: IResolvers<IResolverContext> = {
     },
     character: async (blueprint, args, { dataSources }) => {
       return getCharacter(blueprint.characterId, dataSources.loaders);
+    },
+  },
+  BuildMaterial: {
+    item: async (parent, args, { dataSources }) => {
+      const item = await dataSources.loaders.invItemLoader.load(parent.typeID);
+
+      if (!item) {
+        throw new Error(`Item id: ${parent.typeID} not found`);
+      }
+
+      return item;
     },
   },
 };

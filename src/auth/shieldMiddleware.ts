@@ -43,6 +43,7 @@ const shieldMiddleware = shield(
   {
     Query: {
       '*': deny,
+      buildInfo: isActiveUser,
       blueprints: isActiveUser,
       character: and(isActiveUser, isCharacterOwner),
       characters: isActiveUser,

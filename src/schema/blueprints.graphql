@@ -31,6 +31,19 @@ type BlueprintsResponse {
   entries: [Blueprint!]!
 }
 
+type BuildMaterial {
+  item: InvItem!
+  quantity: Int!
+}
+
+type BuildInfo {
+  materials: [BuildMaterial!]!
+  product: InvItem!
+  quantity: Int!
+  time: Int!
+}
+
 extend type Query {
   blueprints(page: PageInput, filter: BlueprintFilter, orderBy: BlueprintsOrderByInput): BlueprintsResponse!
+  buildInfo(blueprintId: ID!): BuildInfo
 }

@@ -55,6 +55,20 @@ export type BlueprintsResponse = {
   entries: Array<Blueprint>,
 };
 
+export type BuildInfo = {
+   __typename?: 'BuildInfo',
+  materials: Array<BuildMaterial>,
+  product: InvItem,
+  quantity: Scalars['Int'],
+  time: Scalars['Int'],
+};
+
+export type BuildMaterial = {
+   __typename?: 'BuildMaterial',
+  item: InvItem,
+  quantity: Scalars['Int'],
+};
+
 export type Character = {
    __typename?: 'Character',
   id: Scalars['ID'],
@@ -336,6 +350,7 @@ export enum ProcessingStatus {
 export type Query = {
    __typename?: 'Query',
   blueprints: BlueprintsResponse,
+  buildInfo?: Maybe<BuildInfo>,
   character?: Maybe<Character>,
   characters: Array<Character>,
   invItems: Array<InvItem>,
@@ -356,6 +371,11 @@ export type QueryBlueprintsArgs = {
   page?: Maybe<PageInput>,
   filter?: Maybe<BlueprintFilter>,
   orderBy?: Maybe<BlueprintsOrderByInput>
+};
+
+
+export type QueryBuildInfoArgs = {
+  blueprintId: Scalars['ID']
 };
 
 
@@ -654,6 +674,8 @@ export type ResolversTypes = {
   InvGroup: ResolverTypeWrapper<Partial<InvGroup>>,
   InvCategory: ResolverTypeWrapper<Partial<InvCategory>>,
   Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
+  BuildInfo: ResolverTypeWrapper<Partial<BuildInfo>>,
+  BuildMaterial: ResolverTypeWrapper<Partial<BuildMaterial>>,
   InvItemFilter: ResolverTypeWrapper<Partial<InvItemFilter>>,
   ProcessingLogFilter: ResolverTypeWrapper<Partial<ProcessingLogFilter>>,
   ProcessingLogEntry: ResolverTypeWrapper<Partial<ProcessingLogEntry>>,
@@ -718,6 +740,8 @@ export type ResolversParentTypes = {
   InvGroup: Partial<InvGroup>,
   InvCategory: Partial<InvCategory>,
   Boolean: Partial<Scalars['Boolean']>,
+  BuildInfo: Partial<BuildInfo>,
+  BuildMaterial: Partial<BuildMaterial>,
   InvItemFilter: Partial<InvItemFilter>,
   ProcessingLogFilter: Partial<ProcessingLogFilter>,
   ProcessingLogEntry: Partial<ProcessingLogEntry>,
@@ -777,6 +801,18 @@ export type BlueprintResolvers<ContextType = any, ParentType extends ResolversPa
 export type BlueprintsResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['BlueprintsResponse'] = ResolversParentTypes['BlueprintsResponse']> = {
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   entries?: Resolver<Array<ResolversTypes['Blueprint']>, ParentType, ContextType>,
+};
+
+export type BuildInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['BuildInfo'] = ResolversParentTypes['BuildInfo']> = {
+  materials?: Resolver<Array<ResolversTypes['BuildMaterial']>, ParentType, ContextType>,
+  product?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  time?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+};
+
+export type BuildMaterialResolvers<ContextType = any, ParentType extends ResolversParentTypes['BuildMaterial'] = ResolversParentTypes['BuildMaterial']> = {
+  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
 };
 
 export type CharacterResolvers<ContextType = any, ParentType extends ResolversParentTypes['Character'] = ResolversParentTypes['Character']> = {
@@ -905,6 +941,7 @@ export type ProcessingLogEntryResolvers<ContextType = any, ParentType extends Re
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   blueprints?: Resolver<ResolversTypes['BlueprintsResponse'], ParentType, ContextType, QueryBlueprintsArgs>,
+  buildInfo?: Resolver<Maybe<ResolversTypes['BuildInfo']>, ParentType, ContextType, RequireFields<QueryBuildInfoArgs, 'blueprintId'>>,
   character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>,
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
   invItems?: Resolver<Array<ResolversTypes['InvItem']>, ParentType, ContextType, QueryInvItemsArgs>,
@@ -1004,6 +1041,8 @@ export type Resolvers<ContextType = any> = {
   Alliance?: AllianceResolvers<ContextType>,
   Blueprint?: BlueprintResolvers<ContextType>,
   BlueprintsResponse?: BlueprintsResponseResolvers<ContextType>,
+  BuildInfo?: BuildInfoResolvers<ContextType>,
+  BuildMaterial?: BuildMaterialResolvers<ContextType>,
   Character?: CharacterResolvers<ContextType>,
   Client?: ClientResolvers<ContextType>,
   Corporation?: CorporationResolvers<ContextType>,

@@ -24,6 +24,9 @@ import Knex from 'knex';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import { Blueprint } from './models/blueprint';
+import { IndustryActivity } from './models/industryActivity';
+import { IndustryActivityMaterial } from './models/industryActivityMaterial';
+import { IndustryActivityProduct } from './models/industryActivityProduct';
 import { MarketGroup } from './models/marketGroup';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('../../../knexfile');
@@ -48,6 +51,9 @@ const db: IDataSources['db'] = {
   Scope,
   InvGroup,
   Invitation,
+  IndustryActivityProduct,
+  IndustryActivityMaterial,
+  IndustryActivity,
   InventoryItem,
   MarketGroup,
   SkillMultiplier,
