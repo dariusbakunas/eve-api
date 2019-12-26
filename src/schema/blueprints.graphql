@@ -41,6 +41,7 @@ type BuildInfo {
   product: InvItem!
   quantity: Int!
   time: Int!
+  productionLimit: Int!
 }
 
 extend type Query {

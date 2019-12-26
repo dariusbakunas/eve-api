@@ -27,6 +27,7 @@ import { Blueprint } from './models/blueprint';
 import { IndustryActivity } from './models/industryActivity';
 import { IndustryActivityMaterial } from './models/industryActivityMaterial';
 import { IndustryActivityProduct } from './models/industryActivityProduct';
+import { IndustryBlueprint } from './models/industryBlueprints';
 import { MarketGroup } from './models/marketGroup';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('../../../knexfile');
@@ -51,6 +52,7 @@ const db: IDataSources['db'] = {
   Scope,
   InvGroup,
   Invitation,
+  IndustryBlueprint,
   IndustryActivityProduct,
   IndustryActivityMaterial,
   IndustryActivity,

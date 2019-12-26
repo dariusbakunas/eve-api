@@ -7,6 +7,7 @@ import { Corporation } from './db/models/corporation';
 import { IndustryActivity } from './db/models/industryActivity';
 import { IndustryActivityMaterial } from './db/models/industryActivityMaterial';
 import { IndustryActivityProduct } from './db/models/industryActivityProduct';
+import { IndustryBlueprint } from './db/models/industryBlueprints';
 import { InvCategory } from './db/models/InvCategory';
 import { InventoryItem } from './db/models/InventoryItem';
 import { InvGroup } from './db/models/invGroup';
@@ -47,6 +48,7 @@ export interface IDataSources {
     JournalEntry: typeof JournalEntry;
     JobLogEntry: typeof JobLogEntry;
     MarketGroup: typeof MarketGroup;
+    IndustryBlueprint: typeof IndustryBlueprint;
     InvCategory: typeof InvCategory;
     IndustryActivity: typeof IndustryActivity;
     IndustryActivityMaterial: typeof IndustryActivityMaterial;

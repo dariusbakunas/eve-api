@@ -24,12 +24,3 @@ export interface ApolloContext {
 export type InvItemPartial = Pick<InventoryItem, 'typeID' | 'typeName' | 'groupID' | 'groupName' | 'categoryID'>;
 export type InvGroupPartial = Pick<InvGroup, 'groupID' | 'groupName' | 'categoryID'>;
 export type InvCategoryPartial = Pick<InvCategory, 'categoryID' | 'categoryName'>;
-export type BuildInfo = {
-  materials: Array<{
-    typeID: number;
-    quantity: number;
-  }>;
-  product: InvItemPartial;
-  quantity: number;
-  time: number;
-};

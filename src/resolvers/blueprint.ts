@@ -9,10 +9,10 @@ import {
   ResolversParentTypes,
   ResolverTypeWrapper,
 } from '../__generated__/types';
-import { BuildInfo, InvItemPartial, IResolverContext } from '../types';
 import { Character as CharacterDB } from '../services/db/models/character';
 import { getCharacter } from './common';
 import { IndustryActivityMaterial } from '../services/db/models/industryActivityMaterial';
+import { InvItemPartial, IResolverContext } from '../types';
 import { UserInputError } from 'apollo-server-errors';
 
 interface BlueprintsResponseDB {
@@ -23,11 +23,21 @@ interface BlueprintsResponseDB {
 const BUILD_ACTIVITY_ID = 1;
 const RESEARCH_ACTIVITY_ID = 8;
 
+interface BuildInfo {
+  materials: Array<{
+    typeID: number;
+    quantity: number;
+  }>;
+  product: InvItemPartial;
+  quantity: number;
+  time: number;
+}
+
 interface IResolvers<Context> {
   Query: {
     blueprints: Resolver<BlueprintsResponseDB, ResolversParentTypes['Query'], Context, QueryBlueprintsArgs>;
     buildInfo: Resolver<
-      Maybe<ResolverTypeWrapper<Partial<BuildInfo>>>,
+      Maybe<ResolverTypeWrapper<BuildInfo>>,
       ResolversParentTypes['Query'],
       Context,
       RequireFields<QueryBuildInfoArgs, 'blueprintId'>
@@ -132,6 +142,9 @@ const resolverMap: IResolvers<IResolverContext> = {
         const materials = await dataSources.db.IndustryActivityMaterial.query()
           .where('typeID', blueprintId)
           .where('activityID', BUILD_ACTIVITY_ID);
+        const industryBlueprint = await dataSources.db.IndustryBlueprint.query()
+          .where('typeID', blueprintId)
+          .first();
 
         return {
           materials: materials.map((material: IndustryActivityMaterial) => ({
@@ -141,6 +154,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           product: item!,
           quantity: quantity,
           time: activity.time,
+          productionLimit: industryBlueprint.maxProductionLimit,
         };
       }
 
