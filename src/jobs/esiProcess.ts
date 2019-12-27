@@ -8,6 +8,7 @@ import { processBookmarks } from './processBookmarks';
 import { processCorporations } from './processCorporations';
 import { processJournalEntries } from './processJournalEntries';
 import { processMarketOrders } from './processMarketOrders';
+import { processSkillQueue } from './prrocessSkillQueue';
 import { processSkills } from './processSkills';
 import { processWalletTransactions } from './processWalletTransactions';
 import { updateNameCache } from './updateNameCache';
@@ -16,7 +17,6 @@ import db from '../services/db';
 import EsiAPI from '../services/esi/api';
 import EsiAuth from '../services/esi/auth';
 import logger from '../utils/logger';
-import { processSkillQueue } from './prrocessSkillQueue';
 
 const initDataSources = () => {
   const dataSources = {

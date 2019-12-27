@@ -16,6 +16,17 @@ type SkillGroup {
   trainedSp: Int
 }
 
+type SkillQueueItem {
+  position: Int!
+  finishDate: DateTime
+  finishedLevel: Int!
+  levelEndSp: Int!
+  levelStartSp: Int!
+  skill: Skill!
+  startDate: DateTime
+  trainingStartSp: Int!
+}
+
 type Character {
   id: ID!
   corporation: Corporation!
@@ -26,6 +37,7 @@ type Character {
   securityStatus: Float!
   skillGroups: [SkillGroup!]!
   skillGroup(id: ID!): SkillGroup
+  skillQueue: [SkillQueueItem!]!
   totalSp: Int
 }
 

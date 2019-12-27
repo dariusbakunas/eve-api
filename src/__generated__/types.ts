@@ -61,6 +61,7 @@ export type BuildInfo = {
   product: InvItem,
   quantity: Scalars['Int'],
   time: Scalars['Int'],
+  productionLimit: Scalars['Int'],
 };
 
 export type BuildMaterial = {
@@ -80,6 +81,7 @@ export type Character = {
   securityStatus: Scalars['Float'],
   skillGroups: Array<SkillGroup>,
   skillGroup?: Maybe<SkillGroup>,
+  skillQueue: Array<SkillQueueItem>,
   totalSp?: Maybe<Scalars['Int']>,
 };
 
@@ -468,6 +470,18 @@ export type SkillGroup = {
   trainedSp?: Maybe<Scalars['Int']>,
 };
 
+export type SkillQueueItem = {
+   __typename?: 'SkillQueueItem',
+  position: Scalars['Int'],
+  finishDate?: Maybe<Scalars['DateTime']>,
+  finishedLevel: Scalars['Int'],
+  levelEndSp: Scalars['Int'],
+  levelStartSp: Scalars['Int'],
+  skill: Skill,
+  startDate?: Maybe<Scalars['DateTime']>,
+  trainingStartSp: Scalars['Int'],
+};
+
 
 export type User = {
    __typename?: 'User',
@@ -670,6 +684,7 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<Partial<Scalars['Float']>>,
   SkillGroup: ResolverTypeWrapper<Partial<SkillGroup>>,
   Skill: ResolverTypeWrapper<Partial<Skill>>,
+  SkillQueueItem: ResolverTypeWrapper<Partial<SkillQueueItem>>,
   InvItem: ResolverTypeWrapper<Partial<InvItem>>,
   InvGroup: ResolverTypeWrapper<Partial<InvGroup>>,
   InvCategory: ResolverTypeWrapper<Partial<InvCategory>>,
@@ -736,6 +751,7 @@ export type ResolversParentTypes = {
   Float: Partial<Scalars['Float']>,
   SkillGroup: Partial<SkillGroup>,
   Skill: Partial<Skill>,
+  SkillQueueItem: Partial<SkillQueueItem>,
   InvItem: Partial<InvItem>,
   InvGroup: Partial<InvGroup>,
   InvCategory: Partial<InvCategory>,
@@ -808,6 +824,7 @@ export type BuildInfoResolvers<ContextType = any, ParentType extends ResolversPa
   product?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   time?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  productionLimit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
 };
 
 export type BuildMaterialResolvers<ContextType = any, ParentType extends ResolversParentTypes['BuildMaterial'] = ResolversParentTypes['BuildMaterial']> = {
@@ -825,6 +842,7 @@ export type CharacterResolvers<ContextType = any, ParentType extends ResolversPa
   securityStatus?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
   skillGroups?: Resolver<Array<ResolversTypes['SkillGroup']>, ParentType, ContextType>,
   skillGroup?: Resolver<Maybe<ResolversTypes['SkillGroup']>, ParentType, ContextType, RequireFields<CharacterSkillGroupArgs, 'id'>>,
+  skillQueue?: Resolver<Array<ResolversTypes['SkillQueueItem']>, ParentType, ContextType>,
   totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
 };
 
@@ -980,6 +998,17 @@ export type SkillGroupResolvers<ContextType = any, ParentType extends ResolversP
   trainedSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
 };
 
+export type SkillQueueItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['SkillQueueItem'] = ResolversParentTypes['SkillQueueItem']> = {
+  position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  finishDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>,
+  finishedLevel?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  levelEndSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  levelStartSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  skill?: Resolver<ResolversTypes['Skill'], ParentType, ContextType>,
+  startDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>,
+  trainingStartSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+};
+
 export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Time'], any> {
   name: 'Time'
 }
@@ -1063,6 +1092,7 @@ export type Resolvers<ContextType = any> = {
   Scope?: ScopeResolvers<ContextType>,
   Skill?: SkillResolvers<ContextType>,
   SkillGroup?: SkillGroupResolvers<ContextType>,
+  SkillQueueItem?: SkillQueueItemResolvers<ContextType>,
   Time?: GraphQLScalarType,
   User?: UserResolvers<ContextType>,
   WalletTransaction?: WalletTransactionResolvers<ContextType>,

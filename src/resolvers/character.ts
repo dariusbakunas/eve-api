@@ -17,8 +17,10 @@ import { IResolverContext, Maybe } from '../types';
 import { JoinClause } from 'knex';
 import { raw } from 'objection';
 import { SkillMultiplier } from '../services/db/models/skillMultiplier';
+import { SkillQueueItem as SkillQueueItemDB } from '../services/db/models/skillQueueItem';
 import { UserInputError } from 'apollo-server-errors';
 import moment from 'moment';
+import property from 'lodash.property';
 
 interface SkillGroupWithCharacterId extends SkillGroup {
   characterId: number;
@@ -45,6 +47,11 @@ interface ICharacterResolvers<Context> {
     scopes: Resolver<Maybe<Array<ResolversTypes['String']>>, Character, Context>;
     skillGroups: Resolver<Array<Partial<SkillGroupWithCharacterId>>, Character, Context>;
     skillGroup: Resolver<Maybe<Partial<SkillGroupWithCharacterId>>, Character, Context, RequireFields<CharacterSkillGroupArgs, 'id'>>;
+    skillQueue: Resolver<Array<SkillQueueItemDB>, Character, Context>;
+  };
+  SkillQueueItem: {
+    position: Resolver<ResolversTypes['Int'], SkillQueueItemDB, Context>;
+    skill: Resolver<ResolversTypes['Skill'], SkillQueueItemDB, Context>;
   };
   SkillGroup: {
     skills: Resolver<Maybe<Array<ResolversTypes['Skill']>>, SkillGroupWithCharacterId, Context>;
@@ -189,6 +196,12 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
         name: group.groupName!, // all skill groups have names
       }));
     },
+    skillQueue: async ({ id: characterId }, args, { dataSources }) => {
+      const queue: Array<SkillQueueItemDB> = await dataSources.db.SkillQueueItem.query()
+        .where('characterId', characterId)
+        .orderBy('queuePosition');
+      return queue;
+    },
   },
   SkillGroup: {
     skills: async ({ id, characterId }, args, { dataSources }) => {
@@ -252,6 +265,28 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
         .orderBy('typeName')
         .pluck('trainedSp')
         .first();
+    },
+  },
+  SkillQueueItem: {
+    position: property('queuePosition'),
+    skill: async ({ characterId, skillId }, args, { dataSources }) => {
+      // TODO: create skill loader
+      const skill = await dataSources.db.CharacterSkill.query()
+        .select('characterSkills.*', 'skillMultipliers.multiplier', 'invTypes.typeName')
+        .join('invTypes', 'invTypes.typeID', 'characterSkills.skillId')
+        .join('skillMultipliers', 'skillMultipliers.skillId', 'characterSkills.skillId')
+        .where('characterId', characterId)
+        .where('characterSkills.skillId', skillId)
+        .first();
+
+      return {
+        id: `${skillId}`,
+        name: skill.typeName,
+        multiplier: skill.multiplier,
+        trainedSkillLevel: skill.trainedSkillLevel,
+        activeSkillLevel: skill.activeSkillLevel,
+        skillPointsInSkill: skill.skillPointsInSkill,
+      };
     },
   },
 };
