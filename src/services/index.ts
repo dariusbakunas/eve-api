@@ -30,6 +30,7 @@ import Crypt from './crypt';
 import db from './db';
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
+import { SkillQueueItem } from './db/models/skillQueueItem';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,
@@ -55,6 +56,7 @@ export interface IDataSources {
     IndustryActivityProduct: typeof IndustryActivityProduct;
     User: typeof User;
     Scope: typeof Scope;
+    SkillQueueItem: typeof SkillQueueItem;
     Invitation: typeof Invitation;
     InvGroup: typeof InvGroup;
     InventoryItem: typeof InventoryItem;

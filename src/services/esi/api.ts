@@ -7,6 +7,7 @@ import {
   IEsiCorporationInfo,
   IEsiJournalEntry,
   IEsiMarketOrder,
+  IEsiSkillQueueItem,
   IEsiWalletTransaction,
 } from './esiTypes';
 import { KeyValueCache } from 'apollo-server-caching';
@@ -100,6 +101,15 @@ class EsiAPI extends RESTDataSource {
 
   async getCharacterSkills(characterId: number, token: string): Promise<IEsiCharacterSkills> {
     return this.get(`/characters/${characterId}/skills`, undefined, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
+  async getCharacterSkillQueue(characterId: number, token: string): Promise<IEsiSkillQueueItem[]> {
+    return this.get(`/characters/${characterId}/skillqueue`, undefined, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',

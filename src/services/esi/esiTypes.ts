@@ -27,6 +27,17 @@ export interface IEsiJournalEntry {
   tax_receiver_id?: number;
 }
 
+export interface IEsiSkillQueueItem {
+  finish_date?: string;
+  finished_level: number;
+  level_end_sp?: number;
+  level_start_sp?: number;
+  queue_position: number;
+  skill_id: number;
+  start_date?: string;
+  training_start_sp?: number;
+}
+
 export interface IEsiBookmark {
   bookmark_id: number;
   coordinates?: {

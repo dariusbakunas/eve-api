@@ -18,7 +18,9 @@ export class JobLogEntry extends BaseModel {
     | 'CONTACTS'
     | 'CONTRACTS'
     | 'INDUSTRY_JOBS'
-    | 'STATS';
+    | 'STATS'
+    | 'SKILLS'
+    | 'SKILL_QUEUE';
   status!: 'SUCCESS' | 'FAILURE';
   message!: string;
   error?: string;

@@ -56,7 +56,6 @@ export const processMarketOrders = async (character: Character, token: string, d
           const state = orderMap[order.order_id];
           if (state === 'active') {
             // no need to update expired or cancelled orders
-            updated++;
             const update: PartialUpdate<MarketOrder> = {
               duration: order.duration,
               escrow: order.escrow,
@@ -72,6 +71,8 @@ export const processMarketOrders = async (character: Character, token: string, d
             await db.MarketOrder.query(trx)
               .findById(order.order_id)
               .patch(update);
+
+            updated++;
           }
         }
       }
