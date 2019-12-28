@@ -21,6 +21,7 @@ interface BlueprintsResponseDB {
 }
 
 const BUILD_ACTIVITY_ID = 1;
+const REACTION_ACTIVITY_ID = 11;
 const RESEARCH_ACTIVITY_ID = 8;
 
 interface BuildInfo {
@@ -129,7 +130,7 @@ const resolverMap: IResolvers<IResolverContext> = {
     buildInfo: async (_parent, { blueprintId }, { dataSources }) => {
       const product = await dataSources.db.IndustryActivityProduct.query()
         .where('typeID', blueprintId)
-        .where('activityID', BUILD_ACTIVITY_ID)
+        .where('activityID', 'in', [BUILD_ACTIVITY_ID, REACTION_ACTIVITY_ID])
         .first();
 
       if (product) {
@@ -137,11 +138,11 @@ const resolverMap: IResolvers<IResolverContext> = {
         const item = await dataSources.loaders.invItemLoader.load(productTypeID);
         const activity = await dataSources.db.IndustryActivity.query()
           .where('typeID', blueprintId)
-          .where('activityID', BUILD_ACTIVITY_ID)
+          .where('activityID', 'in', [BUILD_ACTIVITY_ID, REACTION_ACTIVITY_ID])
           .first();
         const materials = await dataSources.db.IndustryActivityMaterial.query()
           .where('typeID', blueprintId)
-          .where('activityID', BUILD_ACTIVITY_ID);
+          .where('activityID', 'in', [BUILD_ACTIVITY_ID, REACTION_ACTIVITY_ID]);
         const industryBlueprint = await dataSources.db.IndustryBlueprint.query()
           .where('typeID', blueprintId)
           .first();
