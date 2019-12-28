@@ -30,6 +30,23 @@ const isWarehouseOwner = rule()(async (parent, { id }, { user, dataSources }: Ap
   return count === 1;
 });
 
+const isMultipleWarehouseOwner = rule()(async (parent, { warehouseIds }, { user, dataSources }: ApolloContext & { dataSources: IDataSources }) => {
+  if (!warehouseIds) {
+    return true;
+  }
+
+  const idSet = new Set(warehouseIds);
+
+  const result = await dataSources.db.Warehouse.query()
+    .where('id', 'in', [...idSet])
+    .andWhere('ownerId', '=', user!.id)
+    .count('*')
+    .pluck('count(*)')
+    .first();
+  const count = (result as unknown) as number;
+  return count === idSet.size;
+});
+
 const isActiveUser = rule({ cache: 'contextual' })((parent, args, { user }: ApolloContext) => !!user && user.status === 'ACTIVE');
 
 // current user email should match the one requested
@@ -58,6 +75,7 @@ const shieldMiddleware = shield(
       walletTransactionSummary: isActiveUser,
       warehouse: and(isActiveUser, isWarehouseOwner),
       warehouses: isActiveUser,
+      warehouseItems: and(isActiveUser, isMultipleWarehouseOwner),
     },
     Mutation: {
       '*': deny,

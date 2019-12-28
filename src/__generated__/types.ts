@@ -364,6 +364,7 @@ export type Query = {
   walletTransactions: WalletTransactions,
   walletTransactionSummary: WalletTransactionSummary,
   walletTransactionIds: Array<Scalars['ID']>,
+  warehouseItems?: Maybe<Array<WarehouseItem>>,
   warehouse?: Maybe<Warehouse>,
   warehouses: Array<Warehouse>,
 };
@@ -429,6 +430,12 @@ export type QueryWalletTransactionSummaryArgs = {
 
 export type QueryWalletTransactionIdsArgs = {
   filter?: Maybe<WalletTransactionFilter>
+};
+
+
+export type QueryWarehouseItemsArgs = {
+  itemIds: Array<Scalars['ID']>,
+  warehouseIds?: Maybe<Array<Scalars['ID']>>
 };
 
 
@@ -583,8 +590,7 @@ export type Warehouse = {
 
 export type WarehouseItem = {
    __typename?: 'WarehouseItem',
-  id: Scalars['ID'],
-  name: Scalars['String'],
+  item: InvItem,
   quantity: Scalars['Int'],
   unitCost: Scalars['Float'],
 };
@@ -722,8 +728,8 @@ export type ResolversTypes = {
   MarketGroup: ResolverTypeWrapper<Partial<MarketGroup>>,
   WalletTransactionSummary: ResolverTypeWrapper<Partial<WalletTransactionSummary>>,
   WalletTransactionSummaryItem: ResolverTypeWrapper<Partial<WalletTransactionSummaryItem>>,
-  Warehouse: ResolverTypeWrapper<Partial<Warehouse>>,
   WarehouseItem: ResolverTypeWrapper<Partial<WarehouseItem>>,
+  Warehouse: ResolverTypeWrapper<Partial<Warehouse>>,
   Mutation: ResolverTypeWrapper<{}>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
   WarehouseItemInput: ResolverTypeWrapper<Partial<WarehouseItemInput>>,
@@ -789,8 +795,8 @@ export type ResolversParentTypes = {
   MarketGroup: Partial<MarketGroup>,
   WalletTransactionSummary: Partial<WalletTransactionSummary>,
   WalletTransactionSummaryItem: Partial<WalletTransactionSummaryItem>,
-  Warehouse: Partial<Warehouse>,
   WarehouseItem: Partial<WarehouseItem>,
+  Warehouse: Partial<Warehouse>,
   Mutation: {},
   RegistrationInput: Partial<RegistrationInput>,
   WarehouseItemInput: Partial<WarehouseItemInput>,
@@ -971,6 +977,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   walletTransactions?: Resolver<ResolversTypes['WalletTransactions'], ParentType, ContextType, QueryWalletTransactionsArgs>,
   walletTransactionSummary?: Resolver<ResolversTypes['WalletTransactionSummary'], ParentType, ContextType, RequireFields<QueryWalletTransactionSummaryArgs, 'ids'>>,
   walletTransactionIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType, QueryWalletTransactionIdsArgs>,
+  warehouseItems?: Resolver<Maybe<Array<ResolversTypes['WarehouseItem']>>, ParentType, ContextType, RequireFields<QueryWarehouseItemsArgs, 'itemIds'>>,
   warehouse?: Resolver<Maybe<ResolversTypes['Warehouse']>, ParentType, ContextType, RequireFields<QueryWarehouseArgs, 'id'>>,
   warehouses?: Resolver<Array<ResolversTypes['Warehouse']>, ParentType, ContextType>,
 };
@@ -1060,8 +1067,7 @@ export type WarehouseResolvers<ContextType = any, ParentType extends ResolversPa
 };
 
 export type WarehouseItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['WarehouseItem'] = ResolversParentTypes['WarehouseItem']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   unitCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
 };

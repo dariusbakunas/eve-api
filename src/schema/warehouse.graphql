@@ -1,6 +1,5 @@
 type WarehouseItem {
-  id: ID!
-  name: String!
+  item: InvItem!
   quantity: Int!
   unitCost: Float!
 }
@@ -18,6 +17,7 @@ input WarehouseItemInput {
 }
 
 extend type Query {
+  warehouseItems(itemIds: [ID!]!, warehouseIds: [ID!]): [WarehouseItem!]
   warehouse(id: ID!): Warehouse
   warehouses: [Warehouse!]!
 }

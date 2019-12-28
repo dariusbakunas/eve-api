@@ -1,5 +1,4 @@
-import { InventoryItem } from '../services/db/models/InventoryItem';
-import { IResolverContext } from '../types';
+import { InvItemPartial, IResolverContext, WarehouseItemPartial } from '../types';
 import {
   Maybe,
   MutationAddItemsToWarehouseArgs,
@@ -9,34 +8,39 @@ import {
   MutationUpdateItemsInWarehouseArgs,
   MutationUpdateWarehouseArgs,
   QueryWarehouseArgs,
+  QueryWarehouseItemsArgs,
   RequireFields,
   Resolver,
   ResolversParentTypes,
   ResolversTypes,
   Warehouse,
-  WarehouseItem,
 } from '../__generated__/types';
 import { transaction } from 'objection';
 import { Warehouse as WarehouseDB } from '../services/db/models/warehouse';
 import { WarehouseItem as WarehouseItemDB } from '../services/db/models/warehouseItem';
-
-interface ICombinedWarehouseItem extends WarehouseItemDB, InventoryItem {}
+import property from 'lodash.property';
 
 interface IResolvers<Context> {
   Query: {
     warehouse: Resolver<Maybe<ResolversTypes['Warehouse']>, ResolversParentTypes['Query'], Context, RequireFields<QueryWarehouseArgs, 'id'>>;
     warehouses: Resolver<Maybe<Array<WarehouseDB>>, ResolversParentTypes['Query'], Context>;
+    warehouseItems: Resolver<
+      Maybe<Array<WarehouseItemPartial>>,
+      ResolversParentTypes['Query'],
+      Context,
+      RequireFields<QueryWarehouseItemsArgs, 'itemIds'>
+    >;
   };
   Mutation: {
     addWarehouse: Resolver<ResolversTypes['Warehouse'], ResolversParentTypes['Mutation'], Context, RequireFields<MutationAddWarehouseArgs, 'name'>>;
     addItemsToWarehouse: Resolver<
-      Array<ResolversTypes['WarehouseItem']>,
+      Array<WarehouseItemPartial>,
       ResolversParentTypes['Mutation'],
       Context,
       RequireFields<MutationAddItemsToWarehouseArgs, 'id' | 'input'>
     >;
     updateItemsInWarehouse: Resolver<
-      Array<ResolversTypes['WarehouseItem']>,
+      Array<WarehouseItemPartial>,
       ResolversParentTypes['Mutation'],
       Context,
       RequireFields<MutationUpdateItemsInWarehouseArgs, 'id' | 'input'>
@@ -56,7 +60,11 @@ interface IResolvers<Context> {
     >;
   };
   Warehouse: {
-    items: Resolver<Array<ResolversTypes['WarehouseItem']>, WarehouseDB, Context>;
+    items: Resolver<Array<WarehouseItemPartial>, WarehouseDB, Context>;
+  };
+  WarehouseItem: {
+    unitCost: Resolver<ResolversTypes['Float'], WarehouseItemPartial, Context>;
+    item: Resolver<InvItemPartial, WarehouseItemPartial, Context>;
   };
 }
 
@@ -79,6 +87,23 @@ const resolverMap: IResolvers<IResolverContext> = {
         .where('ownerId', id)
         .orderBy('name');
     },
+    warehouseItems: async (_parent, { itemIds, warehouseIds: warehouseIdFilter }, { dataSources, user: { id } }) => {
+      const warehouseIds = warehouseIdFilter
+        ? [...new Set(warehouseIdFilter)]
+        : await dataSources.db.Warehouse.query()
+            .select('id')
+            .where('ownerId', id)
+            .orderBy('name')
+            .pluck('id');
+
+      const items: Array<WarehouseItemPartial> = await dataSources.db.WarehouseItem.query()
+        .where('warehouseId', 'in', warehouseIds)
+        .where('warehouseItems.typeId', 'in', itemIds)
+        .join('invTypes as item', 'item.typeID', 'warehouseItems.typeId')
+        .orderBy('typeName');
+
+      return items;
+    },
   },
   Mutation: {
     addWarehouse: async (_, { name }, { dataSources: { db }, user: { id: userId } }) => {
@@ -90,13 +115,13 @@ const resolverMap: IResolvers<IResolverContext> = {
     },
     updateItemsInWarehouse: async (_, { id, input }, { dataSources: { db } }) => {
       const knex = WarehouseItemDB.knex();
-      const result: Partial<WarehouseItem>[] = [];
+      const result: WarehouseItemPartial[] = [];
 
       return transaction(knex, async trx => {
         for (let i = 0; i < input.length; i++) {
           const item = input[i];
 
-          const update: Partial<WarehouseItemDB> = {
+          const update: WarehouseItemPartial = {
             warehouseId: +id,
             typeId: +item.id,
             quantity: +item.quantity,
@@ -108,11 +133,7 @@ const resolverMap: IResolvers<IResolverContext> = {
             .where('typeId', item.id)
             .andWhere('warehouseId', id);
 
-          result.push({
-            id: `${update.typeId}`,
-            quantity: update.quantity,
-            unitCost: update.unitPrice,
-          });
+          result.push(update);
         }
 
         return result;
@@ -122,7 +143,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       const knex = WarehouseItemDB.knex();
       const newItemIds = input.map(item => item.id);
 
-      const result: Partial<WarehouseItem>[] = [];
+      const result: WarehouseItemPartial[] = [];
 
       return transaction(knex, async trx => {
         const existingItems: WarehouseItemDB[] = await db.WarehouseItem.query(trx)
@@ -142,7 +163,7 @@ const resolverMap: IResolvers<IResolverContext> = {
             const newQuantity = existingItem.quantity + inputItem.quantity;
             const newCost = (existingItem.quantity * existingItem.unitPrice + inputItem.quantity * inputItem.unitCost) / newQuantity;
 
-            const update: Partial<WarehouseItemDB> = {
+            const update: WarehouseItemPartial = {
               warehouseId: +id,
               typeId: +inputItem.id,
               quantity: newQuantity,
@@ -154,11 +175,7 @@ const resolverMap: IResolvers<IResolverContext> = {
               .where('typeId', inputItem.id)
               .andWhere('warehouseId', id);
 
-            result.push({
-              id: `${update.typeId}`,
-              quantity: update.quantity,
-              unitCost: update.unitPrice,
-            });
+            result.push(update);
           } else {
             const newItem: Partial<WarehouseItemDB> = {
               warehouseId: +id,
@@ -169,11 +186,7 @@ const resolverMap: IResolvers<IResolverContext> = {
 
             const item: WarehouseItemDB = await db.WarehouseItem.query(trx).insertAndFetch(newItem);
 
-            result.push({
-              id: `${item.typeId}`,
-              quantity: item.quantity,
-              unitCost: item.unitPrice,
-            });
+            result.push(item);
           }
         }
 
@@ -199,19 +212,23 @@ const resolverMap: IResolvers<IResolverContext> = {
     },
   },
   Warehouse: {
-    items: async ({ id }, args, { dataSources: { db } }): Promise<Array<Partial<WarehouseItem>>> => {
-      const items: Array<ICombinedWarehouseItem> = await db.WarehouseItem.query()
-        .select('warehouseItems.*', 'item.typeName as typeName')
+    items: async ({ id }, args, { dataSources: { db } }): Promise<Array<WarehouseItemPartial>> => {
+      return db.WarehouseItem.query()
         .where('warehouseId', id)
         .join('invTypes as item', 'item.typeID', 'warehouseItems.typeId')
         .orderBy('typeName');
+    },
+  },
+  WarehouseItem: {
+    unitCost: property('unitPrice'),
+    item: async ({ typeId }, args, { dataSources: { db, loaders } }) => {
+      const item = await loaders.invItemLoader.load(typeId);
 
-      return items.map(item => ({
-        id: `${item.typeId}`,
-        name: item.typeName,
-        quantity: item.quantity,
-        unitCost: item.unitPrice,
-      }));
+      if (!item) {
+        throw new Error(`Unable to load item ID: ${typeId}`);
+      }
+
+      return item;
     },
   },
 };
