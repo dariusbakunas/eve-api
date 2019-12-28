@@ -128,6 +128,31 @@ export interface IEsiAllianceInfo {
   ticker: string;
 }
 
+export interface IEsiIndustryJob {
+  activity_id: number;
+  blueprint_id: number;
+  blueprint_location_id: number;
+  blueprint_type_id: number;
+  completed_character_id?: number;
+  completed_date?: string;
+  cost?: number;
+  duration: number;
+  end_date: string;
+  facility_id: number;
+  installer_id: number;
+  job_id: number;
+  licensed_runs?: number;
+  output_location_id: number;
+  pause_date?: string;
+  probability?: number;
+  product_type_id?: number;
+  runs: number;
+  start_date: string;
+  station_id: string;
+  status: 'active' | 'cancelled' | 'delivered' | 'paused' | 'ready' | 'reverted';
+  successful_runs?: number;
+}
+
 export interface IEsiCharacterSkills {
   skills: Array<{
     active_skill_level: number;

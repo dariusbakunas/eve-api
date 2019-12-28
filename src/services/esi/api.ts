@@ -5,6 +5,7 @@ import {
   IEsiCharacterInfo,
   IEsiCharacterSkills,
   IEsiCorporationInfo,
+  IEsiIndustryJob,
   IEsiJournalEntry,
   IEsiMarketOrder,
   IEsiSkillQueueItem,
@@ -101,6 +102,15 @@ class EsiAPI extends RESTDataSource {
 
   async getCharacterSkills(characterId: number, token: string): Promise<IEsiCharacterSkills> {
     return this.get(`/characters/${characterId}/skills`, undefined, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
+  async getCharacterIndustryJobs(characterId: number, token: string): Promise<IEsiIndustryJob[]> {
+    return this.get(`/characters/${characterId}/industry/jobs?include_completed=true`, undefined, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
