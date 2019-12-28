@@ -1,4 +1,5 @@
 type WarehouseItem {
+  warehouse: Warehouse!
   item: InvItem!
   quantity: Int!
   unitCost: Float!

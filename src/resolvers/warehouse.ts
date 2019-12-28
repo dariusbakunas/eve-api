@@ -65,6 +65,7 @@ interface IResolvers<Context> {
   WarehouseItem: {
     unitCost: Resolver<ResolversTypes['Float'], WarehouseItemPartial, Context>;
     item: Resolver<InvItemPartial, WarehouseItemPartial, Context>;
+    warehouse: Resolver<ResolversTypes['Warehouse'], WarehouseItemPartial, Context>;
   };
 }
 
@@ -229,6 +230,18 @@ const resolverMap: IResolvers<IResolverContext> = {
       }
 
       return item;
+    },
+    warehouse: async ({ warehouseId }, args, { dataSources: { loaders } }) => {
+      const warehouse = await loaders.warehouseLoader.load(warehouseId);
+
+      if (warehouse) {
+        return {
+          ...warehouse,
+          id: `${warehouse.id}`,
+        };
+      } else {
+        throw new Error(`Unable to load warehouse ID: ${warehouseId}`);
+      }
     },
   },
 };

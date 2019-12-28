@@ -21,6 +21,7 @@ import { NameCacheItem } from './db/models/nameCacheItem';
 import { RedisCache } from 'apollo-server-cache-redis';
 import { Scope } from './db/models/scope';
 import { SkillMultiplier } from './db/models/skillMultiplier';
+import { SkillQueueItem } from './db/models/skillQueueItem';
 import { Station } from './db/models/station';
 import { User } from './db/models/user';
 import { WalletTransaction } from './db/models/walletTransaction';
@@ -30,7 +31,6 @@ import Crypt from './crypt';
 import db from './db';
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
-import { SkillQueueItem } from './db/models/skillQueueItem';
 
 const redisCache = new RedisCache({
   host: process.env.REDIS_HOST,

@@ -8,6 +8,7 @@ import { Maybe } from '../../types';
 import { Station } from './models/station';
 import DataLoader from 'dataloader';
 import logger from '../../utils/logger';
+import { Warehouse } from './models/warehouse';
 
 export class Loaders {
   private db: IDataSources['db'];
@@ -17,6 +18,7 @@ export class Loaders {
   public invCategoryLoader: DataLoader<number, Maybe<InvCategory>>;
   public characterLoader: DataLoader<number, Maybe<Character>>;
   public stationLoader: DataLoader<number, Maybe<Station>>;
+  public warehouseLoader: DataLoader<number, Maybe<Warehouse>>;
 
   constructor(db: IDataSources['db']) {
     this.db = db;
@@ -26,6 +28,7 @@ export class Loaders {
     this.stationLoader = new DataLoader(ids => this.loadStations(ids));
     this.invGroupLoader = new DataLoader(ids => this.loadInvGroups(ids));
     this.marketGroupLoader = new DataLoader(ids => this.loadMarketGroups(ids));
+    this.warehouseLoader = new DataLoader(ids => this.loadWarehouses(ids));
   }
 
   private mapItems<T>(ids: number[], items: T[], idGetter: (item: T) => number) {
@@ -63,6 +66,11 @@ export class Loaders {
   private async loadMarketGroups(ids: number[]) {
     const marketGroups: Array<MarketGroup> = await this.db.MarketGroup.query().where('marketGroupID', 'in', ids);
     return this.mapItems<MarketGroup>(ids, marketGroups, marketGroup => marketGroup.marketGroupID);
+  }
+
+  private async loadWarehouses(ids: number[]) {
+    const warehouses: Array<Warehouse> = await this.db.Warehouse.query().where('id', 'in', ids);
+    return this.mapItems<Warehouse>(ids, warehouses, warehouse => warehouse.id);
   }
 
   private async loadInvItems(ids: number[]) {

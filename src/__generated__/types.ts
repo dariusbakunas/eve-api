@@ -590,6 +590,7 @@ export type Warehouse = {
 
 export type WarehouseItem = {
    __typename?: 'WarehouseItem',
+  warehouse: Warehouse,
   item: InvItem,
   quantity: Scalars['Int'],
   unitCost: Scalars['Float'],
@@ -1067,6 +1068,7 @@ export type WarehouseResolvers<ContextType = any, ParentType extends ResolversPa
 };
 
 export type WarehouseItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['WarehouseItem'] = ResolversParentTypes['WarehouseItem']> = {
+  warehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType>,
   item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   unitCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
