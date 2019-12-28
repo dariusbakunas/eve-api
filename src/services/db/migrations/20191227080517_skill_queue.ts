@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<any> {
     t.integer('levelEndSp');
     t.integer('levelStartSp');
     t.integer('queuePosition');
-    t.date('startDate');
+    t.dateTime('startDate');
     t.integer('trainingStartSp');
   });
 }

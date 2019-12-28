@@ -17,8 +17,8 @@ export const processMarketOrders = async (character: Character, token: string, d
     const knex = MarketOrder.knex();
 
     await transaction(knex, async trx => {
-      const existingOrders: Array<{ id: number; state: string }> = await db.MarketOrder.query(trx)
-        .select('id', 'state')
+      const existingOrders: Array<{ id: number; state: string; issued: string; duration: number }> = await db.MarketOrder.query(trx)
+        .select('id', 'state', 'duration', 'issued')
         .where('characterId', character.id);
 
       const orderMap = existingOrders.reduce<{ [key: number]: string }>((acc, order) => {
@@ -28,6 +28,23 @@ export const processMarketOrders = async (character: Character, token: string, d
 
       let newOrders = 0;
       let updated = 0;
+
+      for (let i = 0; i < existingOrders.length; i++) {
+        const order = existingOrders[i];
+        const expires = moment(order.issued).add(order.duration, 'days');
+        if (expires.isBefore()) {
+          // mark this order expired (esi does not always return all expired orders)
+          order.state = 'expired';
+
+          const update: PartialUpdate<MarketOrder> = {
+            state: 'expired',
+          };
+
+          await db.MarketOrder.query(trx)
+            .findById(order.id)
+            .patch(update);
+        }
+      }
 
       for (let i = 0; i < orders.length; i++) {
         const order = orders[i];
