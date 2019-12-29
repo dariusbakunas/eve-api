@@ -5,7 +5,7 @@ import { PartialUpdate, transaction } from 'objection';
 import logger from '../utils/logger';
 import moment = require('moment');
 
-export const processMarketOrders = async (character: Character, token: string, db: IDataSources['db'], esiApi: IDataSources['esiApi']) => {
+export const processCharacterMarketOrders = async (character: Character, token: string, db: IDataSources['db'], esiApi: IDataSources['esiApi']) => {
   logger.info(`Getting market orders for character: ${character.name}`);
 
   try {

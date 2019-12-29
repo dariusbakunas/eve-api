@@ -5,9 +5,9 @@ import { initDataSources } from './initDataSources';
 import { processAlliances } from './processAlliances';
 import { processBlueprints } from './processBlueprints';
 import { processBookmarks } from './processBookmarks';
+import { processCharacterMarketOrders } from './processCharacterMarketOrders';
 import { processCorporations } from './processCorporations';
 import { processJournalEntries } from './processJournalEntries';
-import { processMarketOrders } from './processMarketOrders';
 import { processSkillQueue } from './prrocessSkillQueue';
 import { processSkills } from './processSkills';
 import { processWalletTransactions } from './processWalletTransactions';
@@ -35,7 +35,7 @@ export const processData = async () => {
       }
 
       if (scopes.includes('esi-markets.read_character_orders.v1')) {
-        await processMarketOrders(character, token, db, esiApi);
+        await processCharacterMarketOrders(character, token, db, esiApi);
       }
 
       if (scopes.includes('esi-skills.read_skills.v1')) {

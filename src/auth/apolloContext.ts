@@ -51,7 +51,7 @@ const apolloContext: ContextFunction<ContextParams, ApolloContext> = async ({ re
   if (!user) {
     try {
       // get user information
-      const authUser = await request<IAuthUser>(`https://${process.env.AUTH0_DOMAIN}/userinfo`, {
+      const { data: authUser } = await request<IAuthUser>(`https://${process.env.AUTH0_DOMAIN}/userinfo`, {
         headers,
       });
 
