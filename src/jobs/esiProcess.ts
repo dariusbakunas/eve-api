@@ -1,7 +1,7 @@
 import { Character } from '../services/db/models/character';
 import { cleanup } from './cleanup';
 import { getAccessToken } from '../resolvers/common';
-import { InMemoryLRUCache } from 'apollo-server-caching';
+import { initDataSources } from './initDataSources';
 import { processAlliances } from './processAlliances';
 import { processBlueprints } from './processBlueprints';
 import { processBookmarks } from './processBookmarks';
@@ -12,25 +12,7 @@ import { processSkillQueue } from './prrocessSkillQueue';
 import { processSkills } from './processSkills';
 import { processWalletTransactions } from './processWalletTransactions';
 import { updateNameCache } from './updateNameCache';
-import Crypt from '../services/crypt';
-import db from '../services/db';
-import EsiAPI from '../services/esi/api';
-import EsiAuth from '../services/esi/auth';
 import logger from '../utils/logger';
-
-const initDataSources = () => {
-  const dataSources = {
-    esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL!),
-    esiApi: new EsiAPI(process.env.EVE_ESI_URL!, new InMemoryLRUCache()),
-    db: db,
-    crypt: new Crypt(process.env.TOKEN_SECRET!),
-  };
-
-  dataSources.esiApi.initialize({ context: null, cache: new InMemoryLRUCache() });
-  dataSources.esiAuth.initialize({ context: null, cache: new InMemoryLRUCache() });
-
-  return dataSources;
-};
 
 export const processData = async () => {
   const { db, crypt, esiAuth, esiApi } = initDataSources();

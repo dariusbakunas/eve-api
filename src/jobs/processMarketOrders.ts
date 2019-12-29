@@ -1,6 +1,6 @@
 import { Character } from '../services/db/models/character';
+import { CharacterMarketOrder } from '../services/db/models/characterMarketOrder';
 import { IDataSources } from '../services';
-import { MarketOrder } from '../services/db/models/marketOrder';
 import { PartialUpdate, transaction } from 'objection';
 import logger from '../utils/logger';
 import moment = require('moment');
@@ -9,12 +9,12 @@ export const processMarketOrders = async (character: Character, token: string, d
   logger.info(`Getting market orders for character: ${character.name}`);
 
   try {
-    const activeOrders = await esiApi.getActiveMarketOrders(character.id, token);
+    const activeOrders = await esiApi.getCharacterMarketOrders(character.id, token);
     const orderHistory = await esiApi.getOrderHistory(character.id, token);
 
     const orders = [...activeOrders, ...orderHistory];
 
-    const knex = MarketOrder.knex();
+    const knex = CharacterMarketOrder.knex();
 
     await transaction(knex, async trx => {
       const existingOrders: Array<{ id: number; state: string; issued: string; duration: number }> = await db.MarketOrder.query(trx)
@@ -36,7 +36,7 @@ export const processMarketOrders = async (character: Character, token: string, d
           // mark this order expired (esi does not always return all expired orders)
           order.state = 'expired';
 
-          const update: PartialUpdate<MarketOrder> = {
+          const update: PartialUpdate<CharacterMarketOrder> = {
             state: 'expired',
           };
 
@@ -73,7 +73,7 @@ export const processMarketOrders = async (character: Character, token: string, d
           const state = orderMap[order.order_id];
           if (state === 'active') {
             // no need to update expired or cancelled orders
-            const update: PartialUpdate<MarketOrder> = {
+            const update: PartialUpdate<CharacterMarketOrder> = {
               duration: order.duration,
               escrow: order.escrow,
               issued: moment(order.issued).toDate(),

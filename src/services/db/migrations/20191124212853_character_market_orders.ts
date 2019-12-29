@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 
 export async function up(knex: Knex): Promise<any> {
-  return knex.schema.createTable('marketOrders', t => {
+  return knex.schema.createTable('characterMarketOrders', t => {
     t.bigInteger('id')
       .unsigned()
       .primary();
@@ -38,5 +38,5 @@ export async function up(knex: Knex): Promise<any> {
 }
 
 export async function down(knex: Knex): Promise<any> {
-  return knex.schema.dropTable('marketOrders');
+  return knex.schema.dropTable('characterMarketOrders');
 }

@@ -1,5 +1,6 @@
 import { Alliance } from './models/alliance';
 import { Character } from './models/character';
+import { CharacterMarketOrder } from './models/characterMarketOrder';
 import { CharacterSkill } from './models/characterSkill';
 import { CitadelCacheItem } from './models/citadelCacheItem';
 import { Corporation } from './models/corporation';
@@ -10,7 +11,6 @@ import { InvGroup } from './models/invGroup';
 import { Invitation } from './models/invitation';
 import { JobLogEntry } from './models/jobLogEntry';
 import { JournalEntry } from './models/journalEntry';
-import { MarketOrder } from './models/marketOrder';
 import { Model } from 'objection';
 import { NameCacheItem } from './models/nameCacheItem';
 import { Scope } from './models/scope';
@@ -45,7 +45,7 @@ const db: IDataSources['db'] = {
   CharacterSkill,
   Corporation,
   NameCacheItem,
-  MarketOrder,
+  CharacterMarketOrder,
   InvCategory,
   JournalEntry,
   JobLogEntry,

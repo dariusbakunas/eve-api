@@ -1,4 +1,5 @@
 import { Character } from '../services/db/models/character';
+import { CharacterMarketOrder } from '../services/db/models/characterMarketOrder';
 import { getCharacter } from './common';
 import {
   InvGroup,
@@ -22,7 +23,6 @@ import { InvItemPartial, IResolverContext } from '../types';
 import { JoinClause } from 'knex';
 import { JournalEntry } from '../services/db/models/journalEntry';
 import { Loaders } from '../services/db/loaders';
-import { MarketOrder } from '../services/db/models/marketOrder';
 import { QueryBuilder, raw } from 'objection';
 import { UserInputError } from 'apollo-server-express';
 import { WalletTransaction as WalletTransactionDB } from '../services/db/models/walletTransaction';
@@ -41,9 +41,9 @@ interface IResolvers<Context> {
     >;
   };
   MarketOrder: {
-    item: Resolver<InvItemPartial, MarketOrder, Context>;
-    character: Resolver<Character, MarketOrder, Context>;
-    location: Resolver<Maybe<ResolversTypes['Location']>, MarketOrder, Context>;
+    item: Resolver<InvItemPartial, CharacterMarketOrder, Context>;
+    character: Resolver<Character, CharacterMarketOrder, Context>;
+    location: Resolver<Maybe<ResolversTypes['Location']>, CharacterMarketOrder, Context>;
   };
   WalletTransaction: {
     item: Resolver<InvItemPartial, WalletTransactionDB, Context>;
@@ -80,23 +80,23 @@ const resolverMap: IResolvers<IResolverContext> = {
         .pluck('id');
 
       if (characterIds.length) {
-        const query = dataSources.db.MarketOrder.query()
-          .select('marketOrders.*', raw('coalesce(citadel.name, station.stationName) as locationName'))
-          .leftJoin('citadelCache as citadel', 'citadel.id', 'marketOrders.locationId')
-          .leftJoin('staStations as station', 'station.stationID', 'marketOrders.locationId');
+        const query = dataSources.db.CharacterMarketOrder.query()
+          .select('characterMarketOrders.*', raw('coalesce(citadel.name, station.stationName) as locationName'))
+          .leftJoin('citadelCache as citadel', 'citadel.id', 'characterMarketOrders.locationId')
+          .leftJoin('staStations as station', 'station.stationID', 'characterMarketOrders.locationId');
 
         if (filter && filter.characterId) {
           if (characterIds.includes(+filter.characterId)) {
-            query.where('marketOrders.characterId', filter.characterId);
+            query.where('characterMarketOrders.characterId', filter.characterId);
           } else {
             throw new UserInputError('Invalid character id');
           }
         } else {
-          query.where('marketOrders.characterId', 'in', characterIds);
+          query.where('characterMarketOrders.characterId', 'in', characterIds);
         }
 
         if (filter && filter.state) {
-          query.where((builder: QueryBuilder<MarketOrder>) => {
+          query.where((builder: QueryBuilder<CharacterMarketOrder>) => {
             if (filter.state!.active) {
               builder.orWhere('state', 'active');
             }

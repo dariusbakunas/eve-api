@@ -3,11 +3,13 @@ import {
   IEsiBlueprint,
   IEsiBookmark,
   IEsiCharacterInfo,
+  IEsiCharacterMarketOrder,
   IEsiCharacterSkills,
   IEsiCorporationInfo,
   IEsiIndustryJob,
   IEsiJournalEntry,
   IEsiMarketOrder,
+  IEsiPagedResponse,
   IEsiSkillQueueItem,
   IEsiWalletTransaction,
 } from './esiTypes';
@@ -42,11 +44,19 @@ class EsiAPI extends RESTDataSource {
     }
   }
 
-  protected async didReceiveResponse<TResult = any>(response: Response, request: Request): Promise<TResult> {
+  protected async didReceiveResponse(response: Response, request: Request) {
     const cacheKey = `${request.url}`;
     if (response.ok) {
-      const data = (await (this.parseBody(response) as any)) as Promise<TResult>;
+      const parsedResponse = (await (this.parseBody(response) as any)) as Promise<any>;
       const etag = response.headers.get('etag');
+      const pages = response.headers.get('x-pages');
+
+      const data = pages
+        ? {
+            pages,
+            data: parsedResponse,
+          }
+        : parsedResponse;
 
       if (etag) {
         await this.cache.set(
@@ -136,7 +146,16 @@ class EsiAPI extends RESTDataSource {
     });
   }
 
-  async getActiveMarketOrders(characterId: number, token: string): Promise<IEsiMarketOrder[]> {
+  async getMarketOrders(regionId: number, page: number): Promise<IEsiPagedResponse<IEsiMarketOrder[]>> {
+    return this.get(`/markets/${regionId}/orders?page=${page}`, undefined, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout: 4000,
+    });
+  }
+
+  async getCharacterMarketOrders(characterId: number, token: string): Promise<IEsiCharacterMarketOrder[]> {
     return this.get(`/characters/${characterId}/orders`, undefined, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -145,7 +164,7 @@ class EsiAPI extends RESTDataSource {
     });
   }
 
-  async getOrderHistory(characterId: number, token: string): Promise<IEsiMarketOrder[]> {
+  async getOrderHistory(characterId: number, token: string): Promise<IEsiCharacterMarketOrder[]> {
     return this.get(`/characters/${characterId}/orders/history`, undefined, {
       headers: {
         Authorization: `Bearer ${token}`,

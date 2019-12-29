@@ -68,7 +68,7 @@ export interface IEsiBlueprint {
   type_id: number;
 }
 
-export interface IEsiMarketOrder {
+export interface IEsiCharacterMarketOrder {
   duration: number;
   escrow?: number;
   is_buy_order?: boolean;
@@ -84,6 +84,26 @@ export interface IEsiMarketOrder {
   type_id: number;
   volume_remain: number;
   volume_total: number;
+}
+
+export interface IEsiMarketOrder {
+  duration: number;
+  is_buy_order: boolean;
+  issued: string;
+  location_id: number;
+  min_volume: number;
+  order_id: number;
+  price: number;
+  range: number;
+  system_id: number;
+  type_id: number;
+  volume_remain: number;
+  volume_total: number;
+}
+
+export interface IEsiPagedResponse<T> {
+  pages: number;
+  data: T;
 }
 
 export interface IEsiCharacterInfo {

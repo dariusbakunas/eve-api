@@ -1,6 +1,7 @@
 import { Alliance } from './db/models/alliance';
 import { Blueprint } from './db/models/blueprint';
 import { Character } from './db/models/character';
+import { CharacterMarketOrder } from './db/models/characterMarketOrder';
 import { CharacterSkill } from './db/models/characterSkill';
 import { CitadelCacheItem } from './db/models/citadelCacheItem';
 import { Corporation } from './db/models/corporation';
@@ -16,7 +17,6 @@ import { JobLogEntry } from './db/models/jobLogEntry';
 import { JournalEntry } from './db/models/journalEntry';
 import { Loaders } from './db/loaders';
 import { MarketGroup } from './db/models/marketGroup';
-import { MarketOrder } from './db/models/marketOrder';
 import { NameCacheItem } from './db/models/nameCacheItem';
 import { RedisCache } from 'apollo-server-cache-redis';
 import { Scope } from './db/models/scope';
@@ -45,7 +45,7 @@ export interface IDataSources {
     CharacterSkill: typeof CharacterSkill;
     Corporation: typeof Corporation;
     NameCacheItem: typeof NameCacheItem;
-    MarketOrder: typeof MarketOrder;
+    CharacterMarketOrder: typeof CharacterMarketOrder;
     JournalEntry: typeof JournalEntry;
     JobLogEntry: typeof JobLogEntry;
     MarketGroup: typeof MarketGroup;

@@ -1,7 +1,7 @@
 import BaseModel from './base';
 
-export class MarketOrder extends BaseModel {
-  static tableName = 'marketOrders';
+export class CharacterMarketOrder extends BaseModel {
+  static tableName = 'characterMarketOrders';
 
   readonly id!: number;
   characterId!: number;
