@@ -17,7 +17,8 @@
     "db:seed:pd": "node -r dotenv/config ./node_modules/knex/bin/cli.js seed:run --env production",
     "postinstall": "yarn patch-package",
     "gen:types": "graphql-codegen --config codegen.yml",
-    "start:processor": "ts-node -r dotenv/config ./src/jobs/manual.ts"
+    "start:processor": "ts-node -r dotenv/config ./src/jobs/manual.ts",
+    "start:market:processor": "ts-node -r dotenv/config ./src/jobs/marketOrderProcessor.ts"
   },
   "husky": {
     "hooks": {
