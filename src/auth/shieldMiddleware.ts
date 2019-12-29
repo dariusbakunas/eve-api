@@ -60,6 +60,7 @@ const shieldMiddleware = shield(
   {
     Query: {
       '*': deny,
+      cache: isActiveUser,
       buildInfo: isActiveUser,
       blueprints: isActiveUser,
       character: and(isActiveUser, isCharacterOwner),
@@ -79,6 +80,7 @@ const shieldMiddleware = shield(
     },
     Mutation: {
       '*': deny,
+      setCache: isActiveUser,
       addCharacter: isActiveUser,
       addWarehouse: isActiveUser,
       addItemsToWarehouse: and(isActiveUser, isWarehouseOwner),

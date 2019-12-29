@@ -71,6 +71,7 @@ export interface IDataSources {
   esiAuth: EsiAuth;
   esiApi: EsiAPI;
   crypt: Crypt;
+  cache: RedisCache;
   [key: string]: object;
 }
 
@@ -80,4 +81,5 @@ export const dataSources: () => IDataSources = () => ({
   esiApi: new EsiAPI(process.env.EVE_ESI_URL!, redisCache),
   crypt: new Crypt(process.env.TOKEN_SECRET!),
   loaders: new Loaders(db),
+  cache: redisCache,
 });

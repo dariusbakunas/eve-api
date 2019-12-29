@@ -218,6 +218,7 @@ export type MarketOrders = {
 
 export type Mutation = {
    __typename?: 'Mutation',
+  setCache: Scalars['ID'],
   addCharacter: Character,
   updateCharacter: Character,
   removeCharacter: Scalars['ID'],
@@ -228,6 +229,12 @@ export type Mutation = {
   addWarehouse: Warehouse,
   removeWarehouse: Scalars['ID'],
   updateWarehouse: Warehouse,
+};
+
+
+export type MutationSetCacheArgs = {
+  key: Scalars['ID'],
+  value: Scalars['String']
 };
 
 
@@ -353,6 +360,7 @@ export type Query = {
    __typename?: 'Query',
   blueprints: BlueprintsResponse,
   buildInfo?: Maybe<BuildInfo>,
+  cache?: Maybe<Scalars['String']>,
   character?: Maybe<Character>,
   characters: Array<Character>,
   invItems: Array<InvItem>,
@@ -379,6 +387,11 @@ export type QueryBlueprintsArgs = {
 
 export type QueryBuildInfoArgs = {
   blueprintId: Scalars['ID']
+};
+
+
+export type QueryCacheArgs = {
+  key: Scalars['ID']
 };
 
 
@@ -942,6 +955,7 @@ export type MarketOrdersResolvers<ContextType = any, ParentType extends Resolver
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  setCache?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationSetCacheArgs, 'key' | 'value'>>,
   addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'code'>>,
   updateCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>,
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
@@ -967,6 +981,7 @@ export type ProcessingLogEntryResolvers<ContextType = any, ParentType extends Re
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   blueprints?: Resolver<ResolversTypes['BlueprintsResponse'], ParentType, ContextType, QueryBlueprintsArgs>,
   buildInfo?: Resolver<Maybe<ResolversTypes['BuildInfo']>, ParentType, ContextType, RequireFields<QueryBuildInfoArgs, 'blueprintId'>>,
+  cache?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryCacheArgs, 'key'>>,
   character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>,
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
   invItems?: Resolver<Array<ResolversTypes['InvItem']>, ParentType, ContextType, QueryInvItemsArgs>,

@@ -1,0 +1,7 @@
+extend type Query {
+  cache(key: ID!): String
+}
+
+extend type Mutation {
+  setCache(key: ID!, value: String!): ID!
+}

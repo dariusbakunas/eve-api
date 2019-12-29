@@ -64,6 +64,7 @@
     "node-cache": "^5.0.1",
     "node-fetch": "^2.6.0",
     "objection": "^1.6.9",
+    "sjcl": "^1.0.8",
     "winston": "^3.2.1"
   },
   "devDependencies": {
@@ -81,6 +82,7 @@
     "@types/lodash.property": "^4.4.6",
     "@types/morgan": "^1.7.37",
     "@types/node-fetch": "^2.5.2",
+    "@types/sjcl": "^1.0.28",
     "@typescript-eslint/eslint-plugin": "^2.3.1",
     "@typescript-eslint/parser": "^2.3.1",
     "coveralls": "^3.0.6",

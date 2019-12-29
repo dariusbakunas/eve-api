@@ -1,5 +1,6 @@
 import Alliance from './alliance';
 import Blueprint from './blueprint';
+import Cache from './cache';
 import Character from './character';
 import Corporation from './corporation';
 import CustomScalars from './customScalars';
@@ -18,6 +19,7 @@ export default merge(
   Query,
   Alliance,
   Blueprint,
+  Cache,
   Character,
   Corporation,
   InvCategory,

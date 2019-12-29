@@ -7,6 +7,7 @@ import {
   QueryCharacterArgs,
   RequireFields,
   Resolver,
+  ResolversParentTypes,
   ResolversTypes,
   SkillGroup,
 } from '../__generated__/types';
@@ -34,8 +35,8 @@ interface Skill extends InventoryItem {
 
 interface ICharacterResolvers<Context> {
   Query: {
-    characters: Resolver<Array<Character>, any, Context>;
-    character: Resolver<Maybe<ResolversTypes['Character']>, any, Context, RequireFields<QueryCharacterArgs, 'id'>>;
+    characters: Resolver<Array<Character>, ResolversParentTypes['Query'], Context>;
+    character: Resolver<Maybe<ResolversTypes['Character']>, ResolversParentTypes['Query'], Context, RequireFields<QueryCharacterArgs, 'id'>>;
   };
   Mutation: {
     addCharacter: Resolver<ResolversTypes['Character'], unknown, Context, RequireFields<MutationAddCharacterArgs, 'code'>>;
