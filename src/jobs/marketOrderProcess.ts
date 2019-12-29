@@ -3,12 +3,15 @@ import { IDataSources } from '../services';
 import { IEsiMarketOrder } from '../services/esi/esiTypes';
 import { MarketOrder } from '../services/db/models/marketOrder';
 import { PartialUpdate, transaction } from 'objection';
+import chunk from 'lodash.chunk';
 import db from '../services/db';
 import logger from '../utils/logger';
 import moment from 'moment';
+import range from 'lodash.range';
 
 // for now only process Forge
 const FORGE_REGION_ID = 10000002;
+const REQUEST_CHUNK_SIZE = 25;
 
 const processMarketOrders = async (db: IDataSources['db'], orders: IEsiMarketOrder[]) => {
   const knex = db.MarketOrder.knex();
@@ -21,7 +24,7 @@ const processMarketOrders = async (db: IDataSources['db'], orders: IEsiMarketOrd
         .pluck('id');
       const existingIdSet = new Set(existingOrderIds);
 
-      let inserted = 0;
+      const inserted = new Set();
       let updated = 0;
 
       // insert/update orrders
@@ -43,23 +46,27 @@ const processMarketOrders = async (db: IDataSources['db'], orders: IEsiMarketOrd
 
           updated++;
         } else {
-          // insert
-          await db.MarketOrder.query(trx).insert({
-            id: order.order_id,
-            duration: order.duration,
-            isBuy: order.is_buy_order,
-            issued: moment(order.issued).toDate(),
-            locationId: order.location_id,
-            minVolume: order.min_volume,
-            price: order.price,
-            range: order.range,
-            systemId: order.system_id,
-            typeId: order.type_id,
-            volumeRemain: order.volume_remain,
-            volumeTotal: order.volume_total,
-          });
+          if (inserted.has(order.order_id)) {
+            logger.warn(`Duplicate order detected, skipping: ${JSON.stringify(order)}`);
+          } else {
+            // insert
+            await db.MarketOrder.query(trx).insert({
+              id: order.order_id,
+              duration: order.duration,
+              isBuy: order.is_buy_order,
+              issued: moment(order.issued).toDate(),
+              locationId: order.location_id,
+              minVolume: order.min_volume,
+              price: order.price,
+              range: order.range,
+              systemId: order.system_id,
+              typeId: order.type_id,
+              volumeRemain: order.volume_remain,
+              volumeTotal: order.volume_total,
+            });
 
-          inserted++;
+            inserted.add(order.order_id);
+          }
         }
       }
 
@@ -72,11 +79,20 @@ const processMarketOrders = async (db: IDataSources['db'], orders: IEsiMarketOrd
           .where('id', 'in', idsToDelete);
       }
 
-      logger.info(`Finished processing market orders. Inserted: ${inserted}, updated: ${updated}, deleted" ${idsToDelete.length}`);
+      logger.info(`Finished processing market orders. Inserted: ${inserted.size}, updated: ${updated}, deleted" ${idsToDelete.length}`);
     });
   } catch (e) {
     logger.error(`Failed to process market orders: ${e}`);
   }
+};
+
+const fetchMarketOrderPages = async (regionId: number, pages: number[]) => {
+  return Promise.all(
+    pages.map(async page => {
+      const ordersResponse = await getMarketOrders(regionId, page);
+      return ordersResponse.data;
+    })
+  );
 };
 
 (async function() {
@@ -85,9 +101,13 @@ const processMarketOrders = async (db: IDataSources['db'], orders: IEsiMarketOrd
     const orders = [...ordersResponse.data];
 
     if (ordersResponse.pages > 1) {
-      for (let i = 2; i < ordersResponse.pages; i++) {
-        const response = await getMarketOrders(FORGE_REGION_ID, i);
-        orders.push(...response.data);
+      const pageChunks = chunk(range(2, ordersResponse.pages), REQUEST_CHUNK_SIZE);
+
+      for (let i = 0; i < pageChunks.length; i++) {
+        const responses = await fetchMarketOrderPages(FORGE_REGION_ID, pageChunks[i]);
+        responses.forEach(response => {
+          orders.push(...response);
+        });
       }
     }
 
