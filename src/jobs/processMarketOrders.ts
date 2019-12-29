@@ -17,7 +17,7 @@ export const processMarketOrders = async (character: Character, token: string, d
     const knex = CharacterMarketOrder.knex();
 
     await transaction(knex, async trx => {
-      const existingOrders: Array<{ id: number; state: string; issued: string; duration: number }> = await db.MarketOrder.query(trx)
+      const existingOrders: Array<{ id: number; state: string; issued: string; duration: number }> = await db.CharacterMarketOrder.query(trx)
         .select('id', 'state', 'duration', 'issued')
         .where('characterId', character.id);
 
@@ -40,7 +40,7 @@ export const processMarketOrders = async (character: Character, token: string, d
             state: 'expired',
           };
 
-          await db.MarketOrder.query(trx)
+          await db.CharacterMarketOrder.query(trx)
             .findById(order.id)
             .patch(update);
         }
@@ -51,7 +51,7 @@ export const processMarketOrders = async (character: Character, token: string, d
 
         if (!orderMap[order.order_id]) {
           newOrders++;
-          await db.MarketOrder.query(trx).insert({
+          await db.CharacterMarketOrder.query(trx).insert({
             id: order.order_id,
             characterId: character.id,
             duration: order.duration,
@@ -85,7 +85,7 @@ export const processMarketOrders = async (character: Character, token: string, d
               volumeTotal: order.volume_total,
             };
 
-            await db.MarketOrder.query(trx)
+            await db.CharacterMarketOrder.query(trx)
               .findById(order.order_id)
               .patch(update);
 
