@@ -18,7 +18,7 @@
     "postinstall": "yarn patch-package",
     "gen:types": "graphql-codegen --config codegen.yml",
     "start:processor": "ts-node -r dotenv/config ./src/jobs/manual.ts",
-    "start:market:processor": "ts-node -r dotenv/config ./src/jobs/marketOrderProcessor.ts"
+    "start:market:processor": "ts-node -r dotenv/config ./src/jobs/marketOrderProcess.ts"
   },
   "husky": {
     "hooks": {
