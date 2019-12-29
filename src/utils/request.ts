@@ -46,15 +46,16 @@ interface RequestResponse<T> {
 const request = async <T>(url: string, options?: RequestOptions): Promise<RequestResponse<T>> => {
   const timerStart = process.hrtime();
   const requestMethod = options && options.method ? options.method : 'GET';
-  let response = await fetch(url, options);
   let retry = options && options.retries ? options.retries : 1;
   let timerEnd;
+  let response;
   let success = false;
 
   while (retry-- && !success) {
     let error;
 
     try {
+      response = await fetch(url, options);
       response = checkStatus(response);
       success = true;
     } catch (e) {
@@ -75,11 +76,15 @@ const request = async <T>(url: string, options?: RequestOptions): Promise<Reques
     }
   }
 
-  const data = await parseJSON(response);
-  return {
-    headers: response.headers,
-    data,
-  };
+  if (response) {
+    const data = await parseJSON(response);
+    return {
+      headers: response.headers,
+      data,
+    };
+  } else {
+    throw new Error(`Empty fetch response: ${url}`);
+  }
 };
 
 export default request;
