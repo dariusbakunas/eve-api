@@ -17,6 +17,7 @@ import { JobLogEntry } from './db/models/jobLogEntry';
 import { JournalEntry } from './db/models/journalEntry';
 import { Loaders } from './db/loaders';
 import { MarketGroup } from './db/models/marketGroup';
+import { MarketOrder } from './db/models/marketOrder';
 import { NameCacheItem } from './db/models/nameCacheItem';
 import { RedisCache } from 'apollo-server-cache-redis';
 import { Scope } from './db/models/scope';
@@ -49,6 +50,7 @@ export interface IDataSources {
     JournalEntry: typeof JournalEntry;
     JobLogEntry: typeof JobLogEntry;
     MarketGroup: typeof MarketGroup;
+    MarketOrder: typeof MarketOrder;
     IndustryBlueprint: typeof IndustryBlueprint;
     InvCategory: typeof InvCategory;
     IndustryActivity: typeof IndustryActivity;

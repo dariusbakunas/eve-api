@@ -29,6 +29,7 @@ import { IndustryActivityMaterial } from './models/industryActivityMaterial';
 import { IndustryActivityProduct } from './models/industryActivityProduct';
 import { IndustryBlueprint } from './models/industryBlueprints';
 import { MarketGroup } from './models/marketGroup';
+import { MarketOrder } from './models/marketOrder';
 import { SkillQueueItem } from './models/skillQueueItem';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const config = require('../../../knexfile');
@@ -59,6 +60,7 @@ const db: IDataSources['db'] = {
   IndustryActivity,
   InventoryItem,
   MarketGroup,
+  MarketOrder,
   SkillQueueItem,
   SkillMultiplier,
   Station,
