@@ -18,7 +18,7 @@ enum WalletJournalOrderBy {
   description
 }
 
-enum MarketOrderOrderBy {
+enum CharacterMarketOrderOrderBy {
   issued
 }
 
@@ -37,8 +37,8 @@ input WalletJournalOrderByInput {
   order: Order!
 }
 
-input MarketOrderOrderByInput {
-  column: MarketOrderOrderBy!
+input CharacterMarketOrderOrderByInput {
+  column: CharacterMarketOrderOrderBy!
   order: Order!
 }
 
@@ -59,7 +59,7 @@ enum OrderState {
   expired
 }
 
-type MarketOrder {
+type CharacterMarketOrder {
   id: ID!
   """
   Character who issued the order
@@ -158,9 +158,9 @@ type JournalEntries {
   entries: [JournalEntry!]!
 }
 
-type MarketOrders {
+type CharacterMarketOrders {
   total: Int!
-  orders: [MarketOrder!]!
+  orders: [CharacterMarketOrder!]!
 }
 
 input WalletTransactionFilter {
@@ -180,7 +180,7 @@ input OrderStateFilter {
   cancelled: Boolean
 }
 
-input MarketOrderFilter {
+input CharacterMarketOrderFilter {
   characterId: ID
   state: OrderStateFilter
 }
@@ -197,7 +197,7 @@ type WalletTransactionSummary {
 }
 
 extend type Query {
-  marketOrders(page: PageInput, filter: MarketOrderFilter, orderBy: MarketOrderOrderByInput): MarketOrders!
+  marketOrders(page: PageInput, filter: CharacterMarketOrderFilter, orderBy: CharacterMarketOrderOrderByInput): CharacterMarketOrders!
   walletJournal(page: PageInput, filter: WalletJournalFilter, orderBy: WalletJournalOrderByInput): JournalEntries!
   walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions!
   walletTransactionSummary(ids: [ID!]!): WalletTransactionSummary!

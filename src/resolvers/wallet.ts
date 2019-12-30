@@ -1,10 +1,8 @@
 import { Character } from '../services/db/models/character';
 import { CharacterMarketOrder } from '../services/db/models/characterMarketOrder';
-import { getCharacter } from './common';
 import {
-  InvGroup,
+  CharacterMarketOrderOrderBy,
   MarketGroup,
-  MarketOrderOrderBy,
   Maybe,
   OrderType,
   QueryMarketOrdersArgs,
@@ -19,6 +17,7 @@ import {
   WalletJournalOrderBy,
   WalletTransactionOrderBy,
 } from '../__generated__/types';
+import { getCharacter } from './common';
 import { InvItemPartial, IResolverContext } from '../types';
 import { JoinClause } from 'knex';
 import { JournalEntry } from '../services/db/models/journalEntry';
@@ -29,7 +28,7 @@ import { WalletTransaction as WalletTransactionDB } from '../services/db/models/
 
 interface IResolvers<Context> {
   Query: {
-    marketOrders: Resolver<Maybe<ResolversTypes['MarketOrders']>, ResolversParentTypes['Query'], Context, QueryMarketOrdersArgs>;
+    marketOrders: Resolver<Maybe<ResolversTypes['CharacterMarketOrders']>, ResolversParentTypes['Query'], Context, QueryMarketOrdersArgs>;
     walletJournal: Resolver<Maybe<ResolversTypes['JournalEntries']>, ResolversParentTypes['Query'], Context, QueryWalletJournalArgs>;
     walletTransactions: Resolver<Maybe<ResolversTypes['WalletTransactions']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionsArgs>;
     walletTransactionIds: Resolver<Array<ResolversTypes['ID']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionIdsArgs>;
@@ -40,7 +39,7 @@ interface IResolvers<Context> {
       RequireFields<QueryWalletTransactionSummaryArgs, 'ids'>
     >;
   };
-  MarketOrder: {
+  CharacterMarketOrder: {
     item: Resolver<InvItemPartial, CharacterMarketOrder, Context>;
     character: Resolver<Character, CharacterMarketOrder, Context>;
     location: Resolver<Maybe<ResolversTypes['Location']>, CharacterMarketOrder, Context>;
@@ -116,7 +115,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           const { column, order } = orderBy;
 
           switch (column) {
-            case MarketOrderOrderBy.Issued:
+            case CharacterMarketOrderOrderBy.Issued:
               orderByCol = column;
               break;
           }
@@ -378,7 +377,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       return getCharacter(parent.characterId, dataSources.loaders);
     },
   },
-  MarketOrder: {
+  CharacterMarketOrder: {
     character: async (parent, args, { dataSources }) => {
       return getCharacter(parent.characterId, dataSources.loaders);
     },
