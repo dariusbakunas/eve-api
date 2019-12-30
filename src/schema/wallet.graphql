@@ -197,7 +197,7 @@ type WalletTransactionSummary {
 }
 
 extend type Query {
-  marketOrders(page: PageInput, filter: CharacterMarketOrderFilter, orderBy: CharacterMarketOrderOrderByInput): CharacterMarketOrders!
+  characterMarketOrders(page: PageInput, filter: CharacterMarketOrderFilter, orderBy: CharacterMarketOrderOrderByInput): CharacterMarketOrders!
   walletJournal(page: PageInput, filter: WalletJournalFilter, orderBy: WalletJournalOrderByInput): JournalEntries!
   walletTransactions(page: PageInput, filter: WalletTransactionFilter, orderBy: WalletTransactionOrderByInput): WalletTransactions!
   walletTransactionSummary(ids: [ID!]!): WalletTransactionSummary!

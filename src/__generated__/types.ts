@@ -367,7 +367,7 @@ export type Query = {
   processingLogs: Array<ProcessingLogEntry>,
   scopes: Array<Scope>,
   userByEmail?: Maybe<User>,
-  marketOrders: CharacterMarketOrders,
+  characterMarketOrders: CharacterMarketOrders,
   walletJournal: JournalEntries,
   walletTransactions: WalletTransactions,
   walletTransactionSummary: WalletTransactionSummary,
@@ -415,7 +415,7 @@ export type QueryUserByEmailArgs = {
 };
 
 
-export type QueryMarketOrdersArgs = {
+export type QueryCharacterMarketOrdersArgs = {
   page?: Maybe<PageInput>,
   filter?: Maybe<CharacterMarketOrderFilter>,
   orderBy?: Maybe<CharacterMarketOrderOrderByInput>
@@ -988,7 +988,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   processingLogs?: Resolver<Array<ResolversTypes['ProcessingLogEntry']>, ParentType, ContextType, QueryProcessingLogsArgs>,
   scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
   userByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>,
-  marketOrders?: Resolver<ResolversTypes['CharacterMarketOrders'], ParentType, ContextType, QueryMarketOrdersArgs>,
+  characterMarketOrders?: Resolver<ResolversTypes['CharacterMarketOrders'], ParentType, ContextType, QueryCharacterMarketOrdersArgs>,
   walletJournal?: Resolver<ResolversTypes['JournalEntries'], ParentType, ContextType, QueryWalletJournalArgs>,
   walletTransactions?: Resolver<ResolversTypes['WalletTransactions'], ParentType, ContextType, QueryWalletTransactionsArgs>,
   walletTransactionSummary?: Resolver<ResolversTypes['WalletTransactionSummary'], ParentType, ContextType, RequireFields<QueryWalletTransactionSummaryArgs, 'ids'>>,

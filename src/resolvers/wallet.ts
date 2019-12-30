@@ -5,7 +5,7 @@ import {
   MarketGroup,
   Maybe,
   OrderType,
-  QueryMarketOrdersArgs,
+  QueryCharacterMarketOrdersArgs,
   QueryWalletJournalArgs,
   QueryWalletTransactionIdsArgs,
   QueryWalletTransactionsArgs,
@@ -28,7 +28,12 @@ import { WalletTransaction as WalletTransactionDB } from '../services/db/models/
 
 interface IResolvers<Context> {
   Query: {
-    marketOrders: Resolver<Maybe<ResolversTypes['CharacterMarketOrders']>, ResolversParentTypes['Query'], Context, QueryMarketOrdersArgs>;
+    characterMarketOrders: Resolver<
+      Maybe<ResolversTypes['CharacterMarketOrders']>,
+      ResolversParentTypes['Query'],
+      Context,
+      QueryCharacterMarketOrdersArgs
+    >;
     walletJournal: Resolver<Maybe<ResolversTypes['JournalEntries']>, ResolversParentTypes['Query'], Context, QueryWalletJournalArgs>;
     walletTransactions: Resolver<Maybe<ResolversTypes['WalletTransactions']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionsArgs>;
     walletTransactionIds: Resolver<Array<ResolversTypes['ID']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionIdsArgs>;
@@ -71,7 +76,7 @@ const getItem: (typeId: number, loaders: Loaders) => Promise<InvItemPartial> = a
 
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
-    marketOrders: async (_parent, { filter, orderBy, page }, { dataSources, user }) => {
+    characterMarketOrders: async (_parent, { filter, orderBy, page }, { dataSources, user }) => {
       const { index, size } = page || { index: 0, size: 10 };
       const characterIds = await dataSources.db.Character.query()
         .select('id')
