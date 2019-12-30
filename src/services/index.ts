@@ -19,7 +19,6 @@ import { Loaders } from './db/loaders';
 import { MarketGroup } from './db/models/marketGroup';
 import { MarketOrder } from './db/models/marketOrder';
 import { NameCacheItem } from './db/models/nameCacheItem';
-import { RedisCache } from 'apollo-server-cache-redis';
 import { Scope } from './db/models/scope';
 import { SkillMultiplier } from './db/models/skillMultiplier';
 import { SkillQueueItem } from './db/models/skillQueueItem';
@@ -32,11 +31,6 @@ import Crypt from './crypt';
 import db from './db';
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
-
-const redisCache = new RedisCache({
-  host: process.env.REDIS_HOST,
-  password: process.env.REDIS_PASSWORD,
-});
 
 export interface IDataSources {
   db: {
@@ -73,15 +67,13 @@ export interface IDataSources {
   esiAuth: EsiAuth;
   esiApi: EsiAPI;
   crypt: Crypt;
-  cache: RedisCache;
   [key: string]: object;
 }
 
 export const dataSources: () => IDataSources = () => ({
   db,
   esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL!),
-  esiApi: new EsiAPI(process.env.EVE_ESI_URL!, redisCache),
+  esiApi: new EsiAPI(process.env.EVE_ESI_URL!),
   crypt: new Crypt(process.env.TOKEN_SECRET!),
   loaders: new Loaders(db),
-  cache: redisCache,
 });

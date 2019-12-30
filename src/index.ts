@@ -3,7 +3,6 @@ import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import { applyMiddleware } from 'graphql-middleware';
 import { dataSources } from './services';
 import { loadSchema } from './schema/loadSchema';
-import { RedisCache } from 'apollo-server-cache-redis';
 import apolloContext from './auth/apolloContext';
 import express, { Request, Response } from 'express';
 import helmet from 'helmet';
@@ -92,10 +91,6 @@ const schema = makeExecutableSchema({
 
 const server = new ApolloServer({
   context: apolloContext,
-  cache: new RedisCache({
-    host: process.env.REDIS_HOST,
-    password: process.env.REDIS_PASSWORD,
-  }),
   dataSources,
   formatError: err => {
     // Don't give the specific errors to the client.
@@ -118,4 +113,6 @@ server.applyMiddleware({ app });
 
 app.use(Sentry.Handlers.errorHandler());
 
-app.listen({ port: 4000 }, () => logger.info(`🚀 Server ready at http://localhost:4000/graphql`));
+const port = process.env.PORT || 4000;
+
+app.listen({ port }, () => logger.info(`🚀 Server ready at http://localhost:4000/graphql`));

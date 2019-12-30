@@ -13,79 +13,15 @@ import {
   IEsiSkillQueueItem,
   IEsiWalletTransaction,
 } from './esiTypes';
-import { KeyValueCache } from 'apollo-server-caching';
 import { Request, Response, RESTDataSource } from 'apollo-datasource-rest';
-import { RequestOptions } from 'apollo-datasource-rest/src/RESTDataSource';
-import logger from '../../utils/logger';
 
 class EsiAPI extends RESTDataSource {
-  private cache: KeyValueCache;
-
-  constructor(baseUrl: string, cache: KeyValueCache) {
+  constructor(baseUrl: string) {
     super();
     this.baseURL = baseUrl;
-    this.cache = cache;
   }
   async getCharacterInfo(characterId: number): Promise<IEsiCharacterInfo> {
     return this.get(`/characters/${characterId}`);
-  }
-
-  protected async willSendRequest(request: RequestOptions): Promise<void> {
-    if (request.method === 'GET') {
-      const url = this.resolveURL(request);
-      const cacheKey = `${url}`;
-
-      const value = await this.cache.get(cacheKey);
-
-      if (value) {
-        const { etag } = JSON.parse(value);
-        request.headers.set('If-None-Match', etag);
-      }
-    }
-  }
-
-  protected async didReceiveResponse(response: Response, request: Request) {
-    const cacheKey = `${request.url}`;
-    if (response.ok) {
-      const parsedResponse = (await (this.parseBody(response) as any)) as Promise<any>;
-      const etag = response.headers.get('etag');
-      const pages = response.headers.get('x-pages');
-
-      const data = pages
-        ? {
-            pages,
-            data: parsedResponse,
-          }
-        : parsedResponse;
-
-      if (etag) {
-        await this.cache.set(
-          cacheKey,
-          JSON.stringify({
-            etag: etag.replace(/['"]+/g, ''),
-            data,
-          }),
-          {
-            ttl: 3600, // 1 hour
-          }
-        );
-      }
-
-      return data;
-    } else if (response.status === 304) {
-      // etag was used and 0 length response was returned, return cached entry
-      const value = await this.cache.get(cacheKey);
-
-      if (!value) {
-        logger.warning(`Could not get cache entry for ${cacheKey} for 304 response`);
-        throw new Error(`Could not get cache entry for ${cacheKey} for 304 response`);
-      }
-
-      const { data } = JSON.parse(value);
-      return data;
-    } else {
-      throw await this.errorFromResponse(response);
-    }
   }
 
   async getBookmarks(characterId: number, token: string): Promise<IEsiBookmark[]> {
