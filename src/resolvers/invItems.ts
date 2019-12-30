@@ -1,15 +1,27 @@
 import { InvGroupPartial, InvItemPartial, IResolverContext } from '../types';
-import { QueryInvItemsArgs, Resolver, ResolversParentTypes, ResolversTypes } from '../__generated__/types';
+import {
+  InvItemMarketPriceArgs,
+  ItemMarketPrice,
+  Maybe,
+  QueryInvItemsArgs,
+  RequireFields,
+  Resolver,
+  ResolversParentTypes,
+  ResolversTypes,
+} from '../__generated__/types';
+import { raw } from 'objection';
 import property from 'lodash.property';
+import { MarketOrder } from '../services/db/models/marketOrder';
 
 interface IResolvers<Context> {
   Query: {
     invItems: Resolver<Array<InvItemPartial>, ResolversParentTypes['Query'], Context, QueryInvItemsArgs>;
   };
   InvItem: {
-    id?: Resolver<ResolversTypes['ID'], InvItemPartial, Context>;
-    name?: Resolver<ResolversTypes['String'], InvItemPartial, Context>;
-    invGroup?: Resolver<InvGroupPartial, InvItemPartial, Context>;
+    id: Resolver<ResolversTypes['ID'], InvItemPartial, Context>;
+    name: Resolver<ResolversTypes['String'], InvItemPartial, Context>;
+    invGroup: Resolver<InvGroupPartial, InvItemPartial, Context>;
+    marketPrice: Resolver<Maybe<ResolversTypes['ItemMarketPrice']>, InvItemPartial, Context, RequireFields<InvItemMarketPriceArgs, 'systemId'>>;
   };
 }
 
@@ -52,6 +64,23 @@ const resolverMap: IResolvers<IResolverContext> = {
 
         throw new Error(`Could not load invGroup ID: ${invItem.groupID}`);
       }
+    },
+    marketPrice: async (invItem, { systemId }, { dataSources: { db, loaders } }) => {
+      const orders: Array<Partial<MarketOrder>> = await db.MarketOrder.query()
+        .select('isBuy', raw('(case when isBuy = true then max(price) else min(price) end) as price'))
+        .where('systemId', systemId)
+        .where('typeId', invItem.typeID)
+        .groupBy('isBuy');
+
+      return orders.reduce<Partial<ItemMarketPrice>>((acc, order) => {
+        if (order.isBuy) {
+          acc.sell = order.price;
+        } else {
+          acc.buy = order.price;
+        }
+
+        return acc;
+      }, {});
     },
   },
 };

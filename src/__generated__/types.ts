@@ -181,11 +181,23 @@ export type InvItem = {
   id: Scalars['ID'],
   name: Scalars['String'],
   invGroup: InvGroup,
+  marketPrice?: Maybe<ItemMarketPrice>,
+};
+
+
+export type InvItemMarketPriceArgs = {
+  systemId: Scalars['ID']
 };
 
 export type InvItemFilter = {
   name?: Maybe<Scalars['String']>,
   categoryIds?: Maybe<Array<Scalars['ID']>>,
+};
+
+export type ItemMarketPrice = {
+   __typename?: 'ItemMarketPrice',
+  buy?: Maybe<Scalars['Float']>,
+  sell?: Maybe<Scalars['Float']>,
 };
 
 export type JournalEntries = {
@@ -708,6 +720,7 @@ export type ResolversTypes = {
   InvItem: ResolverTypeWrapper<Partial<InvItem>>,
   InvGroup: ResolverTypeWrapper<Partial<InvGroup>>,
   InvCategory: ResolverTypeWrapper<Partial<InvCategory>>,
+  ItemMarketPrice: ResolverTypeWrapper<Partial<ItemMarketPrice>>,
   Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   BuildInfo: ResolverTypeWrapper<Partial<BuildInfo>>,
   BuildMaterial: ResolverTypeWrapper<Partial<BuildMaterial>>,
@@ -775,6 +788,7 @@ export type ResolversParentTypes = {
   InvItem: Partial<InvItem>,
   InvGroup: Partial<InvGroup>,
   InvCategory: Partial<InvCategory>,
+  ItemMarketPrice: Partial<ItemMarketPrice>,
   Boolean: Partial<Scalars['Boolean']>,
   BuildInfo: Partial<BuildInfo>,
   BuildMaterial: Partial<BuildMaterial>,
@@ -928,6 +942,12 @@ export type InvItemResolvers<ContextType = any, ParentType extends ResolversPare
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
   invGroup?: Resolver<ResolversTypes['InvGroup'], ParentType, ContextType>,
+  marketPrice?: Resolver<Maybe<ResolversTypes['ItemMarketPrice']>, ParentType, ContextType, RequireFields<InvItemMarketPriceArgs, 'systemId'>>,
+};
+
+export type ItemMarketPriceResolvers<ContextType = any, ParentType extends ResolversParentTypes['ItemMarketPrice'] = ResolversParentTypes['ItemMarketPrice']> = {
+  buy?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
+  sell?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
 };
 
 export type JournalEntriesResolvers<ContextType = any, ParentType extends ResolversParentTypes['JournalEntries'] = ResolversParentTypes['JournalEntries']> = {
@@ -1105,6 +1125,7 @@ export type Resolvers<ContextType = any> = {
   InvCategory?: InvCategoryResolvers<ContextType>,
   InvGroup?: InvGroupResolvers<ContextType>,
   InvItem?: InvItemResolvers<ContextType>,
+  ItemMarketPrice?: ItemMarketPriceResolvers<ContextType>,
   JournalEntries?: JournalEntriesResolvers<ContextType>,
   JournalEntry?: JournalEntryResolvers<ContextType>,
   Location?: LocationResolvers<ContextType>,

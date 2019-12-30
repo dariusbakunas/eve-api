@@ -14,10 +14,16 @@ type InvGroup {
   category: InvCategory!
 }
 
+type ItemMarketPrice {
+  buy: Float
+  sell: Float
+}
+
 type InvItem {
   id: ID!
   name: String!
   invGroup: InvGroup!
+  marketPrice(systemId: ID!): ItemMarketPrice
 }
 
 extend type Query {
