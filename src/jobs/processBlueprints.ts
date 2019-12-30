@@ -1,14 +1,20 @@
 import { Blueprint } from '../services/db/models/blueprint';
 import { Character } from '../services/db/models/character';
+import { getCharacterBlueprints } from '../services/esi/fetchApi';
 import { IDataSources } from '../services';
 import { PartialUpdate, transaction } from 'objection';
 import logger from '../utils/logger';
 
-export const processBlueprints = async (character: Character, token: string, db: IDataSources['db'], esiApi: IDataSources['esiApi']) => {
+export const processBlueprints = async (character: Character, token: string, db: IDataSources['db']) => {
   logger.info(`Getting blueprints for character: ${character.name}`);
 
   try {
-    const blueprints = await esiApi.getBlueprints(character.id, token);
+    const { data: blueprints, pages } = await getCharacterBlueprints(character.id, token);
+
+    if (pages > 1) {
+      logger.warn('Blueprint fetch for multiple pages not yet implemented');
+    }
+
     const knex = Blueprint.knex();
 
     await transaction(knex, async trx => {

@@ -44,7 +44,7 @@ export const processData = async () => {
       }
 
       if (scopes.includes('esi-characters.read_blueprints.v1')) {
-        await processBlueprints(character, token, db, esiApi);
+        await processBlueprints(character, token, db);
       }
     } catch (e) {
       logger.error(e);
