@@ -31,13 +31,6 @@ import { IndustryBlueprint } from './models/industryBlueprints';
 import { MarketGroup } from './models/marketGroup';
 import { MarketOrder } from './models/marketOrder';
 import { SkillQueueItem } from './models/skillQueueItem';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const config = require('../../../knexfile');
-
-const knex = Knex(config[process.env.NODE_ENV!]);
-
-//knex.migrate.latest();
-Model.knex(knex);
 
 const db: IDataSources['db'] = {
   Alliance,

@@ -7,7 +7,7 @@ import EsiAuth from '../services/esi/auth';
 export const initDataSources = () => {
   const dataSources = {
     esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL!),
-    esiApi: new EsiAPI(process.env.EVE_ESI_URL!, new InMemoryLRUCache()),
+    esiApi: new EsiAPI(process.env.EVE_ESI_URL!),
     db: db,
     crypt: new Crypt(process.env.TOKEN_SECRET!),
   };

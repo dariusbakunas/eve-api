@@ -2,7 +2,9 @@ import * as Sentry from '@sentry/node';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import { applyMiddleware } from 'graphql-middleware';
 import { dataSources } from './services';
+import { Firestore } from '@google-cloud/firestore';
 import { loadSchema } from './schema/loadSchema';
+import { Model } from 'objection';
 import apolloContext from './auth/apolloContext';
 import express, { Request, Response } from 'express';
 import helmet from 'helmet';
@@ -12,6 +14,7 @@ import morgan from 'morgan';
 import pJson from '../package.json';
 import resolvers from './resolvers';
 import shieldMiddleware from './auth/shieldMiddleware';
+import Knex = require('knex');
 
 if (process.env.NODE_ENV === 'production') {
   Sentry.init({
@@ -31,88 +34,114 @@ export interface IUserProfile {
   email_verified: boolean;
 }
 
-const requiredEnv = ['AUTH0_AUDIENCE', 'AUTH0_DOMAIN', 'EVE_LOGIN_URL', 'EVE_ESI_URL', 'TOKEN_SECRET', 'EVE_CLIENT_ID', 'EVE_CLIENT_SECRET'];
+(async function() {
+  if (process.env.APP_ENGINE === 'true') {
+    require('@google-cloud/debug-agent').start();
+    const firestore = new Firestore();
+    const ref = firestore.collection('configs').doc('eve-mate-api');
+    const doc = await ref.get();
 
-requiredEnv.forEach(env => {
-  if (!process.env[env]) {
-    throw new Error(`process.env.${env} is required`);
+    if (!doc.exists) {
+      throw new Error('Unable to load app engine configs');
+    } else {
+      const configs = doc.data();
+
+      if (configs) {
+        Object.keys(configs).forEach(key => {
+          process.env[key] = configs[key];
+        });
+      }
+    }
   }
-});
 
-const app = express();
-app.use(helmet());
-app.use(Sentry.Handlers.requestHandler());
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const dbConfig = require('../knexfile');
+  const knex = Knex(dbConfig[process.env.NODE_ENV!]);
+  Model.knex(knex);
 
-app.use(
-  morgan('short', {
-    skip: (req: Request, res: Response) => {
-      return (
-        req.url === '/.well-known/apollo/server-health' ||
-        req.url === '/favicon.ico' ||
-        req.originalUrl === '/.well-known/apollo/server-health' ||
-        req.originalUrl === '/favicon.ico' ||
-        res.statusCode < 400
-      );
+  const requiredEnv = ['AUTH0_AUDIENCE', 'AUTH0_DOMAIN', 'EVE_LOGIN_URL', 'EVE_ESI_URL', 'TOKEN_SECRET', 'EVE_CLIENT_ID', 'EVE_CLIENT_SECRET'];
+
+  requiredEnv.forEach(env => {
+    if (!process.env[env]) {
+      throw new Error(`process.env.${env} is required`);
+    }
+  });
+
+  const app = express();
+  app.use(helmet());
+  app.use(Sentry.Handlers.requestHandler());
+
+  app.use(
+    morgan('short', {
+      skip: (req: Request, res: Response) => {
+        return (
+          req.url === '/.well-known/apollo/server-health' ||
+          req.url === '/favicon.ico' ||
+          req.originalUrl === '/.well-known/apollo/server-health' ||
+          req.originalUrl === '/favicon.ico' ||
+          res.statusCode < 400
+        );
+      },
+      stream: process.stderr,
+    })
+  );
+
+  app.use(
+    morgan('short', {
+      skip: (req: Request, res: Response) => {
+        return (
+          req.url === '/.well-known/apollo/server-health' ||
+          req.url === '/favicon.ico' ||
+          req.originalUrl === '/.well-known/apollo/server-health' ||
+          req.originalUrl === '/favicon.ico' ||
+          res.statusCode >= 400
+        );
+      },
+      stream: process.stdout,
+    })
+  );
+
+  if (process.env.NODE_ENV === 'production' || (process.env.NODE_ENV === 'development' && process.env.USE_TEST_USER !== 'true')) {
+    app.use('/graphql*', jwtMiddleware);
+  } else {
+    logger.warn('Token authentication is disabled!!!');
+  }
+
+  const typeDefs = loadSchema();
+
+  const schema = makeExecutableSchema({
+    typeDefs,
+    resolvers,
+    resolverValidationOptions: {
+      requireResolversForResolveType: true,
     },
-    stream: process.stderr,
-  })
-);
+  });
 
-app.use(
-  morgan('short', {
-    skip: (req: Request, res: Response) => {
-      return (
-        req.url === '/.well-known/apollo/server-health' ||
-        req.url === '/favicon.ico' ||
-        req.originalUrl === '/.well-known/apollo/server-health' ||
-        req.originalUrl === '/favicon.ico' ||
-        res.statusCode >= 400
-      );
+  const server = new ApolloServer({
+    context: apolloContext,
+    dataSources,
+    formatError: err => {
+      // Don't give the specific errors to the client.
+      Sentry.captureException(err);
+      logger.error(err.message);
+
+      // Otherwise return the original error.  The error can also
+      // be manipulated in other ways, so long as it's returned.
+      return err;
     },
-    stream: process.stdout,
-  })
-);
+    schema: applyMiddleware(schema, shieldMiddleware),
+  });
 
-if (process.env.NODE_ENV === 'production' || (process.env.NODE_ENV === 'development' && process.env.USE_TEST_USER !== 'true')) {
-  app.use('/graphql*', jwtMiddleware);
-} else {
-  logger.warn('Token authentication is disabled!!!');
-}
+  app.get('/health-check', (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Status: OK!');
+  });
 
-const typeDefs = loadSchema();
+  server.applyMiddleware({ app });
 
-const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
-  resolverValidationOptions: {
-    requireResolversForResolveType: true,
-  },
-});
+  app.use(Sentry.Handlers.errorHandler());
 
-const server = new ApolloServer({
-  context: apolloContext,
-  dataSources,
-  formatError: err => {
-    // Don't give the specific errors to the client.
-    Sentry.captureException(err);
-    logger.error(err.message);
+  const port = process.env.PORT || 4000;
 
-    // Otherwise return the original error.  The error can also
-    // be manipulated in other ways, so long as it's returned.
-    return err;
-  },
-  schema: applyMiddleware(schema, shieldMiddleware),
-});
-
-app.get('/health-check', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('Status: OK!');
-});
-
-server.applyMiddleware({ app });
-
-app.use(Sentry.Handlers.errorHandler());
-
-const port = process.env.PORT || 4000;
-
-app.listen({ port }, () => logger.info(`🚀 Server ready at http://localhost:4000/graphql`));
+  app.listen({ port }, () => logger.info(`🚀 Server ready at http://localhost:4000/graphql`));
+})();
