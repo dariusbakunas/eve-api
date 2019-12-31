@@ -7,8 +7,8 @@ import { loadSchema } from './schema/loadSchema';
 import { Model } from 'objection';
 import apolloContext from './auth/apolloContext';
 import express, { Request, Response } from 'express';
+import getJwtMiddleware from './auth/jwtMiddleware';
 import helmet from 'helmet';
-import jwtMiddleware from './auth/jwtMiddleware';
 import logger from './utils/logger';
 import morgan from 'morgan';
 import pJson from '../package.json';
@@ -102,7 +102,7 @@ export interface IUserProfile {
   );
 
   if (process.env.NODE_ENV === 'production' || (process.env.NODE_ENV === 'development' && process.env.USE_TEST_USER !== 'true')) {
-    app.use('/graphql*', jwtMiddleware);
+    app.use('/graphql*', getJwtMiddleware(process.env.AUTH0_DOMAIN!, process.env.AUTH0_AUDIENCE!));
   } else {
     logger.warn('Token authentication is disabled!!!');
   }
@@ -143,5 +143,5 @@ export interface IUserProfile {
 
   const port = process.env.PORT || 4000;
 
-  app.listen({ port }, () => logger.info(`🚀 Server ready at http://localhost:4000/graphql`));
+  app.listen({ port }, () => logger.info(`🚀 Server ready at http://localhost:${port}/graphql`));
 })();
