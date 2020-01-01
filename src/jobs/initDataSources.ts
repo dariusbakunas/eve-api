@@ -8,7 +8,7 @@ import Knex from 'knex';
 
 export const initDataSources = () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const dbConfig = require('../knexfile');
+  const dbConfig = require('../../knexfile');
   const knex = Knex(dbConfig[process.env.NODE_ENV!]);
   Model.knex(knex);
 
