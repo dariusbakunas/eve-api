@@ -17,6 +17,7 @@ export async function up(knex: Knex): Promise<any> {
     t.bigInteger('characterId')
       .unsigned()
       .notNullable();
+    t.primary(['skillId', 'characterId']);
   });
 }
 
