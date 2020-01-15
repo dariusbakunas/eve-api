@@ -22,7 +22,7 @@ type SkillQueueItem {
   finishedLevel: Int!
   levelEndSp: Int!
   levelStartSp: Int!
-  skill: Skill!
+  skill: Skill
   startDate: DateTime
   trainingStartSp: Int!
 }

@@ -280,6 +280,8 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
         .where('characterSkills.skillId', skillId)
         .first();
 
+      // TODO: skill may be undefined
+
       return {
         id: `${skillId}`,
         name: skill.typeName,

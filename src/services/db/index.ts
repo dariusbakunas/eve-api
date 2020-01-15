@@ -11,7 +11,6 @@ import { InvGroup } from './models/invGroup';
 import { Invitation } from './models/invitation';
 import { JobLogEntry } from './models/jobLogEntry';
 import { JournalEntry } from './models/journalEntry';
-import { Model } from 'objection';
 import { NameCacheItem } from './models/nameCacheItem';
 import { Scope } from './models/scope';
 import { SkillMultiplier } from './models/skillMultiplier';
@@ -20,7 +19,6 @@ import { User } from './models/user';
 import { WalletTransaction } from './models/walletTransaction';
 import { Warehouse } from './models/warehouse';
 import { WarehouseItem } from './models/warehouseItem';
-import Knex from 'knex';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import { Blueprint } from './models/blueprint';
@@ -30,6 +28,7 @@ import { IndustryActivityProduct } from './models/industryActivityProduct';
 import { IndustryBlueprint } from './models/industryBlueprints';
 import { MarketGroup } from './models/marketGroup';
 import { MarketOrder } from './models/marketOrder';
+import { MarketPrice } from './models/MarketPrice';
 import { SkillQueueItem } from './models/skillQueueItem';
 
 const db: IDataSources['db'] = {
@@ -54,6 +53,7 @@ const db: IDataSources['db'] = {
   InventoryItem,
   MarketGroup,
   MarketOrder,
+  MarketPrice,
   SkillQueueItem,
   SkillMultiplier,
   Station,

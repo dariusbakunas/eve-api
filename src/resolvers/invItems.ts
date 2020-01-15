@@ -12,6 +12,7 @@ import {
 import { raw } from 'objection';
 import property from 'lodash.property';
 import { MarketOrder } from '../services/db/models/marketOrder';
+import { MarketPrice } from '../services/db/models/MarketPrice';
 
 interface IResolvers<Context> {
   Query: {
@@ -66,21 +67,20 @@ const resolverMap: IResolvers<IResolverContext> = {
       }
     },
     marketPrice: async (invItem, { systemId }, { dataSources: { db, loaders } }) => {
-      const orders: Array<Partial<MarketOrder>> = await db.MarketOrder.query()
-        .select('isBuy', raw('(case when isBuy = true then max(price) else min(price) end) as price'))
+      const item: Partial<MarketPrice> = await db.MarketPrice.query()
+        .select('buyPrice', 'sellPrice')
         .where('systemId', systemId)
         .where('typeId', invItem.typeID)
-        .groupBy('isBuy');
+        .first();
 
-      return orders.reduce<Partial<ItemMarketPrice>>((acc, order) => {
-        if (order.isBuy) {
-          acc.sell = order.price;
-        } else {
-          acc.buy = order.price;
-        }
+      if (item) {
+        return {
+          sell: item.sellPrice,
+          buy: item.buyPrice,
+        };
+      }
 
-        return acc;
-      }, {});
+      return null;
     },
   },
 };

@@ -18,6 +18,7 @@ import { JournalEntry } from './db/models/journalEntry';
 import { Loaders } from './db/loaders';
 import { MarketGroup } from './db/models/marketGroup';
 import { MarketOrder } from './db/models/marketOrder';
+import { MarketPrice } from './db/models/MarketPrice';
 import { NameCacheItem } from './db/models/nameCacheItem';
 import { Scope } from './db/models/scope';
 import { SkillMultiplier } from './db/models/skillMultiplier';
@@ -50,6 +51,7 @@ export interface IDataSources {
     IndustryActivity: typeof IndustryActivity;
     IndustryActivityMaterial: typeof IndustryActivityMaterial;
     IndustryActivityProduct: typeof IndustryActivityProduct;
+    MarketPrice: typeof MarketPrice;
     User: typeof User;
     Scope: typeof Scope;
     SkillQueueItem: typeof SkillQueueItem;
@@ -70,10 +72,12 @@ export interface IDataSources {
   [key: string]: object;
 }
 
-export const dataSources: () => IDataSources = () => ({
-  db,
-  esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL!),
-  esiApi: new EsiAPI(process.env.EVE_ESI_URL!),
-  crypt: new Crypt(process.env.TOKEN_SECRET!),
-  loaders: new Loaders(db),
-});
+export const dataSources: () => IDataSources = () => {
+  return {
+    db,
+    esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL!),
+    esiApi: new EsiAPI(process.env.EVE_ESI_URL!),
+    crypt: new Crypt(process.env.TOKEN_SECRET!),
+    loaders: new Loaders(db),
+  };
+};
