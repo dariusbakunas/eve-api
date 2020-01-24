@@ -1,5 +1,4 @@
 import { Character } from './character';
-import { Maybe } from '../../../types';
 import { Model, RelationMappings } from 'objection';
 import { Warehouse } from './warehouse';
 import BaseModel from './base';
@@ -14,8 +13,6 @@ export class User extends BaseModel {
 
   readonly id!: number;
   username!: string;
-  firstName?: Maybe<string>;
-  lastName?: Maybe<string>;
   status!: UserStatus;
   email!: string;
 

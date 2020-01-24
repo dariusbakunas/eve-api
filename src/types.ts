@@ -9,13 +9,13 @@ export type Maybe<T> = T | null;
 
 export interface IResolverContext {
   dataSources: IDataSources;
-  user: IUserProfile;
+  user: ContextUser;
 }
 
 export interface ContextUser {
   id?: string;
   email: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'GUEST';
+  status: 'ACTIVE' | 'INACTIVE' | 'GUEST' | 'NOT_VERIFIED';
 }
 
 export interface ApolloContext {

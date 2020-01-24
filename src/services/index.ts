@@ -32,6 +32,7 @@ import Crypt from './crypt';
 import db from './db';
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
+import Auth0API from './auth0';
 
 export interface IDataSources {
   db: {
@@ -66,6 +67,7 @@ export interface IDataSources {
     WarehouseItem: typeof WarehouseItem;
   };
   loaders: Loaders;
+  auth0Api: Auth0API;
   esiAuth: EsiAuth;
   esiApi: EsiAPI;
   crypt: Crypt;
@@ -75,6 +77,7 @@ export interface IDataSources {
 export const dataSources: () => IDataSources = () => {
   return {
     db,
+    auth0Api: new Auth0API(`https://${process.env.AUTH0_DOMAIN}`),
     esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL!),
     esiApi: new EsiAPI(process.env.EVE_ESI_URL!),
     crypt: new Crypt(process.env.TOKEN_SECRET!),

@@ -1,20 +1,17 @@
 enum UserStatus {
   ACTIVE
   INACTIVE
+  NOT_VERIFIED
 }
 
 type User {
   id: ID!
   username: String!
-  firstName: String
-  lastName: String
   email: String!
   status: UserStatus!
 }
 
 input RegistrationInput {
-  firstName: String
-  lastName: String
   username: String!
   email: String!
   code: String!

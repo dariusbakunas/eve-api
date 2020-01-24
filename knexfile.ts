@@ -35,6 +35,7 @@ if (process.env.APP_ENGINE === 'true') {
     database: process.env.PD_DB_DATABASE,
     user: process.env.PD_DB_USERNAME,
     password: process.env.PD_DB_PASSWORD,
+    port: +process.env.PD_DB_PORT!,
     timezone: '+00:00',
   };
 }

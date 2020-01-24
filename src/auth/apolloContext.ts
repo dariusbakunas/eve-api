@@ -23,7 +23,7 @@ type ContextParams = ExpressContext & {
   };
 };
 
-interface IAuthUser {
+export interface IAuthUser {
   email: string;
   email_verified: boolean;
 }
@@ -57,25 +57,24 @@ const apolloContext: ContextFunction<ContextParams, ApolloContext> = async ({ re
 
       const { email, email_verified: emailVerified } = authUser;
 
-      // Sentry.configureScope(scope => {
-      //   scope.setUser({ email });
-      // });
-
       if (!emailVerified) {
-        return {};
+        user = {
+          email,
+          status: 'NOT_VERIFIED',
+        };
+
+        return { user };
       }
 
       const dbUser = await db.User.query().findOne({
         email,
       });
 
-      user = {
-        email,
-        status: 'GUEST',
-      };
-
       if (!dbUser) {
-        return { user };
+        return {
+          email,
+          status: 'GUEST',
+        };
       }
 
       user = {

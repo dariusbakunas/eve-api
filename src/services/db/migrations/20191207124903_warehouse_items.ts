@@ -10,7 +10,9 @@ export async function up(knex: Knex): Promise<any> {
       .unsigned()
       .notNullable();
     t.integer('warehouseId').unsigned();
-    t.foreign('warehouseId').references('warehouses.id');
+    t.foreign('warehouseId')
+      .references('warehouses.id')
+      .onDelete('CASCADE');
     t.unique(['typeId', 'warehouseId']);
     t.timestamps(true, true);
   });

@@ -230,7 +230,6 @@ export type MarketGroup = {
 
 export type Mutation = {
    __typename?: 'Mutation',
-  setCache: Scalars['ID'],
   addCharacter: Character,
   updateCharacter: Character,
   removeCharacter: Scalars['ID'],
@@ -241,12 +240,6 @@ export type Mutation = {
   addWarehouse: Warehouse,
   removeWarehouse: Scalars['ID'],
   updateWarehouse: Warehouse,
-};
-
-
-export type MutationSetCacheArgs = {
-  key: Scalars['ID'],
-  value: Scalars['String']
 };
 
 
@@ -372,7 +365,6 @@ export type Query = {
    __typename?: 'Query',
   blueprints: BlueprintsResponse,
   buildInfo?: Maybe<BuildInfo>,
-  cache?: Maybe<Scalars['String']>,
   character?: Maybe<Character>,
   characters: Array<Character>,
   invItems: Array<InvItem>,
@@ -399,11 +391,6 @@ export type QueryBlueprintsArgs = {
 
 export type QueryBuildInfoArgs = {
   blueprintId: Scalars['ID']
-};
-
-
-export type QueryCacheArgs = {
-  key: Scalars['ID']
 };
 
 
@@ -469,11 +456,10 @@ export type QueryWarehouseArgs = {
 };
 
 export type RegistrationInput = {
-  firstName?: Maybe<Scalars['String']>,
-  lastName?: Maybe<Scalars['String']>,
   username: Scalars['String'],
   email: Scalars['String'],
   code: Scalars['String'],
+  password: Scalars['String'],
 };
 
 export type Scope = {
@@ -509,7 +495,7 @@ export type SkillQueueItem = {
   finishedLevel: Scalars['Int'],
   levelEndSp: Scalars['Int'],
   levelStartSp: Scalars['Int'],
-  skill: Skill,
+  skill?: Maybe<Skill>,
   startDate?: Maybe<Scalars['DateTime']>,
   trainingStartSp: Scalars['Int'],
 };
@@ -519,8 +505,6 @@ export type User = {
    __typename?: 'User',
   id: Scalars['ID'],
   username: Scalars['String'],
-  firstName?: Maybe<Scalars['String']>,
-  lastName?: Maybe<Scalars['String']>,
   email: Scalars['String'],
   status: UserStatus,
 };
@@ -975,7 +959,6 @@ export type MarketGroupResolvers<ContextType = any, ParentType extends Resolvers
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  setCache?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationSetCacheArgs, 'key' | 'value'>>,
   addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'code'>>,
   updateCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>,
   removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
@@ -1001,7 +984,6 @@ export type ProcessingLogEntryResolvers<ContextType = any, ParentType extends Re
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   blueprints?: Resolver<ResolversTypes['BlueprintsResponse'], ParentType, ContextType, QueryBlueprintsArgs>,
   buildInfo?: Resolver<Maybe<ResolversTypes['BuildInfo']>, ParentType, ContextType, RequireFields<QueryBuildInfoArgs, 'blueprintId'>>,
-  cache?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<QueryCacheArgs, 'key'>>,
   character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>,
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
   invItems?: Resolver<Array<ResolversTypes['InvItem']>, ParentType, ContextType, QueryInvItemsArgs>,
@@ -1047,7 +1029,7 @@ export type SkillQueueItemResolvers<ContextType = any, ParentType extends Resolv
   finishedLevel?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   levelEndSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   levelStartSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  skill?: Resolver<ResolversTypes['Skill'], ParentType, ContextType>,
+  skill?: Resolver<Maybe<ResolversTypes['Skill']>, ParentType, ContextType>,
   startDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>,
   trainingStartSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
 };
@@ -1059,8 +1041,6 @@ export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
-  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
   status?: Resolver<ResolversTypes['UserStatus'], ParentType, ContextType>,
 };

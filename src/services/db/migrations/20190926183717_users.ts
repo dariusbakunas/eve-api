@@ -8,8 +8,6 @@ export async function up(knex: Knex): Promise<any> {
     t.string('username')
       .notNullable()
       .unique();
-    t.string('firstName').notNullable();
-    t.string('lastName').notNullable();
     t.enum('status', ['ACTIVE', 'INACTIVE']).defaultTo('INACTIVE');
     t.string('email')
       .notNullable()
