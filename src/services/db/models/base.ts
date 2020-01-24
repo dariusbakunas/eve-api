@@ -1,5 +1,5 @@
+import { Model, QueryBuilder, Transaction } from 'objection';
 import logger from '../../../utils/logger';
-import { Constructor, Model, QueryBuilder, Transaction } from 'objection';
 import Knex = require('knex');
 
 class BaseModel extends Model {
