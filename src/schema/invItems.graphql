@@ -22,6 +22,8 @@ type ItemMarketPrice {
 type InvItem {
   id: ID!
   name: String!
+  mass: Float!
+  volume(packaged: Boolean = true): Float!
   invGroup: InvGroup!
   marketPrice(systemId: ID!): ItemMarketPrice
 }

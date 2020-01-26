@@ -180,8 +180,15 @@ export type InvItem = {
    __typename?: 'InvItem',
   id: Scalars['ID'],
   name: Scalars['String'],
+  mass: Scalars['Float'],
+  volume: Scalars['Float'],
   invGroup: InvGroup,
   marketPrice?: Maybe<ItemMarketPrice>,
+};
+
+
+export type InvItemVolumeArgs = {
+  packaged?: Maybe<Scalars['Boolean']>
 };
 
 
@@ -459,7 +466,6 @@ export type RegistrationInput = {
   username: Scalars['String'],
   email: Scalars['String'],
   code: Scalars['String'],
-  password: Scalars['String'],
 };
 
 export type Scope = {
@@ -511,7 +517,8 @@ export type User = {
 
 export enum UserStatus {
   Active = 'ACTIVE',
-  Inactive = 'INACTIVE'
+  Inactive = 'INACTIVE',
+  NotVerified = 'NOT_VERIFIED'
 }
 
 export type WalletJournalFilter = {
@@ -702,10 +709,10 @@ export type ResolversTypes = {
   Skill: ResolverTypeWrapper<Partial<Skill>>,
   SkillQueueItem: ResolverTypeWrapper<Partial<SkillQueueItem>>,
   InvItem: ResolverTypeWrapper<Partial<InvItem>>,
+  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   InvGroup: ResolverTypeWrapper<Partial<InvGroup>>,
   InvCategory: ResolverTypeWrapper<Partial<InvCategory>>,
   ItemMarketPrice: ResolverTypeWrapper<Partial<ItemMarketPrice>>,
-  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
   BuildInfo: ResolverTypeWrapper<Partial<BuildInfo>>,
   BuildMaterial: ResolverTypeWrapper<Partial<BuildMaterial>>,
   InvItemFilter: ResolverTypeWrapper<Partial<InvItemFilter>>,
@@ -770,10 +777,10 @@ export type ResolversParentTypes = {
   Skill: Partial<Skill>,
   SkillQueueItem: Partial<SkillQueueItem>,
   InvItem: Partial<InvItem>,
+  Boolean: Partial<Scalars['Boolean']>,
   InvGroup: Partial<InvGroup>,
   InvCategory: Partial<InvCategory>,
   ItemMarketPrice: Partial<ItemMarketPrice>,
-  Boolean: Partial<Scalars['Boolean']>,
   BuildInfo: Partial<BuildInfo>,
   BuildMaterial: Partial<BuildMaterial>,
   InvItemFilter: Partial<InvItemFilter>,
@@ -925,6 +932,8 @@ export type InvGroupResolvers<ContextType = any, ParentType extends ResolversPar
 export type InvItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvItem'] = ResolversParentTypes['InvItem']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  mass?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+  volume?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<InvItemVolumeArgs, 'packaged'>>,
   invGroup?: Resolver<ResolversTypes['InvGroup'], ParentType, ContextType>,
   marketPrice?: Resolver<Maybe<ResolversTypes['ItemMarketPrice']>, ParentType, ContextType, RequireFields<InvItemMarketPriceArgs, 'systemId'>>,
 };

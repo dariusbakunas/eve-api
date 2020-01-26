@@ -26,6 +26,7 @@ export class InventoryItem extends BaseModel {
   description?: string;
   typeName?: string;
   mass?: number;
+  volume?: number;
   marketGroupID?: number;
 
   // relations

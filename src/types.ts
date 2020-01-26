@@ -22,7 +22,7 @@ export interface ApolloContext {
   user?: ContextUser;
 }
 
-export type InvItemPartial = Pick<InventoryItem, 'typeID' | 'typeName' | 'groupID' | 'groupName' | 'categoryID'>;
+export type InvItemPartial = Pick<InventoryItem, 'typeID' | 'typeName' | 'groupID' | 'groupName' | 'categoryID' | 'mass' | 'volume'>;
 export type InvGroupPartial = Pick<InvGroup, 'groupID' | 'groupName' | 'categoryID'>;
 export type InvCategoryPartial = Pick<InvCategory, 'categoryID' | 'categoryName'>;
 export type WarehouseItemPartial = Pick<WarehouseItem, 'warehouseId' | 'typeId' | 'unitPrice' | 'quantity'>;

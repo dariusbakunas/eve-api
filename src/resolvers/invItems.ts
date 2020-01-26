@@ -1,6 +1,7 @@
 import { InvGroupPartial, InvItemPartial, IResolverContext } from '../types';
 import {
   InvItemMarketPriceArgs,
+  InvItemVolumeArgs,
   ItemMarketPrice,
   Maybe,
   QueryInvItemsArgs,
@@ -9,10 +10,8 @@ import {
   ResolversParentTypes,
   ResolversTypes,
 } from '../__generated__/types';
-import { raw } from 'objection';
-import property from 'lodash.property';
-import { MarketOrder } from '../services/db/models/marketOrder';
 import { MarketPrice } from '../services/db/models/MarketPrice';
+import property from 'lodash.property';
 
 interface IResolvers<Context> {
   Query: {
@@ -23,8 +22,54 @@ interface IResolvers<Context> {
     name: Resolver<ResolversTypes['String'], InvItemPartial, Context>;
     invGroup: Resolver<InvGroupPartial, InvItemPartial, Context>;
     marketPrice: Resolver<Maybe<ResolversTypes['ItemMarketPrice']>, InvItemPartial, Context, RequireFields<InvItemMarketPriceArgs, 'systemId'>>;
+    volume: Resolver<ResolversTypes['Float'], InvItemPartial, Context, RequireFields<InvItemVolumeArgs, 'packaged'>>;
   };
 }
+
+/**
+ * These don't seem to be in data export
+ */
+const SHIP_PACKAGED_VOLUMES: { [key: number]: number } = {
+  25: 2500,
+  26: 10000,
+  27: 50000,
+  28: 10000,
+  30: 13000000,
+  31: 500,
+  237: 2500,
+  324: 2500,
+  358: 10000,
+  380: 10000,
+  419: 15000,
+  420: 5000,
+  463: 3750,
+  485: 1300000,
+  513: 1300000,
+  540: 15000,
+  541: 5000,
+  543: 3750,
+  547: 1300000,
+  659: 13000000,
+  830: 2500,
+  831: 2500,
+  832: 10000,
+  833: 10000,
+  834: 2500,
+  883: 1300000,
+  893: 2500,
+  894: 10000,
+  898: 50000,
+  900: 50000,
+  902: 1300000,
+  906: 10000,
+  941: 500000,
+  963: 10000,
+  1022: 500,
+  1201: 15000,
+  1202: 10000,
+  1283: 2500,
+  1305: 5000,
+};
 
 const resolverMap: IResolvers<IResolverContext> = {
   Query: {
@@ -81,6 +126,9 @@ const resolverMap: IResolvers<IResolverContext> = {
       }
 
       return null;
+    },
+    volume: async ({ groupID, volume }, { packaged }) => {
+      return packaged && SHIP_PACKAGED_VOLUMES[groupID] ? SHIP_PACKAGED_VOLUMES[groupID] : volume!;
     },
   },
 };
