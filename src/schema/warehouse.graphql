@@ -5,10 +5,16 @@ type WarehouseItem {
   unitCost: Float!
 }
 
+type WarehouseSummary {
+  totalCost: Float!
+  totalVolume: Float!
+}
+
 type Warehouse {
   id: ID!
   name: String!
   items: [WarehouseItem!]!
+  summary: WarehouseSummary!
 }
 
 input WarehouseItemInput {

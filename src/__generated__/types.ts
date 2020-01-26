@@ -602,6 +602,7 @@ export type Warehouse = {
   id: Scalars['ID'],
   name: Scalars['String'],
   items: Array<WarehouseItem>,
+  summary: WarehouseSummary,
 };
 
 export type WarehouseItem = {
@@ -616,6 +617,12 @@ export type WarehouseItemInput = {
   id: Scalars['ID'],
   quantity: Scalars['Int'],
   unitCost: Scalars['Float'],
+};
+
+export type WarehouseSummary = {
+   __typename?: 'WarehouseSummary',
+  totalCost: Scalars['Float'],
+  totalVolume: Scalars['Float'],
 };
 
 
@@ -748,6 +755,7 @@ export type ResolversTypes = {
   WalletTransactionSummaryItem: ResolverTypeWrapper<Partial<WalletTransactionSummaryItem>>,
   WarehouseItem: ResolverTypeWrapper<Partial<WarehouseItem>>,
   Warehouse: ResolverTypeWrapper<Partial<Warehouse>>,
+  WarehouseSummary: ResolverTypeWrapper<Partial<WarehouseSummary>>,
   Mutation: ResolverTypeWrapper<{}>,
   RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
   WarehouseItemInput: ResolverTypeWrapper<Partial<WarehouseItemInput>>,
@@ -816,6 +824,7 @@ export type ResolversParentTypes = {
   WalletTransactionSummaryItem: Partial<WalletTransactionSummaryItem>,
   WarehouseItem: Partial<WarehouseItem>,
   Warehouse: Partial<Warehouse>,
+  WarehouseSummary: Partial<WarehouseSummary>,
   Mutation: {},
   RegistrationInput: Partial<RegistrationInput>,
   WarehouseItemInput: Partial<WarehouseItemInput>,
@@ -1089,6 +1098,7 @@ export type WarehouseResolvers<ContextType = any, ParentType extends ResolversPa
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
   items?: Resolver<Array<ResolversTypes['WarehouseItem']>, ParentType, ContextType>,
+  summary?: Resolver<ResolversTypes['WarehouseSummary'], ParentType, ContextType>,
 };
 
 export type WarehouseItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['WarehouseItem'] = ResolversParentTypes['WarehouseItem']> = {
@@ -1096,6 +1106,11 @@ export type WarehouseItemResolvers<ContextType = any, ParentType extends Resolve
   item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
   quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
   unitCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+};
+
+export type WarehouseSummaryResolvers<ContextType = any, ParentType extends ResolversParentTypes['WarehouseSummary'] = ResolversParentTypes['WarehouseSummary']> = {
+  totalCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+  totalVolume?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
 };
 
 export type Resolvers<ContextType = any> = {
@@ -1134,6 +1149,7 @@ export type Resolvers<ContextType = any> = {
   WalletTransactionSummaryItem?: WalletTransactionSummaryItemResolvers<ContextType>,
   Warehouse?: WarehouseResolvers<ContextType>,
   WarehouseItem?: WarehouseItemResolvers<ContextType>,
+  WarehouseSummary?: WarehouseSummaryResolvers<ContextType>,
 };
 
 

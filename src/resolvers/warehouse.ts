@@ -15,7 +15,7 @@ import {
   ResolversTypes,
   Warehouse,
 } from '../__generated__/types';
-import { transaction } from 'objection';
+import { raw, transaction } from 'objection';
 import { Warehouse as WarehouseDB } from '../services/db/models/warehouse';
 import { WarehouseItem as WarehouseItemDB } from '../services/db/models/warehouseItem';
 import property from 'lodash.property';
@@ -61,6 +61,7 @@ interface IResolvers<Context> {
   };
   Warehouse: {
     items: Resolver<Array<WarehouseItemPartial>, WarehouseDB, Context>;
+    summary: Resolver<ResolversTypes['WarehouseSummary'], WarehouseDB, Context>;
   };
   WarehouseItem: {
     unitCost: Resolver<ResolversTypes['Float'], WarehouseItemPartial, Context>;
@@ -218,6 +219,18 @@ const resolverMap: IResolvers<IResolverContext> = {
         .where('warehouseId', id)
         .join('invTypes as item', 'item.typeID', 'warehouseItems.typeId')
         .orderBy('typeName');
+    },
+    summary: async ({ id }, args, { dataSources: { db } }) => {
+      return db.WarehouseItem.query()
+        .select(
+          raw('sum(warehouseItems.unitPrice * warehouseItems.quantity) as totalCost'),
+          raw('sum(coalesce(sV.volume, invTypes.volume)) as totalVolume')
+        )
+        .join('invTypes', 'invTypes.typeID', 'warehouseItems.typeId')
+        .leftJoin('shipVolumes as sV', 'sV.groupId', 'invTypes.groupID')
+        .where('warehouseItems.warehouseId', id)
+        .groupBy('warehouseItems.warehouseId')
+        .first();
     },
   },
   WarehouseItem: {
