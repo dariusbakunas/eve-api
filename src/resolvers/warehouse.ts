@@ -221,7 +221,7 @@ const resolverMap: IResolvers<IResolverContext> = {
         .orderBy('typeName');
     },
     summary: async ({ id }, args, { dataSources: { db } }) => {
-      return db.WarehouseItem.query()
+      const summary = await db.WarehouseItem.query()
         .select(
           raw('sum(warehouseItems.unitPrice * warehouseItems.quantity) as totalCost'),
           raw('sum(warehouseItems.quantity * coalesce(sV.volume, invTypes.volume)) as totalVolume')
@@ -231,6 +231,13 @@ const resolverMap: IResolvers<IResolverContext> = {
         .where('warehouseItems.warehouseId', id)
         .groupBy('warehouseItems.warehouseId')
         .first();
+
+      return (
+        summary || {
+          totalVolume: 0,
+          totalCost: 0,
+        }
+      );
     },
   },
   WarehouseItem: {
