@@ -224,7 +224,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       return db.WarehouseItem.query()
         .select(
           raw('sum(warehouseItems.unitPrice * warehouseItems.quantity) as totalCost'),
-          raw('sum(coalesce(sV.volume, invTypes.volume)) as totalVolume')
+          raw('sum(warehouseItems.quantity * coalesce(sV.volume, invTypes.volume)) as totalVolume')
         )
         .join('invTypes', 'invTypes.typeID', 'warehouseItems.typeId')
         .leftJoin('shipVolumes as sV', 'sV.groupId', 'invTypes.groupID')
