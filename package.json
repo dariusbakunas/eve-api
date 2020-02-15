@@ -9,7 +9,7 @@
     "dev": "nodemon",
     "build": "tsc -p . && cp -r ./src/schema/*.graphql ./build/src/schema",
     "start": "NODE_ENV=production node build/src/index.js",
-    "test": "jest",
+    "test": "TZ=UTC jest --coverage",
     "db:migrate": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest --env development",
     "db:migrate:pd": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest --env production",
     "db:migrate:staging": "node -r dotenv/config ./node_modules/knex/bin/cli.js migrate:latest --env staging",
