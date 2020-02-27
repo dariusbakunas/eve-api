@@ -3,3 +3,5 @@ service: eve-mate-api
 
 env_variables:
   APP_ENGINE: 'true'
+  SENTRY_DSN: 'https://3df90faaa98c4caf84cd615965e4aa42@sentry.io/1816282'
+  NODE_ENV: 'production'

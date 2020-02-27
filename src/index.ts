@@ -16,9 +16,9 @@ import resolvers from './resolvers';
 import shieldMiddleware from './auth/shieldMiddleware';
 import Knex = require('knex');
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' && process.env.SENTRY_DSN) {
   Sentry.init({
-    dsn: 'https://3df90faaa98c4caf84cd615965e4aa42@sentry.io/1816282',
+    dsn: process.env.SENTRY_DSN,
     release: `${pJson.name}@${pJson.version}`,
   });
 }
