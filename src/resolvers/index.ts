@@ -3,6 +3,7 @@ import Blueprint from './blueprint';
 import Character from './character';
 import Corporation from './corporation';
 import CustomScalars from './customScalars';
+import IndustryJobs from './industryJobs';
 import InvCategory from './invCategory';
 import InvGroup from './invGroup';
 import InvItems from './invItems';
@@ -23,6 +24,7 @@ export default merge(
   InvCategory,
   InvItems,
   InvGroup,
+  IndustryJobs,
   Mutation,
   CustomScalars,
   User,

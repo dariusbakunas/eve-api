@@ -64,6 +64,7 @@ const shieldMiddleware = shield(
       blueprints: isActiveUser,
       character: and(isActiveUser, isCharacterOwner),
       characters: isActiveUser,
+      industryJobs: isActiveUser,
       scopes: isActiveUser,
       userByEmail: hasSameEmail,
       invItems: isActiveUser,

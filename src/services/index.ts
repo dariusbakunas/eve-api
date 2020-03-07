@@ -9,6 +9,7 @@ import { IndustryActivity } from './db/models/industryActivity';
 import { IndustryActivityMaterial } from './db/models/industryActivityMaterial';
 import { IndustryActivityProduct } from './db/models/industryActivityProduct';
 import { IndustryBlueprint } from './db/models/industryBlueprints';
+import { IndustryJob } from './db/models/industryJob';
 import { InvCategory } from './db/models/InvCategory';
 import { InventoryItem } from './db/models/InventoryItem';
 import { InvGroup } from './db/models/invGroup';
@@ -28,11 +29,11 @@ import { User } from './db/models/user';
 import { WalletTransaction } from './db/models/walletTransaction';
 import { Warehouse } from './db/models/warehouse';
 import { WarehouseItem } from './db/models/warehouseItem';
+import Auth0API from './auth0';
 import Crypt from './crypt';
 import db from './db';
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
-import Auth0API from './auth0';
 
 export interface IDataSources {
   db: {
@@ -52,6 +53,7 @@ export interface IDataSources {
     IndustryActivity: typeof IndustryActivity;
     IndustryActivityMaterial: typeof IndustryActivityMaterial;
     IndustryActivityProduct: typeof IndustryActivityProduct;
+    IndustryJob: typeof IndustryJob;
     MarketPrice: typeof MarketPrice;
     User: typeof User;
     Scope: typeof Scope;

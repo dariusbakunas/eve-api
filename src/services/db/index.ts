@@ -26,6 +26,7 @@ import { IndustryActivity } from './models/industryActivity';
 import { IndustryActivityMaterial } from './models/industryActivityMaterial';
 import { IndustryActivityProduct } from './models/industryActivityProduct';
 import { IndustryBlueprint } from './models/industryBlueprints';
+import { IndustryJob } from './models/industryJob';
 import { MarketGroup } from './models/marketGroup';
 import { MarketOrder } from './models/marketOrder';
 import { MarketPrice } from './models/MarketPrice';
@@ -50,6 +51,7 @@ const db: IDataSources['db'] = {
   IndustryActivityProduct,
   IndustryActivityMaterial,
   IndustryActivity,
+  IndustryJob,
   InventoryItem,
   MarketGroup,
   MarketOrder,

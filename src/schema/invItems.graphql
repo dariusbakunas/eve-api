@@ -25,7 +25,8 @@ type InvItem {
   mass: Float!
   volume(packaged: Boolean = true): Float!
   invGroup: InvGroup!
-  marketPrice(systemId: ID!): ItemMarketPrice
+  # default: Jita
+  marketPrice(systemId: ID = 30000142): ItemMarketPrice
 }
 
 extend type Query {

@@ -1,0 +1,75 @@
+type IndustryActivity {
+  id: ID!
+  name: String!
+}
+
+type IndustryJob {
+  id: ID!
+  activity: IndustryActivity!
+  """
+  The sum of job installation fee and industry facility tax
+  """
+  cost: Float
+  """
+  Date and time when this job finished
+  """
+  endDate: DateTime!
+  """
+  Character which installed this job
+  """
+  installer: Character!
+  """
+  Number of runs blueprint is licensed for
+  """
+  licensedRuns: Int
+  """
+  Date and time when this job was paused (i.e. time when the facility where this job was installed went offline)
+  """
+  pauseDate: DateTime
+  """
+  Chance of success for invention
+  """
+  probability: Float
+  """
+  Product (manufactured, copied or invented)
+  """
+  product: InvItem
+  """
+  Date and time when this job started
+  """
+  startDate: DateTime!
+  """
+  Status string
+  """
+  status: String!
+  """
+  Number of runs for a manufacturing job, or number of copies to make for a blueprint copy
+  """
+  runs: Int!
+  """
+  Number of successful runs for this job. Equal to runs unless this is an invention job
+  """
+  successfulRuns: Int
+}
+
+type IndustryJobs {
+  total: Int!
+  jobs: [IndustryJob!]!
+}
+
+input IndustryJobFilter {
+  installerId: ID
+}
+
+enum IndustryJobOrderBy {
+  startDate
+}
+
+input IndustryJobOrderByInput {
+  column: IndustryJobOrderBy!
+  order: Order!
+}
+
+extend type Query {
+  industryJobs(page: PageInput, filter: IndustryJobFilter, orderBy: IndustryJobOrderByInput): IndustryJobs!
+}

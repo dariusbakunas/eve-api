@@ -163,6 +163,59 @@ export type Corporation = {
 
 
 
+export type IndustryActivity = {
+   __typename?: 'IndustryActivity',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+};
+
+export type IndustryJob = {
+   __typename?: 'IndustryJob',
+  id: Scalars['ID'],
+  activity: IndustryActivity,
+  /** The sum of job installation fee and industry facility tax */
+  cost?: Maybe<Scalars['Float']>,
+  /** Date and time when this job finished */
+  endDate: Scalars['DateTime'],
+  /** Character which installed this job */
+  installer: Character,
+  /** Number of runs blueprint is licensed for */
+  licensedRuns?: Maybe<Scalars['Int']>,
+  /** Date and time when this job was paused (i.e. time when the facility where this job was installed went offline) */
+  pauseDate?: Maybe<Scalars['DateTime']>,
+  /** Chance of success for invention */
+  probability?: Maybe<Scalars['Float']>,
+  /** Product (manufactured, copied or invented) */
+  product?: Maybe<InvItem>,
+  /** Date and time when this job started */
+  startDate: Scalars['DateTime'],
+  /** Status string */
+  status: Scalars['String'],
+  /** Number of runs for a manufacturing job, or number of copies to make for a blueprint copy */
+  runs: Scalars['Int'],
+  /** Number of successful runs for this job. Equal to runs unless this is an invention job */
+  successfulRuns?: Maybe<Scalars['Int']>,
+};
+
+export type IndustryJobFilter = {
+  installerId?: Maybe<Scalars['ID']>,
+};
+
+export enum IndustryJobOrderBy {
+  StartDate = 'startDate'
+}
+
+export type IndustryJobOrderByInput = {
+  column: IndustryJobOrderBy,
+  order: Order,
+};
+
+export type IndustryJobs = {
+   __typename?: 'IndustryJobs',
+  total: Scalars['Int'],
+  jobs: Array<IndustryJob>,
+};
+
 export type InvCategory = {
    __typename?: 'InvCategory',
   id: Scalars['ID'],
@@ -183,6 +236,7 @@ export type InvItem = {
   mass: Scalars['Float'],
   volume: Scalars['Float'],
   invGroup: InvGroup,
+  /** default: Jita */
   marketPrice?: Maybe<ItemMarketPrice>,
 };
 
@@ -193,7 +247,7 @@ export type InvItemVolumeArgs = {
 
 
 export type InvItemMarketPriceArgs = {
-  systemId: Scalars['ID']
+  systemId?: Maybe<Scalars['ID']>
 };
 
 export type InvItemFilter = {
@@ -374,6 +428,7 @@ export type Query = {
   buildInfo?: Maybe<BuildInfo>,
   character?: Maybe<Character>,
   characters: Array<Character>,
+  industryJobs: IndustryJobs,
   invItems: Array<InvItem>,
   processingLogs: Array<ProcessingLogEntry>,
   scopes: Array<Scope>,
@@ -403,6 +458,13 @@ export type QueryBuildInfoArgs = {
 
 export type QueryCharacterArgs = {
   id: Scalars['ID']
+};
+
+
+export type QueryIndustryJobsArgs = {
+  page?: Maybe<PageInput>,
+  filter?: Maybe<IndustryJobFilter>,
+  orderBy?: Maybe<IndustryJobOrderByInput>
 };
 
 
@@ -722,6 +784,12 @@ export type ResolversTypes = {
   ItemMarketPrice: ResolverTypeWrapper<Partial<ItemMarketPrice>>,
   BuildInfo: ResolverTypeWrapper<Partial<BuildInfo>>,
   BuildMaterial: ResolverTypeWrapper<Partial<BuildMaterial>>,
+  IndustryJobFilter: ResolverTypeWrapper<Partial<IndustryJobFilter>>,
+  IndustryJobOrderByInput: ResolverTypeWrapper<Partial<IndustryJobOrderByInput>>,
+  IndustryJobOrderBy: ResolverTypeWrapper<Partial<IndustryJobOrderBy>>,
+  IndustryJobs: ResolverTypeWrapper<Partial<IndustryJobs>>,
+  IndustryJob: ResolverTypeWrapper<Partial<IndustryJob>>,
+  IndustryActivity: ResolverTypeWrapper<Partial<IndustryActivity>>,
   InvItemFilter: ResolverTypeWrapper<Partial<InvItemFilter>>,
   ProcessingLogFilter: ResolverTypeWrapper<Partial<ProcessingLogFilter>>,
   ProcessingLogEntry: ResolverTypeWrapper<Partial<ProcessingLogEntry>>,
@@ -791,6 +859,12 @@ export type ResolversParentTypes = {
   ItemMarketPrice: Partial<ItemMarketPrice>,
   BuildInfo: Partial<BuildInfo>,
   BuildMaterial: Partial<BuildMaterial>,
+  IndustryJobFilter: Partial<IndustryJobFilter>,
+  IndustryJobOrderByInput: Partial<IndustryJobOrderByInput>,
+  IndustryJobOrderBy: Partial<IndustryJobOrderBy>,
+  IndustryJobs: Partial<IndustryJobs>,
+  IndustryJob: Partial<IndustryJob>,
+  IndustryActivity: Partial<IndustryActivity>,
   InvItemFilter: Partial<InvItemFilter>,
   ProcessingLogFilter: Partial<ProcessingLogFilter>,
   ProcessingLogEntry: Partial<ProcessingLogEntry>,
@@ -927,6 +1001,32 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime'
 }
 
+export type IndustryActivityResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndustryActivity'] = ResolversParentTypes['IndustryActivity']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+};
+
+export type IndustryJobResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndustryJob'] = ResolversParentTypes['IndustryJob']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  activity?: Resolver<ResolversTypes['IndustryActivity'], ParentType, ContextType>,
+  cost?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
+  endDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
+  installer?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
+  licensedRuns?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  pauseDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>,
+  probability?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
+  product?: Resolver<Maybe<ResolversTypes['InvItem']>, ParentType, ContextType>,
+  startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  runs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  successfulRuns?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+};
+
+export type IndustryJobsResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndustryJobs'] = ResolversParentTypes['IndustryJobs']> = {
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  jobs?: Resolver<Array<ResolversTypes['IndustryJob']>, ParentType, ContextType>,
+};
+
 export type InvCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvCategory'] = ResolversParentTypes['InvCategory']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
@@ -1004,6 +1104,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   buildInfo?: Resolver<Maybe<ResolversTypes['BuildInfo']>, ParentType, ContextType, RequireFields<QueryBuildInfoArgs, 'blueprintId'>>,
   character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>,
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
+  industryJobs?: Resolver<ResolversTypes['IndustryJobs'], ParentType, ContextType, QueryIndustryJobsArgs>,
   invItems?: Resolver<Array<ResolversTypes['InvItem']>, ParentType, ContextType, QueryInvItemsArgs>,
   processingLogs?: Resolver<Array<ResolversTypes['ProcessingLogEntry']>, ParentType, ContextType, QueryProcessingLogsArgs>,
   scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
@@ -1126,6 +1227,9 @@ export type Resolvers<ContextType = any> = {
   Corporation?: CorporationResolvers<ContextType>,
   Date?: GraphQLScalarType,
   DateTime?: GraphQLScalarType,
+  IndustryActivity?: IndustryActivityResolvers<ContextType>,
+  IndustryJob?: IndustryJobResolvers<ContextType>,
+  IndustryJobs?: IndustryJobsResolvers<ContextType>,
   InvCategory?: InvCategoryResolvers<ContextType>,
   InvGroup?: InvGroupResolvers<ContextType>,
   InvItem?: InvItemResolvers<ContextType>,

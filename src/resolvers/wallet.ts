@@ -18,6 +18,7 @@ import {
   WalletTransactionOrderBy,
 } from '../__generated__/types';
 import { getCharacter } from './common';
+import { InventoryItem } from '../services/db/models/InventoryItem';
 import { InvItemPartial, IResolverContext } from '../types';
 import { JoinClause } from 'knex';
 import { JournalEntry } from '../services/db/models/journalEntry';
@@ -65,7 +66,7 @@ interface IResolvers<Context> {
 }
 
 const getItem: (typeId: number, loaders: Loaders) => Promise<InvItemPartial> = async (typeId, loaders) => {
-  const item = await loaders.invItemLoader.load(typeId);
+  const item: Maybe<InventoryItem> = await loaders.invItemLoader.load(typeId);
 
   if (!item) {
     throw new Error(`Item id: ${typeId} not found`);

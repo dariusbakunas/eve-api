@@ -14,7 +14,7 @@ import {
 import { Corporation } from '../services/db/models/corporation';
 import { InventoryItem } from '../services/db/models/InventoryItem';
 import { InvGroup } from '../services/db/models/invGroup';
-import { IResolverContext, Maybe } from '../types';
+import { IResolverContext, Maybe, MaybeArrayResolver, MaybeResolver } from '../types';
 import { JoinClause } from 'knex';
 import { raw } from 'objection';
 import { SkillMultiplier } from '../services/db/models/skillMultiplier';
@@ -35,8 +35,8 @@ interface Skill extends InventoryItem {
 
 interface ICharacterResolvers<Context> {
   Query: {
-    characters: Resolver<Array<Character>, ResolversParentTypes['Query'], Context>;
-    character: Resolver<Maybe<ResolversTypes['Character']>, ResolversParentTypes['Query'], Context, RequireFields<QueryCharacterArgs, 'id'>>;
+    characters: MaybeArrayResolver<Character, ResolversParentTypes['Query'], Context>;
+    character: MaybeResolver<Character, ResolversParentTypes['Query'], Context, RequireFields<QueryCharacterArgs, 'id'>>;
   };
   Mutation: {
     addCharacter: Resolver<ResolversTypes['Character'], unknown, Context, RequireFields<MutationAddCharacterArgs, 'code'>>;
