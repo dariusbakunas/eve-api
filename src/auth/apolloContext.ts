@@ -71,10 +71,12 @@ const apolloContext: ContextFunction<ContextParams, ApolloContext> = async ({ re
       });
 
       if (!dbUser) {
-        return {
+        user = {
           email,
           status: 'GUEST',
         };
+
+        return { user };
       }
 
       user = {
