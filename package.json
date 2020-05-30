@@ -57,6 +57,7 @@
     "graphql-middleware": "^4.0.1",
     "graphql-shield": "^7.0.0",
     "graphql-tools": "^4.0.5",
+    "handlebars": "^4.5.3",
     "helmet": "^3.21.2",
     "jwks-rsa": "^1.6.0",
     "knex": "^0.20.2",
