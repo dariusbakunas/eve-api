@@ -5,6 +5,7 @@ import { dataSources } from './services';
 import { Firestore } from '@google-cloud/firestore';
 import { loadSchema } from './schema/loadSchema';
 import { Model } from 'objection';
+import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import apolloContext from './auth/apolloContext';
 import express, { Request, Response } from 'express';
 import getJwtMiddleware from './auth/jwtMiddleware';
@@ -36,6 +37,15 @@ export interface IUserProfile {
 
 (async function() {
   if (process.env.APP_ENGINE === 'true') {
+    const secretClient = new SecretManagerServiceClient();
+    const projectId = secretClient.getProjectId();
+
+    const [dbPswPayload] = await secretClient.accessSecretVersion({
+      name: `projects/${projectId}/secrets/EVE_DB_PSW/versions/latest`,
+    });
+
+    process.env['PD_DB_PASSWORD'] = dbPswPayload?.payload?.data?.toString();
+
     require('@google-cloud/debug-agent').start();
     const firestore = new Firestore();
     const ref = firestore.collection('configs').doc('eve-mate-api');

@@ -45,6 +45,7 @@
   "dependencies": {
     "@google-cloud/debug-agent": "^4.2.1",
     "@google-cloud/firestore": "^3.1.0",
+    "@google-cloud/secret-manager": "^3.0.0",
     "@sentry/node": "5.9.0",
     "apollo-datasource-rest": "0.6.6",
     "apollo-server-express": "^2.9.3",
