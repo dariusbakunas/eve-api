@@ -48,7 +48,7 @@
     "@google-cloud/secret-manager": "^3.0.0",
     "@sentry/node": "5.9.0",
     "apollo-datasource-rest": "0.6.6",
-    "apollo-server-express": "^2.9.3",
+    "apollo-server-express": "^2.14.2",
     "compression": "^1.7.4",
     "dataloader": "^1.4.0",
     "express": "^4.17.1",
