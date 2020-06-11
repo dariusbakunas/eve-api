@@ -23,6 +23,9 @@
     "start:processor": "ts-node -r dotenv/config ./src/jobs/manual.ts",
     "start:market:processor": "ts-node -r dotenv/config ./src/jobs/marketOrderProcess.ts"
   },
+  "engines": {
+    "node": "10.x"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged"
