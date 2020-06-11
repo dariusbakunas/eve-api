@@ -1,14 +1,6 @@
 runtime: nodejs10
-env: flex
 service: eve-mate-api
 
-manual_scaling:
-  instances: 1
-resources:
-  cpu: 1
-  memory_gb: 2
-  disk_size_gb: 10
 env_variables:
   APP_ENGINE: 'true'
   SENTRY_DSN: 'https://3df90faaa98c4caf84cd615965e4aa42@sentry.io/1816282'
-  NODE_ENV: 'production'
