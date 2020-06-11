@@ -37,30 +37,34 @@ export interface IUserProfile {
 
 (async function() {
   if (process.env.APP_ENGINE === 'true') {
-    const secretClient = new SecretManagerServiceClient();
-    const projectId = secretClient.getProjectId();
+    try {
+      const secretClient = new SecretManagerServiceClient();
+      const projectId = secretClient.getProjectId();
 
-    const [dbPswPayload] = await secretClient.accessSecretVersion({
-      name: `projects/${projectId}/secrets/EVE_DB_PSW/versions/latest`,
-    });
+      const [dbPswPayload] = await secretClient.accessSecretVersion({
+        name: `projects/${projectId}/secrets/EVE_DB_PSW/versions/latest`,
+      });
 
-    process.env['PD_DB_PASSWORD'] = dbPswPayload?.payload?.data?.toString();
+      process.env['PD_DB_PASSWORD'] = dbPswPayload?.payload?.data?.toString();
 
-    require('@google-cloud/debug-agent').start();
-    const firestore = new Firestore();
-    const ref = firestore.collection('configs').doc('eve-mate-api');
-    const doc = await ref.get();
+      require('@google-cloud/debug-agent').start();
+      const firestore = new Firestore();
+      const ref = firestore.collection('configs').doc('eve-mate-api');
+      const doc = await ref.get();
 
-    if (!doc.exists) {
-      throw new Error('Unable to load app engine configs');
-    } else {
-      const configs = doc.data();
+      if (!doc.exists) {
+        throw new Error('Unable to load app engine configs');
+      } else {
+        const configs = doc.data();
 
-      if (configs) {
-        Object.keys(configs).forEach(key => {
-          process.env[key] = configs[key];
-        });
+        if (configs) {
+          Object.keys(configs).forEach(key => {
+            process.env[key] = configs[key];
+          });
+        }
       }
+    } catch (e) {
+      logger.error(e);
     }
   }
 
