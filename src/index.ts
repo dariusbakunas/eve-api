@@ -1,11 +1,11 @@
 import * as Sentry from '@sentry/node';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
+import { applicationConfig } from './utils/applicationConfig';
 import { applyMiddleware } from 'graphql-middleware';
 import { dataSources } from './services';
-import { Firestore } from '@google-cloud/firestore';
+import { loadKnexConfig } from '../loadKnexConfig';
 import { loadSchema } from './schema/loadSchema';
 import { Model } from 'objection';
-import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
 import apolloContext from './auth/apolloContext';
 import express, { Request, Response } from 'express';
 import getJwtMiddleware from './auth/jwtMiddleware';
@@ -15,7 +15,6 @@ import morgan from 'morgan';
 import pJson from '../package.json';
 import resolvers from './resolvers';
 import shieldMiddleware from './auth/shieldMiddleware';
-import Knex = require('knex');
 
 if (process.env.NODE_ENV === 'production' && process.env.SENTRY_DSN) {
   Sentry.init({
@@ -36,74 +35,14 @@ export interface IUserProfile {
 }
 
 (async function() {
-  if (process.env.APP_ENGINE === 'true') {
-    try {
-      const secretClient = new SecretManagerServiceClient();
-      const projectId = await secretClient.getProjectId();
-
-      const dbSecretPath = `projects/${projectId}/secrets/EVE_DB_PSW/versions/latest`;
-      const tokenSecretPath = `projects/${projectId}/secrets/TOKEN_SECRET/versions/latest`;
-      const eveClientSecretPath = `projects/${projectId}/secrets/EVE_CLIENT_SECRET/versions/latest`;
-
-      const [dbPswPayload] = await secretClient.accessSecretVersion({
-        name: dbSecretPath,
-      });
-
-      const [tokenSecretPayload] = await secretClient.accessSecretVersion({
-        name: tokenSecretPath,
-      });
-
-      const [eveClientSecretPayload] = await secretClient.accessSecretVersion({
-        name: eveClientSecretPath,
-      });
-
-      // TODO: move these out of env
-      process.env['PD_DB_PASSWORD'] = dbPswPayload?.payload?.data?.toString();
-      process.env['TOKEN_SECRET'] = tokenSecretPayload?.payload?.data?.toString();
-      process.env['EVE_CLIENT_SECRET'] = eveClientSecretPayload?.payload?.data?.toString();
-
-      require('@google-cloud/debug-agent').start();
-      const firestore = new Firestore();
-      const ref = firestore.collection('configs').doc('eve-mate-api');
-      const doc = await ref.get();
-
-      if (!doc.exists) {
-        throw new Error('Unable to load app engine configs');
-      } else {
-        const configs = doc.data();
-
-        if (configs) {
-          Object.keys(configs).forEach(key => {
-            process.env[key] = configs[key];
-          });
-        }
-      }
-    } catch (e) {
-      logger.error(e);
-    }
+  try {
+    await applicationConfig.load();
+    const dbConfig = loadKnexConfig(applicationConfig.config);
+    // @ts-ignore
+    Model.knex(dbConfig);
+  } catch (e) {
+    logger.error(e);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const dbConfig = require('../knexfile');
-  const knex = Knex(dbConfig[process.env.NODE_ENV!]);
-  Model.knex(knex);
-
-  const requiredEnv = [
-    'AUTH0_AUDIENCE',
-    'PD_DB_PASSWORD',
-    'AUTH0_DOMAIN',
-    'EVE_LOGIN_URL',
-    'EVE_ESI_URL',
-    'TOKEN_SECRET',
-    'EVE_CLIENT_ID',
-    'EVE_CLIENT_SECRET',
-  ];
-
-  requiredEnv.forEach(env => {
-    if (!process.env[env]) {
-      throw new Error(`process.env.${env} is required`);
-    }
-  });
 
   const app = express();
   app.use(helmet());
