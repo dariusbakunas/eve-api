@@ -42,12 +42,25 @@ export interface IUserProfile {
       const projectId = await secretClient.getProjectId();
 
       const dbSecretPath = `projects/${projectId}/secrets/EVE_DB_PSW/versions/latest`;
+      const tokenSecretPath = `projects/${projectId}/secrets/TOKEN_SECRET/versions/latest`;
+      const eveClientSecretPath = `projects/${projectId}/secrets/EVE_CLIENT_SECRET/versions/latest`;
 
       const [dbPswPayload] = await secretClient.accessSecretVersion({
         name: dbSecretPath,
       });
 
+      const [tokenSecretPayload] = await secretClient.accessSecretVersion({
+        name: tokenSecretPath,
+      });
+
+      const [eveClientSecretPayload] = await secretClient.accessSecretVersion({
+        name: eveClientSecretPath,
+      });
+
+      // TODO: move these out of env
       process.env['PD_DB_PASSWORD'] = dbPswPayload?.payload?.data?.toString();
+      process.env['TOKEN_SECRET'] = tokenSecretPayload?.payload?.data?.toString();
+      process.env['EVE_CLIENT_SECRET'] = eveClientSecretPayload?.payload?.data?.toString();
 
       require('@google-cloud/debug-agent').start();
       const firestore = new Firestore();
@@ -75,7 +88,16 @@ export interface IUserProfile {
   const knex = Knex(dbConfig[process.env.NODE_ENV!]);
   Model.knex(knex);
 
-  const requiredEnv = ['AUTH0_AUDIENCE', 'AUTH0_DOMAIN', 'EVE_LOGIN_URL', 'EVE_ESI_URL', 'TOKEN_SECRET', 'EVE_CLIENT_ID', 'EVE_CLIENT_SECRET'];
+  const requiredEnv = [
+    'AUTH0_AUDIENCE',
+    'PD_DB_PASSWORD',
+    'AUTH0_DOMAIN',
+    'EVE_LOGIN_URL',
+    'EVE_ESI_URL',
+    'TOKEN_SECRET',
+    'EVE_CLIENT_ID',
+    'EVE_CLIENT_SECRET',
+  ];
 
   requiredEnv.forEach(env => {
     if (!process.env[env]) {
