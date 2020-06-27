@@ -3,6 +3,7 @@ import { IDataSources } from '../services';
 import { Loaders } from '../services/db/loaders';
 import { PartialUpdate } from 'objection';
 import logger from '../utils/logger';
+import { applicationConfig } from '../utils/applicationConfig';
 
 export const getAccessToken = async (
   characterId: number,
@@ -13,13 +14,15 @@ export const getAccessToken = async (
   crypt: IDataSources['crypt'],
   esiAuth: IDataSources['esiAuth']
 ) => {
+  const { config } = applicationConfig;
+
   if (new Date().getTime() < expiresAt - 1000 * 60) {
     return crypt.decrypt(accessToken);
   } else {
     logger.info(`Getting new access token for character: ${characterId}`);
 
     // get new tokens
-    const tokens = await esiAuth.getAccessToken(process.env.EVE_CLIENT_ID!, process.env.EVE_CLIENT_SECRET!, crypt.decrypt(refreshToken));
+    const tokens = await esiAuth.getAccessToken(config.eveClientId, config.eveClientSecret, crypt.decrypt(refreshToken));
 
     const update: PartialUpdate<Character> = {
       accessToken: crypt.encrypt(tokens.access_token),

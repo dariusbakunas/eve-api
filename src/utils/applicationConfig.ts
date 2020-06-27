@@ -98,6 +98,7 @@ class ApplicationConfig {
         tokenSecret: process.env['TOKEN_SECRET'] || '',
       };
     } else {
+      // TODO: add support for deployments to different clouds
       if (process.env.APP_ENGINE === 'true') {
         const [
           dbName,

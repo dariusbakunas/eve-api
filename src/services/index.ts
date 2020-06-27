@@ -1,4 +1,5 @@
 import { Alliance } from './db/models/alliance';
+import { applicationConfig } from '../utils/applicationConfig';
 import { Blueprint } from './db/models/blueprint';
 import { Character } from './db/models/character';
 import { CharacterMarketOrder } from './db/models/characterMarketOrder';
@@ -77,12 +78,13 @@ export interface IDataSources {
 }
 
 export const dataSources: () => IDataSources = () => {
+  const { config } = applicationConfig;
   return {
     db,
-    auth0Api: new Auth0API(`https://${process.env.AUTH0_DOMAIN}`),
-    esiAuth: new EsiAuth(process.env.EVE_LOGIN_URL!),
-    esiApi: new EsiAPI(process.env.EVE_ESI_URL!),
-    crypt: new Crypt(process.env.TOKEN_SECRET!),
+    auth0Api: new Auth0API(`https://${config.auth0Domain}`),
+    esiAuth: new EsiAuth(config.eveLoginUrl),
+    esiApi: new EsiAPI(config.eveEsiUrl),
+    crypt: new Crypt(config.tokenSecret),
     loaders: new Loaders(db),
   };
 };

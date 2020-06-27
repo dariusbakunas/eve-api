@@ -22,6 +22,7 @@ import { SkillQueueItem as SkillQueueItemDB } from '../services/db/models/skillQ
 import { UserInputError } from 'apollo-server-errors';
 import moment from 'moment';
 import property from 'lodash.property';
+import { applicationConfig } from '../utils/applicationConfig';
 
 interface SkillGroupWithCharacterId extends SkillGroup {
   characterId: number;
@@ -78,8 +79,9 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
   },
   Mutation: {
     addCharacter: async (_, { code }, { dataSources: { esiAuth, db, crypt, esiApi }, user: { id: userId } }) => {
+      const { config } = applicationConfig;
       try {
-        const tokens = await esiAuth.getCharacterTokens(process.env.EVE_CLIENT_ID!, process.env.EVE_CLIENT_SECRET!, code);
+        const tokens = await esiAuth.getCharacterTokens(config.eveClientId, config.eveClientSecret, code);
         const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = tokens;
         const expiresAt = expiresIn * 1000 + new Date(Date.now()).getTime();
         const { CharacterID, CharacterName, Scopes } = await esiAuth.verifyToken(accessToken);
@@ -130,7 +132,8 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
       }
     },
     updateCharacter: async (_, { id, code }, { dataSources: { db, crypt, esiAuth } }) => {
-      const tokens = await esiAuth.getCharacterTokens(process.env.EVE_CLIENT_ID!, process.env.EVE_CLIENT_SECRET!, code);
+      const { config } = applicationConfig;
+      const tokens = await esiAuth.getCharacterTokens(config.eveClientId, config.eveClientSecret, code);
       const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = tokens;
       const expiresAt = expiresIn * 1000 + new Date(Date.now()).getTime();
       const { CharacterID, CharacterName, Scopes } = await esiAuth.verifyToken(accessToken);

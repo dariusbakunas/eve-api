@@ -79,7 +79,7 @@ export interface IUserProfile {
   );
 
   if (process.env.NODE_ENV === 'production' || (process.env.NODE_ENV === 'development' && process.env.USE_TEST_USER !== 'true')) {
-    app.use('/graphql*', getJwtMiddleware(process.env.AUTH0_DOMAIN!, process.env.AUTH0_AUDIENCE!));
+    app.use('/graphql*', getJwtMiddleware(applicationConfig.config.auth0Domain, applicationConfig.config.auth0Audience));
   } else {
     logger.warn('Token authentication is disabled!!!');
   }

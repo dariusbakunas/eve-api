@@ -7,6 +7,7 @@ import request from '../utils/request';
 //import * as Sentry from '@sentry/node';
 import logger from '../utils/logger';
 import mockUser from './userMock';
+import { applicationConfig } from '../utils/applicationConfig';
 
 const cache = new Cache({
   stdTTL: 100,
@@ -29,6 +30,7 @@ export interface IAuthUser {
 }
 
 const apolloContext: ContextFunction<ContextParams, ApolloContext> = async ({ req }) => {
+  const { config } = applicationConfig;
   if (process.env.USE_TEST_USER === 'true') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const user: ContextUser = mockUser;
@@ -51,7 +53,7 @@ const apolloContext: ContextFunction<ContextParams, ApolloContext> = async ({ re
   if (!user) {
     try {
       // get user information
-      const { data: authUser } = await request<IAuthUser>(`https://${process.env.AUTH0_DOMAIN}/userinfo`, {
+      const { data: authUser } = await request<IAuthUser>(`https://${config.auth0Domain}/userinfo`, {
         headers,
       });
 
