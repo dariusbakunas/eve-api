@@ -21,20 +21,33 @@ For development, you will only need Node.js and a node global package, Yarn, ins
 
 Open `.env` then edit it with your settings. You will need:
 
+### Auth0 settings:
+
 - AUTH0_DOMAIN=
 - AUTH0_AUDIENCE=
-- DEV_DB_USERNAME=
-- DEV_DB_PASSWORD=
-- DEV_DB_HOST=
-- DEV_DB_DATABASE=
-- NODE_ENV=development
+
+### Database settings:
+
+- DB_USER=
+- DB_PASSWORD=
+- DB_HOST=
+- DB_NAME=
+
+### Eve ESI settings
+
 - EVE_CLIENT_ID=
 - EVE_CLIENT_SECRET=
 - EVE_LOGIN_URL=https://login.eveonline.com
 - EVE_ESI_URL=https://esi.evetech.net/latest
-- REDIS_HOST=
-- REDIS_PASSWORD=
+
+### Encryption settings
+
 - TOKEN_SECRET=
+
+### Optional
+
+- NODE_ENV=development
+- DB_PORT=3306
 - LOG_LEVEL=info
 
 ## Running the project

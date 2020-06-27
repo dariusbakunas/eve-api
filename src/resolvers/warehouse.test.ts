@@ -5,6 +5,7 @@ import { loadSchema } from '../schema/loadSchema';
 import { makeExecutableSchema } from 'graphql-tools';
 import { Warehouse } from '../services/db/models/warehouse';
 import resolvers from './index';
+import { applicationConfig } from '../utils/applicationConfig';
 
 const EVE_CLIENT_ID = 'TEST_CLIENT_ID';
 const EVE_CLIENT_SECRET = 'TEST_CLIENT_SECRET';
@@ -14,9 +15,10 @@ describe('Warehouse Resolcer', () => {
   let schema: GraphQLSchema;
 
   beforeAll(() => {
+    process.env = Object.assign(process.env, { EVE_CLIENT_ID, EVE_CLIENT_SECRET });
+    applicationConfig.load(false);
     typeDefs = loadSchema();
     schema = makeExecutableSchema<IResolverContext>({ typeDefs, resolvers });
-    process.env = Object.assign(process.env, { EVE_CLIENT_ID, EVE_CLIENT_SECRET });
   });
 
   beforeEach(() => {

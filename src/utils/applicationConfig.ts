@@ -33,8 +33,6 @@ const REQUIRED_CONFIG: Array<keyof IApplicationConfig> = [
 
 class ApplicationConfig {
   private _config: IApplicationConfig;
-  // @ts-ignore
-  private secretClient: SecretManagerServiceClient;
 
   constructor() {
     this._config = {
@@ -49,20 +47,29 @@ class ApplicationConfig {
       eveEsiUrl: '',
       eveLoginUrl: '',
     };
-
-    this.secretClient = new SecretManagerServiceClient();
   }
 
-  private async loadGCloudSecret(projectId: string, secretName: string, version = 'latest'): Promise<string> {
+  private async loadGCloudSecret(
+    // @ts-ignore
+    secretClient: SecretManagerServiceClient,
+    projectId: string,
+    secretName: string,
+    version = 'latest'
+  ): Promise<string> {
     const path = `projects/${projectId}/secrets/${secretName}/versions/${version}`;
-    const [response] = await this.secretClient.accessSecretVersion({
+    const [response] = await secretClient.accessSecretVersion({
       name: path,
     });
     return response?.payload?.data?.toString() ?? '';
   }
 
-  private async loadLatestGCloudSecrets(projectId: string, secretNames: string[]): Promise<Array<string>> {
-    return Promise.all(secretNames.map(secret => this.loadGCloudSecret(projectId, secret)));
+  private async loadLatestGCloudSecrets(
+    // @ts-ignore
+    secretClient: SecretManagerServiceClient,
+    projectId: string,
+    secretNames: string[]
+  ): Promise<Array<string>> {
+    return Promise.all(secretNames.map(secret => this.loadGCloudSecret(secretClient, projectId, secret)));
   }
 
   private validateConfig() {
@@ -79,27 +86,32 @@ class ApplicationConfig {
     }
   }
 
-  async load(validate = true) {
-    const projectId = await this.secretClient.getProjectId();
+  private getConfigFromEnv(): IApplicationConfig {
+    return {
+      auth0Domain: process.env['AUTH0_DOMAIN'] || '',
+      auth0Audience: process.env['AUTH0_AUDIENCE'] || '',
+      eveClientId: process.env['EVE_CLIENT_ID'] || '',
+      eveClientSecret: process.env['EVE_CLIENT_SECRET'] || '',
+      eveEsiUrl: process.env['EVE_ESI_URL'] || '',
+      eveLoginUrl: process.env['EVE_LOGIN_URL'] || '',
+      dbSecret: process.env['DB_PASSWORD'] || '',
+      dbName: process.env['DB_NAME'] || '',
+      dbUser: process.env['DB_USER'] || '',
+      dbHost: process.env['DB_HOST'] || '',
+      dbPort: process.env['DB_PORT'] ? +process.env['DB_PORT'] : null,
+      tokenSecret: process.env['TOKEN_SECRET'] || '',
+    };
+  }
 
+  async load(validate = true) {
     if (process.env.NODE_ENV === 'development') {
-      this._config = {
-        auth0Domain: process.env['AUTH0_DOMAIN'] || '',
-        auth0Audience: process.env['AUTH0_AUDIENCE'] || '',
-        eveClientId: process.env['EVE_CLIENT_ID'] || '',
-        eveClientSecret: process.env['EVE_CLIENT_SECRET'] || '',
-        eveEsiUrl: process.env['EVE_ESI_URL'] || '',
-        eveLoginUrl: process.env['EVE_LOGIN_URL'] || '',
-        dbSecret: process.env['DB_PASSWORD'] || '',
-        dbName: process.env['DB_NAME'] || '',
-        dbUser: process.env['DB_USER'] || '',
-        dbHost: process.env['DB_HOST'] || '',
-        dbPort: process.env['DB_PORT'] ? +process.env['DB_PORT'] : null,
-        tokenSecret: process.env['TOKEN_SECRET'] || '',
-      };
+      this._config = this.getConfigFromEnv();
     } else {
       // TODO: add support for deployments to different clouds
       if (process.env.APP_ENGINE === 'true') {
+        const secretClient = new SecretManagerServiceClient();
+        const projectId = await secretClient.getProjectId();
+
         const [
           dbName,
           dbUser,
@@ -112,7 +124,7 @@ class ApplicationConfig {
           eveEsiUrl,
           auth0Audience,
           auth0Domain,
-        ] = await this.loadLatestGCloudSecrets(projectId, [
+        ] = await this.loadLatestGCloudSecrets(secretClient, projectId, [
           'EVE_DB_NAME',
           'EVE_DB_USER',
           'EVE_DB_SOCKET',
@@ -140,6 +152,8 @@ class ApplicationConfig {
           dbSecret,
           tokenSecret,
         };
+      } else {
+        this._config = this.getConfigFromEnv();
       }
     }
 

@@ -1,3 +1,4 @@
+import { applicationConfig } from '../utils/applicationConfig';
 import { Character } from '../services/db/models/character';
 import {
   CharacterSkillGroupArgs,
@@ -22,7 +23,6 @@ import { SkillQueueItem as SkillQueueItemDB } from '../services/db/models/skillQ
 import { UserInputError } from 'apollo-server-errors';
 import moment from 'moment';
 import property from 'lodash.property';
-import { applicationConfig } from '../utils/applicationConfig';
 
 interface SkillGroupWithCharacterId extends SkillGroup {
   characterId: number;

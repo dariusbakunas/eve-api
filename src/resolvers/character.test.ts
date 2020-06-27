@@ -7,6 +7,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 import { User } from '../services/db/models/user';
 import resolvers from './index';
 import moment = require('moment');
+import { applicationConfig } from '../utils/applicationConfig';
 
 const EVE_CLIENT_ID = 'TEST_CLIENT_ID';
 const EVE_CLIENT_SECRET = 'TEST_CLIENT_SECRET';
@@ -15,10 +16,11 @@ describe('Character Resolver', () => {
   let typeDefs;
   let schema: GraphQLSchema;
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    process.env = Object.assign(process.env, { EVE_CLIENT_ID, EVE_CLIENT_SECRET });
+    await applicationConfig.load(false);
     typeDefs = loadSchema();
     schema = makeExecutableSchema<IResolverContext>({ typeDefs, resolvers });
-    process.env = Object.assign(process.env, { EVE_CLIENT_ID, EVE_CLIENT_SECRET });
   });
 
   beforeEach(() => {
