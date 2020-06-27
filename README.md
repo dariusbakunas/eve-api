@@ -21,12 +21,12 @@ For development, you will only need Node.js and a node global package, Yarn, ins
 
 Open `.env` then edit it with your settings. You will need:
 
-### Auth0 settings:
+### Auth0 settings
 
 - AUTH0_DOMAIN=
 - AUTH0_AUDIENCE=
 
-### Database settings:
+### Database settings
 
 - DB_USER=
 - DB_PASSWORD=
