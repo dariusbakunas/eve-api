@@ -41,8 +41,12 @@ export interface IUserProfile {
       const secretClient = new SecretManagerServiceClient();
       const projectId = secretClient.getProjectId();
 
+      const dbSecretPath = `projects/${projectId}/secrets/EVE_DB_PSW/versions/latest`;
+
+      logger.info(`Loading DB secret from ${dbSecretPath}`);
+
       const [dbPswPayload] = await secretClient.accessSecretVersion({
-        name: `projects/${projectId}/secrets/EVE_DB_PSW/versions/latest`,
+        name: dbSecretPath,
       });
 
       process.env['PD_DB_PASSWORD'] = dbPswPayload?.payload?.data?.toString();
