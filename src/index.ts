@@ -15,6 +15,7 @@ import morgan from 'morgan';
 import pJson from '../package.json';
 import resolvers from './resolvers';
 import shieldMiddleware from './auth/shieldMiddleware';
+import Knex = require('knex');
 
 if (process.env.NODE_ENV === 'production' && process.env.SENTRY_DSN) {
   Sentry.init({
@@ -38,8 +39,8 @@ export interface IUserProfile {
   try {
     await applicationConfig.load();
     const dbConfig = loadKnexConfig(applicationConfig.config);
-    // @ts-ignore
-    Model.knex(dbConfig);
+
+    Model.knex(Knex(dbConfig));
   } catch (e) {
     logger.error(e);
   }
