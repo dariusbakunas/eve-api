@@ -2,10 +2,9 @@
 
 GraphQL server for [eve-app](https://github.com/dariusbakunas/eve-app)
 
-| master                                                                                                                                                                 | dev |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
-| [![Build Status](https://travis-ci.org/dariusbakunas/eve-api.svg?branch=master)](https://travis-ci.org/dariusbakunas/eve-api)                                          |     |
-| [![Coverage Status](https://coveralls.io/repos/github/dariusbakunas/eve-api/badge.svg?branch=master)](https://coveralls.io/github/dariusbakunas/eve-api?branch=master) |     |
+[![Build Status](https://travis-ci.org/dariusbakunas/eve-api.svg?branch=master)](https://travis-ci.org/dariusbakunas/eve-api)
+[![Coverage Status](https://coveralls.io/repos/github/dariusbakunas/eve-api/badge.svg?branch=master)](https://coveralls.io/github/dariusbakunas/eve-api?branch=master)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/9ceef682a36b4338a64d2692ff4d1395)](https://www.codacy.com/manual/dariusbakunas/eve-api?utm_source=github.com&utm_medium=referral&utm_content=dariusbakunas/eve-api&utm_campaign=Badge_Grade)
 
 ## Requirements
 
