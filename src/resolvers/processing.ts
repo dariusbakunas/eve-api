@@ -24,10 +24,11 @@ const resolverMap: IProcessingResolvers<IResolverContext> = {
 
       if (characterIds.length) {
         const query = dataSources.db.JobLogEntry.query().select('jobLogs.*');
+        const validIds = new Set(characterIds);
 
-        if (filter && filter.characterId) {
-          if (characterIds.includes(+filter.characterId)) {
-            query.where('jobLogs.characterId', filter.characterId);
+        if (filter && filter.characterIds && filter.characterIds.length) {
+          if (filter.characterIds.every(id => validIds.has(+id))) {
+            query.where('jobLogs.characterId', 'in', filter.characterIds);
           } else {
             throw new UserInputError('Invalid character id');
           }

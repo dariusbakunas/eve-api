@@ -236,7 +236,6 @@ export type InvItem = {
   mass: Scalars['Float'],
   volume: Scalars['Float'],
   invGroup: InvGroup,
-  /** default: Jita */
   marketPrice?: Maybe<ItemMarketPrice>,
 };
 
@@ -292,14 +291,14 @@ export type MarketGroup = {
 export type Mutation = {
    __typename?: 'Mutation',
   addCharacter: Character,
-  updateCharacter: Character,
-  removeCharacter: Scalars['ID'],
-  register: User,
   addItemsToWarehouse: Array<WarehouseItem>,
-  updateItemsInWarehouse: Array<WarehouseItem>,
-  removeItemsFromWarehouse: Array<Scalars['ID']>,
   addWarehouse: Warehouse,
+  register: User,
+  removeCharacter: Scalars['ID'],
+  removeItemsFromWarehouse: Array<Scalars['ID']>,
   removeWarehouse: Scalars['ID'],
+  updateCharacter: Character,
+  updateItemsInWarehouse: Array<WarehouseItem>,
   updateWarehouse: Warehouse,
 };
 
@@ -309,14 +308,14 @@ export type MutationAddCharacterArgs = {
 };
 
 
-export type MutationUpdateCharacterArgs = {
+export type MutationAddItemsToWarehouseArgs = {
   id: Scalars['ID'],
-  code: Scalars['String']
+  input: Array<WarehouseItemInput>
 };
 
 
-export type MutationRemoveCharacterArgs = {
-  id: Scalars['ID']
+export type MutationAddWarehouseArgs = {
+  name: Scalars['String']
 };
 
 
@@ -325,15 +324,8 @@ export type MutationRegisterArgs = {
 };
 
 
-export type MutationAddItemsToWarehouseArgs = {
-  id: Scalars['ID'],
-  input: Array<WarehouseItemInput>
-};
-
-
-export type MutationUpdateItemsInWarehouseArgs = {
-  id: Scalars['ID'],
-  input: Array<WarehouseItemInput>
+export type MutationRemoveCharacterArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -343,13 +335,20 @@ export type MutationRemoveItemsFromWarehouseArgs = {
 };
 
 
-export type MutationAddWarehouseArgs = {
-  name: Scalars['String']
+export type MutationRemoveWarehouseArgs = {
+  id: Scalars['ID']
 };
 
 
-export type MutationRemoveWarehouseArgs = {
-  id: Scalars['ID']
+export type MutationUpdateCharacterArgs = {
+  id: Scalars['ID'],
+  code: Scalars['String']
+};
+
+
+export type MutationUpdateItemsInWarehouseArgs = {
+  id: Scalars['ID'],
+  input: Array<WarehouseItemInput>
 };
 
 
@@ -414,7 +413,7 @@ export type ProcessingLogEntry = {
 };
 
 export type ProcessingLogFilter = {
-  characterId?: Maybe<Scalars['ID']>,
+  characterIds?: Maybe<Array<Scalars['ID']>>,
 };
 
 export enum ProcessingStatus {
@@ -427,19 +426,19 @@ export type Query = {
   blueprints: BlueprintsResponse,
   buildInfo?: Maybe<BuildInfo>,
   character?: Maybe<Character>,
+  characterMarketOrders: CharacterMarketOrders,
   characters: Array<Character>,
   industryJobs: IndustryJobs,
   invItems: Array<InvItem>,
   processingLogs: Array<ProcessingLogEntry>,
   scopes: Array<Scope>,
   userByEmail?: Maybe<User>,
-  characterMarketOrders: CharacterMarketOrders,
   walletJournal: JournalEntries,
-  walletTransactions: WalletTransactions,
-  walletTransactionSummary: WalletTransactionSummary,
   walletTransactionIds: Array<Scalars['ID']>,
-  warehouseItems?: Maybe<Array<WarehouseItem>>,
+  walletTransactionSummary: WalletTransactionSummary,
+  walletTransactions: WalletTransactions,
   warehouse?: Maybe<Warehouse>,
+  warehouseItems?: Maybe<Array<WarehouseItem>>,
   warehouses: Array<Warehouse>,
 };
 
@@ -458,6 +457,13 @@ export type QueryBuildInfoArgs = {
 
 export type QueryCharacterArgs = {
   id: Scalars['ID']
+};
+
+
+export type QueryCharacterMarketOrdersArgs = {
+  page?: Maybe<PageInput>,
+  filter?: Maybe<CharacterMarketOrderFilter>,
+  orderBy?: Maybe<CharacterMarketOrderOrderByInput>
 };
 
 
@@ -483,17 +489,20 @@ export type QueryUserByEmailArgs = {
 };
 
 
-export type QueryCharacterMarketOrdersArgs = {
-  page?: Maybe<PageInput>,
-  filter?: Maybe<CharacterMarketOrderFilter>,
-  orderBy?: Maybe<CharacterMarketOrderOrderByInput>
-};
-
-
 export type QueryWalletJournalArgs = {
   page?: Maybe<PageInput>,
   filter?: Maybe<WalletJournalFilter>,
   orderBy?: Maybe<WalletJournalOrderByInput>
+};
+
+
+export type QueryWalletTransactionIdsArgs = {
+  filter?: Maybe<WalletTransactionFilter>
+};
+
+
+export type QueryWalletTransactionSummaryArgs = {
+  ids: Array<Scalars['ID']>
 };
 
 
@@ -504,24 +513,14 @@ export type QueryWalletTransactionsArgs = {
 };
 
 
-export type QueryWalletTransactionSummaryArgs = {
-  ids: Array<Scalars['ID']>
-};
-
-
-export type QueryWalletTransactionIdsArgs = {
-  filter?: Maybe<WalletTransactionFilter>
+export type QueryWarehouseArgs = {
+  id: Scalars['ID']
 };
 
 
 export type QueryWarehouseItemsArgs = {
   itemIds: Array<Scalars['ID']>,
   warehouseIds?: Maybe<Array<Scalars['ID']>>
-};
-
-
-export type QueryWarehouseArgs = {
-  id: Scalars['ID']
 };
 
 export type RegistrationInput = {
@@ -691,22 +690,27 @@ export type WarehouseSummary = {
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
+
+export type LegacyStitchingResolver<TResult, TParent, TContext, TArgs> = {
+  fragment: string;
+  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
+};
+
+export type NewStitchingResolver<TResult, TParent, TContext, TArgs> = {
+  selectionSet: string;
+  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
+};
+export type StitchingResolver<TResult, TParent, TContext, TArgs> = LegacyStitchingResolver<TResult, TParent, TContext, TArgs> | NewStitchingResolver<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
+  | ResolverFn<TResult, TParent, TContext, TArgs>
+  | StitchingResolver<TResult, TParent, TContext, TArgs>;
+
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
   info: GraphQLResolveInfo
 ) => Promise<TResult> | TResult;
-
-
-export type StitchingResolver<TResult, TParent, TContext, TArgs> = {
-  fragment: string;
-  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
-};
-
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
-  | ResolverFn<TResult, TParent, TContext, TArgs>
-  | StitchingResolver<TResult, TParent, TContext, TArgs>;
 
 export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
@@ -744,7 +748,9 @@ export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
   parent: TParent,
   context: TContext,
   info: GraphQLResolveInfo
-) => Maybe<TTypes>;
+) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
+
+export type IsTypeOfResolverFn<T = {}> = (obj: T, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
@@ -758,507 +764,541 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  Query: ResolverTypeWrapper<{}>,
-  PageInput: ResolverTypeWrapper<Partial<PageInput>>,
-  Int: ResolverTypeWrapper<Partial<Scalars['Int']>>,
-  BlueprintFilter: ResolverTypeWrapper<Partial<BlueprintFilter>>,
-  ID: ResolverTypeWrapper<Partial<Scalars['ID']>>,
-  BlueprintsOrderByInput: ResolverTypeWrapper<Partial<BlueprintsOrderByInput>>,
-  BlueprintsOrderBy: ResolverTypeWrapper<Partial<BlueprintsOrderBy>>,
-  Order: ResolverTypeWrapper<Partial<Order>>,
-  BlueprintsResponse: ResolverTypeWrapper<Partial<BlueprintsResponse>>,
-  Blueprint: ResolverTypeWrapper<Partial<Blueprint>>,
-  Character: ResolverTypeWrapper<Partial<Character>>,
-  Corporation: ResolverTypeWrapper<Partial<Corporation>>,
-  Alliance: ResolverTypeWrapper<Partial<Alliance>>,
-  String: ResolverTypeWrapper<Partial<Scalars['String']>>,
-  DateTime: ResolverTypeWrapper<Partial<Scalars['DateTime']>>,
-  Float: ResolverTypeWrapper<Partial<Scalars['Float']>>,
-  SkillGroup: ResolverTypeWrapper<Partial<SkillGroup>>,
-  Skill: ResolverTypeWrapper<Partial<Skill>>,
-  SkillQueueItem: ResolverTypeWrapper<Partial<SkillQueueItem>>,
-  InvItem: ResolverTypeWrapper<Partial<InvItem>>,
-  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>,
-  InvGroup: ResolverTypeWrapper<Partial<InvGroup>>,
-  InvCategory: ResolverTypeWrapper<Partial<InvCategory>>,
-  ItemMarketPrice: ResolverTypeWrapper<Partial<ItemMarketPrice>>,
-  BuildInfo: ResolverTypeWrapper<Partial<BuildInfo>>,
-  BuildMaterial: ResolverTypeWrapper<Partial<BuildMaterial>>,
-  IndustryJobFilter: ResolverTypeWrapper<Partial<IndustryJobFilter>>,
-  IndustryJobOrderByInput: ResolverTypeWrapper<Partial<IndustryJobOrderByInput>>,
-  IndustryJobOrderBy: ResolverTypeWrapper<Partial<IndustryJobOrderBy>>,
-  IndustryJobs: ResolverTypeWrapper<Partial<IndustryJobs>>,
-  IndustryJob: ResolverTypeWrapper<Partial<IndustryJob>>,
-  IndustryActivity: ResolverTypeWrapper<Partial<IndustryActivity>>,
-  InvItemFilter: ResolverTypeWrapper<Partial<InvItemFilter>>,
-  ProcessingLogFilter: ResolverTypeWrapper<Partial<ProcessingLogFilter>>,
-  ProcessingLogEntry: ResolverTypeWrapper<Partial<ProcessingLogEntry>>,
-  ProcessingCategory: ResolverTypeWrapper<Partial<ProcessingCategory>>,
-  ProcessingStatus: ResolverTypeWrapper<Partial<ProcessingStatus>>,
-  Scope: ResolverTypeWrapper<Partial<Scope>>,
-  User: ResolverTypeWrapper<Partial<User>>,
-  UserStatus: ResolverTypeWrapper<Partial<UserStatus>>,
-  CharacterMarketOrderFilter: ResolverTypeWrapper<Partial<CharacterMarketOrderFilter>>,
-  OrderStateFilter: ResolverTypeWrapper<Partial<OrderStateFilter>>,
-  CharacterMarketOrderOrderByInput: ResolverTypeWrapper<Partial<CharacterMarketOrderOrderByInput>>,
-  CharacterMarketOrderOrderBy: ResolverTypeWrapper<Partial<CharacterMarketOrderOrderBy>>,
-  CharacterMarketOrders: ResolverTypeWrapper<Partial<CharacterMarketOrders>>,
-  CharacterMarketOrder: ResolverTypeWrapper<Partial<CharacterMarketOrder>>,
-  Location: ResolverTypeWrapper<Partial<Location>>,
-  OrderState: ResolverTypeWrapper<Partial<OrderState>>,
-  WalletJournalFilter: ResolverTypeWrapper<Partial<WalletJournalFilter>>,
-  WalletJournalOrderByInput: ResolverTypeWrapper<Partial<WalletJournalOrderByInput>>,
-  WalletJournalOrderBy: ResolverTypeWrapper<Partial<WalletJournalOrderBy>>,
-  JournalEntries: ResolverTypeWrapper<Partial<JournalEntries>>,
-  JournalEntry: ResolverTypeWrapper<Partial<JournalEntry>>,
-  WalletTransactionFilter: ResolverTypeWrapper<Partial<WalletTransactionFilter>>,
-  OrderType: ResolverTypeWrapper<Partial<OrderType>>,
-  WalletTransactionOrderByInput: ResolverTypeWrapper<Partial<WalletTransactionOrderByInput>>,
-  WalletTransactionOrderBy: ResolverTypeWrapper<Partial<WalletTransactionOrderBy>>,
-  WalletTransactions: ResolverTypeWrapper<Partial<WalletTransactions>>,
-  WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>,
-  Client: ResolverTypeWrapper<Partial<Client>>,
-  MarketGroup: ResolverTypeWrapper<Partial<MarketGroup>>,
-  WalletTransactionSummary: ResolverTypeWrapper<Partial<WalletTransactionSummary>>,
-  WalletTransactionSummaryItem: ResolverTypeWrapper<Partial<WalletTransactionSummaryItem>>,
-  WarehouseItem: ResolverTypeWrapper<Partial<WarehouseItem>>,
-  Warehouse: ResolverTypeWrapper<Partial<Warehouse>>,
-  WarehouseSummary: ResolverTypeWrapper<Partial<WarehouseSummary>>,
-  Mutation: ResolverTypeWrapper<{}>,
-  RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>,
-  WarehouseItemInput: ResolverTypeWrapper<Partial<WarehouseItemInput>>,
-  Date: ResolverTypeWrapper<Partial<Scalars['Date']>>,
-  Time: ResolverTypeWrapper<Partial<Scalars['Time']>>,
+  Query: ResolverTypeWrapper<{}>;
+  PageInput: ResolverTypeWrapper<Partial<PageInput>>;
+  Int: ResolverTypeWrapper<Partial<Scalars['Int']>>;
+  BlueprintFilter: ResolverTypeWrapper<Partial<BlueprintFilter>>;
+  ID: ResolverTypeWrapper<Partial<Scalars['ID']>>;
+  BlueprintsOrderByInput: ResolverTypeWrapper<Partial<BlueprintsOrderByInput>>;
+  BlueprintsOrderBy: ResolverTypeWrapper<Partial<BlueprintsOrderBy>>;
+  Order: ResolverTypeWrapper<Partial<Order>>;
+  BlueprintsResponse: ResolverTypeWrapper<Partial<BlueprintsResponse>>;
+  Blueprint: ResolverTypeWrapper<Partial<Blueprint>>;
+  Character: ResolverTypeWrapper<Partial<Character>>;
+  Corporation: ResolverTypeWrapper<Partial<Corporation>>;
+  Alliance: ResolverTypeWrapper<Partial<Alliance>>;
+  String: ResolverTypeWrapper<Partial<Scalars['String']>>;
+  DateTime: ResolverTypeWrapper<Partial<Scalars['DateTime']>>;
+  Float: ResolverTypeWrapper<Partial<Scalars['Float']>>;
+  SkillGroup: ResolverTypeWrapper<Partial<SkillGroup>>;
+  Skill: ResolverTypeWrapper<Partial<Skill>>;
+  SkillQueueItem: ResolverTypeWrapper<Partial<SkillQueueItem>>;
+  InvItem: ResolverTypeWrapper<Partial<InvItem>>;
+  Boolean: ResolverTypeWrapper<Partial<Scalars['Boolean']>>;
+  InvGroup: ResolverTypeWrapper<Partial<InvGroup>>;
+  InvCategory: ResolverTypeWrapper<Partial<InvCategory>>;
+  ItemMarketPrice: ResolverTypeWrapper<Partial<ItemMarketPrice>>;
+  BuildInfo: ResolverTypeWrapper<Partial<BuildInfo>>;
+  BuildMaterial: ResolverTypeWrapper<Partial<BuildMaterial>>;
+  CharacterMarketOrderFilter: ResolverTypeWrapper<Partial<CharacterMarketOrderFilter>>;
+  OrderStateFilter: ResolverTypeWrapper<Partial<OrderStateFilter>>;
+  CharacterMarketOrderOrderByInput: ResolverTypeWrapper<Partial<CharacterMarketOrderOrderByInput>>;
+  CharacterMarketOrderOrderBy: ResolverTypeWrapper<Partial<CharacterMarketOrderOrderBy>>;
+  CharacterMarketOrders: ResolverTypeWrapper<Partial<CharacterMarketOrders>>;
+  CharacterMarketOrder: ResolverTypeWrapper<Partial<CharacterMarketOrder>>;
+  Location: ResolverTypeWrapper<Partial<Location>>;
+  OrderState: ResolverTypeWrapper<Partial<OrderState>>;
+  IndustryJobFilter: ResolverTypeWrapper<Partial<IndustryJobFilter>>;
+  IndustryJobOrderByInput: ResolverTypeWrapper<Partial<IndustryJobOrderByInput>>;
+  IndustryJobOrderBy: ResolverTypeWrapper<Partial<IndustryJobOrderBy>>;
+  IndustryJobs: ResolverTypeWrapper<Partial<IndustryJobs>>;
+  IndustryJob: ResolverTypeWrapper<Partial<IndustryJob>>;
+  IndustryActivity: ResolverTypeWrapper<Partial<IndustryActivity>>;
+  InvItemFilter: ResolverTypeWrapper<Partial<InvItemFilter>>;
+  ProcessingLogFilter: ResolverTypeWrapper<Partial<ProcessingLogFilter>>;
+  ProcessingLogEntry: ResolverTypeWrapper<Partial<ProcessingLogEntry>>;
+  ProcessingCategory: ResolverTypeWrapper<Partial<ProcessingCategory>>;
+  ProcessingStatus: ResolverTypeWrapper<Partial<ProcessingStatus>>;
+  Scope: ResolverTypeWrapper<Partial<Scope>>;
+  User: ResolverTypeWrapper<Partial<User>>;
+  UserStatus: ResolverTypeWrapper<Partial<UserStatus>>;
+  WalletJournalFilter: ResolverTypeWrapper<Partial<WalletJournalFilter>>;
+  WalletJournalOrderByInput: ResolverTypeWrapper<Partial<WalletJournalOrderByInput>>;
+  WalletJournalOrderBy: ResolverTypeWrapper<Partial<WalletJournalOrderBy>>;
+  JournalEntries: ResolverTypeWrapper<Partial<JournalEntries>>;
+  JournalEntry: ResolverTypeWrapper<Partial<JournalEntry>>;
+  WalletTransactionFilter: ResolverTypeWrapper<Partial<WalletTransactionFilter>>;
+  OrderType: ResolverTypeWrapper<Partial<OrderType>>;
+  WalletTransactionSummary: ResolverTypeWrapper<Partial<WalletTransactionSummary>>;
+  WalletTransactionSummaryItem: ResolverTypeWrapper<Partial<WalletTransactionSummaryItem>>;
+  WalletTransactionOrderByInput: ResolverTypeWrapper<Partial<WalletTransactionOrderByInput>>;
+  WalletTransactionOrderBy: ResolverTypeWrapper<Partial<WalletTransactionOrderBy>>;
+  WalletTransactions: ResolverTypeWrapper<Partial<WalletTransactions>>;
+  WalletTransaction: ResolverTypeWrapper<Partial<WalletTransaction>>;
+  Client: ResolverTypeWrapper<Partial<Client>>;
+  MarketGroup: ResolverTypeWrapper<Partial<MarketGroup>>;
+  Warehouse: ResolverTypeWrapper<Partial<Warehouse>>;
+  WarehouseItem: ResolverTypeWrapper<Partial<WarehouseItem>>;
+  WarehouseSummary: ResolverTypeWrapper<Partial<WarehouseSummary>>;
+  Mutation: ResolverTypeWrapper<{}>;
+  WarehouseItemInput: ResolverTypeWrapper<Partial<WarehouseItemInput>>;
+  RegistrationInput: ResolverTypeWrapper<Partial<RegistrationInput>>;
+  Date: ResolverTypeWrapper<Partial<Scalars['Date']>>;
+  Time: ResolverTypeWrapper<Partial<Scalars['Time']>>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  Query: {},
-  PageInput: Partial<PageInput>,
-  Int: Partial<Scalars['Int']>,
-  BlueprintFilter: Partial<BlueprintFilter>,
-  ID: Partial<Scalars['ID']>,
-  BlueprintsOrderByInput: Partial<BlueprintsOrderByInput>,
-  BlueprintsOrderBy: Partial<BlueprintsOrderBy>,
-  Order: Partial<Order>,
-  BlueprintsResponse: Partial<BlueprintsResponse>,
-  Blueprint: Partial<Blueprint>,
-  Character: Partial<Character>,
-  Corporation: Partial<Corporation>,
-  Alliance: Partial<Alliance>,
-  String: Partial<Scalars['String']>,
-  DateTime: Partial<Scalars['DateTime']>,
-  Float: Partial<Scalars['Float']>,
-  SkillGroup: Partial<SkillGroup>,
-  Skill: Partial<Skill>,
-  SkillQueueItem: Partial<SkillQueueItem>,
-  InvItem: Partial<InvItem>,
-  Boolean: Partial<Scalars['Boolean']>,
-  InvGroup: Partial<InvGroup>,
-  InvCategory: Partial<InvCategory>,
-  ItemMarketPrice: Partial<ItemMarketPrice>,
-  BuildInfo: Partial<BuildInfo>,
-  BuildMaterial: Partial<BuildMaterial>,
-  IndustryJobFilter: Partial<IndustryJobFilter>,
-  IndustryJobOrderByInput: Partial<IndustryJobOrderByInput>,
-  IndustryJobOrderBy: Partial<IndustryJobOrderBy>,
-  IndustryJobs: Partial<IndustryJobs>,
-  IndustryJob: Partial<IndustryJob>,
-  IndustryActivity: Partial<IndustryActivity>,
-  InvItemFilter: Partial<InvItemFilter>,
-  ProcessingLogFilter: Partial<ProcessingLogFilter>,
-  ProcessingLogEntry: Partial<ProcessingLogEntry>,
-  ProcessingCategory: Partial<ProcessingCategory>,
-  ProcessingStatus: Partial<ProcessingStatus>,
-  Scope: Partial<Scope>,
-  User: Partial<User>,
-  UserStatus: Partial<UserStatus>,
-  CharacterMarketOrderFilter: Partial<CharacterMarketOrderFilter>,
-  OrderStateFilter: Partial<OrderStateFilter>,
-  CharacterMarketOrderOrderByInput: Partial<CharacterMarketOrderOrderByInput>,
-  CharacterMarketOrderOrderBy: Partial<CharacterMarketOrderOrderBy>,
-  CharacterMarketOrders: Partial<CharacterMarketOrders>,
-  CharacterMarketOrder: Partial<CharacterMarketOrder>,
-  Location: Partial<Location>,
-  OrderState: Partial<OrderState>,
-  WalletJournalFilter: Partial<WalletJournalFilter>,
-  WalletJournalOrderByInput: Partial<WalletJournalOrderByInput>,
-  WalletJournalOrderBy: Partial<WalletJournalOrderBy>,
-  JournalEntries: Partial<JournalEntries>,
-  JournalEntry: Partial<JournalEntry>,
-  WalletTransactionFilter: Partial<WalletTransactionFilter>,
-  OrderType: Partial<OrderType>,
-  WalletTransactionOrderByInput: Partial<WalletTransactionOrderByInput>,
-  WalletTransactionOrderBy: Partial<WalletTransactionOrderBy>,
-  WalletTransactions: Partial<WalletTransactions>,
-  WalletTransaction: Partial<WalletTransaction>,
-  Client: Partial<Client>,
-  MarketGroup: Partial<MarketGroup>,
-  WalletTransactionSummary: Partial<WalletTransactionSummary>,
-  WalletTransactionSummaryItem: Partial<WalletTransactionSummaryItem>,
-  WarehouseItem: Partial<WarehouseItem>,
-  Warehouse: Partial<Warehouse>,
-  WarehouseSummary: Partial<WarehouseSummary>,
-  Mutation: {},
-  RegistrationInput: Partial<RegistrationInput>,
-  WarehouseItemInput: Partial<WarehouseItemInput>,
-  Date: Partial<Scalars['Date']>,
-  Time: Partial<Scalars['Time']>,
+  Query: {};
+  PageInput: Partial<PageInput>;
+  Int: Partial<Scalars['Int']>;
+  BlueprintFilter: Partial<BlueprintFilter>;
+  ID: Partial<Scalars['ID']>;
+  BlueprintsOrderByInput: Partial<BlueprintsOrderByInput>;
+  BlueprintsOrderBy: Partial<BlueprintsOrderBy>;
+  Order: Partial<Order>;
+  BlueprintsResponse: Partial<BlueprintsResponse>;
+  Blueprint: Partial<Blueprint>;
+  Character: Partial<Character>;
+  Corporation: Partial<Corporation>;
+  Alliance: Partial<Alliance>;
+  String: Partial<Scalars['String']>;
+  DateTime: Partial<Scalars['DateTime']>;
+  Float: Partial<Scalars['Float']>;
+  SkillGroup: Partial<SkillGroup>;
+  Skill: Partial<Skill>;
+  SkillQueueItem: Partial<SkillQueueItem>;
+  InvItem: Partial<InvItem>;
+  Boolean: Partial<Scalars['Boolean']>;
+  InvGroup: Partial<InvGroup>;
+  InvCategory: Partial<InvCategory>;
+  ItemMarketPrice: Partial<ItemMarketPrice>;
+  BuildInfo: Partial<BuildInfo>;
+  BuildMaterial: Partial<BuildMaterial>;
+  CharacterMarketOrderFilter: Partial<CharacterMarketOrderFilter>;
+  OrderStateFilter: Partial<OrderStateFilter>;
+  CharacterMarketOrderOrderByInput: Partial<CharacterMarketOrderOrderByInput>;
+  CharacterMarketOrderOrderBy: Partial<CharacterMarketOrderOrderBy>;
+  CharacterMarketOrders: Partial<CharacterMarketOrders>;
+  CharacterMarketOrder: Partial<CharacterMarketOrder>;
+  Location: Partial<Location>;
+  OrderState: Partial<OrderState>;
+  IndustryJobFilter: Partial<IndustryJobFilter>;
+  IndustryJobOrderByInput: Partial<IndustryJobOrderByInput>;
+  IndustryJobOrderBy: Partial<IndustryJobOrderBy>;
+  IndustryJobs: Partial<IndustryJobs>;
+  IndustryJob: Partial<IndustryJob>;
+  IndustryActivity: Partial<IndustryActivity>;
+  InvItemFilter: Partial<InvItemFilter>;
+  ProcessingLogFilter: Partial<ProcessingLogFilter>;
+  ProcessingLogEntry: Partial<ProcessingLogEntry>;
+  ProcessingCategory: Partial<ProcessingCategory>;
+  ProcessingStatus: Partial<ProcessingStatus>;
+  Scope: Partial<Scope>;
+  User: Partial<User>;
+  UserStatus: Partial<UserStatus>;
+  WalletJournalFilter: Partial<WalletJournalFilter>;
+  WalletJournalOrderByInput: Partial<WalletJournalOrderByInput>;
+  WalletJournalOrderBy: Partial<WalletJournalOrderBy>;
+  JournalEntries: Partial<JournalEntries>;
+  JournalEntry: Partial<JournalEntry>;
+  WalletTransactionFilter: Partial<WalletTransactionFilter>;
+  OrderType: Partial<OrderType>;
+  WalletTransactionSummary: Partial<WalletTransactionSummary>;
+  WalletTransactionSummaryItem: Partial<WalletTransactionSummaryItem>;
+  WalletTransactionOrderByInput: Partial<WalletTransactionOrderByInput>;
+  WalletTransactionOrderBy: Partial<WalletTransactionOrderBy>;
+  WalletTransactions: Partial<WalletTransactions>;
+  WalletTransaction: Partial<WalletTransaction>;
+  Client: Partial<Client>;
+  MarketGroup: Partial<MarketGroup>;
+  Warehouse: Partial<Warehouse>;
+  WarehouseItem: Partial<WarehouseItem>;
+  WarehouseSummary: Partial<WarehouseSummary>;
+  Mutation: {};
+  WarehouseItemInput: Partial<WarehouseItemInput>;
+  RegistrationInput: Partial<RegistrationInput>;
+  Date: Partial<Scalars['Date']>;
+  Time: Partial<Scalars['Time']>;
 };
 
 export type AllianceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Alliance'] = ResolversParentTypes['Alliance']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  ticker?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ticker?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type BlueprintResolvers<ContextType = any, ParentType extends ResolversParentTypes['Blueprint'] = ResolversParentTypes['Blueprint']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
-  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
-  isCopy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
-  maxRuns?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  materialEfficiency?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  timeEfficiency?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>;
+  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>;
+  isCopy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  maxRuns?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  materialEfficiency?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  timeEfficiency?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type BlueprintsResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['BlueprintsResponse'] = ResolversParentTypes['BlueprintsResponse']> = {
-  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  entries?: Resolver<Array<ResolversTypes['Blueprint']>, ParentType, ContextType>,
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  entries?: Resolver<Array<ResolversTypes['Blueprint']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type BuildInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['BuildInfo'] = ResolversParentTypes['BuildInfo']> = {
-  materials?: Resolver<Array<ResolversTypes['BuildMaterial']>, ParentType, ContextType>,
-  product?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
-  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  time?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  productionLimit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  materials?: Resolver<Array<ResolversTypes['BuildMaterial']>, ParentType, ContextType>;
+  product?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>;
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  time?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  productionLimit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type BuildMaterialResolvers<ContextType = any, ParentType extends ResolversParentTypes['BuildMaterial'] = ResolversParentTypes['BuildMaterial']> = {
-  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
-  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>;
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type CharacterResolvers<ContextType = any, ParentType extends ResolversParentTypes['Character'] = ResolversParentTypes['Character']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  corporation?: Resolver<ResolversTypes['Corporation'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  gender?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  scopes?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>,
-  birthday?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
-  securityStatus?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
-  skillGroups?: Resolver<Array<ResolversTypes['SkillGroup']>, ParentType, ContextType>,
-  skillGroup?: Resolver<Maybe<ResolversTypes['SkillGroup']>, ParentType, ContextType, RequireFields<CharacterSkillGroupArgs, 'id'>>,
-  skillQueue?: Resolver<Array<ResolversTypes['SkillQueueItem']>, ParentType, ContextType>,
-  totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  corporation?: Resolver<ResolversTypes['Corporation'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  gender?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  scopes?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  birthday?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  securityStatus?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  skillGroups?: Resolver<Array<ResolversTypes['SkillGroup']>, ParentType, ContextType>;
+  skillGroup?: Resolver<Maybe<ResolversTypes['SkillGroup']>, ParentType, ContextType, RequireFields<CharacterSkillGroupArgs, 'id'>>;
+  skillQueue?: Resolver<Array<ResolversTypes['SkillQueueItem']>, ParentType, ContextType>;
+  totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type CharacterMarketOrderResolvers<ContextType = any, ParentType extends ResolversParentTypes['CharacterMarketOrder'] = ResolversParentTypes['CharacterMarketOrder']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
-  duration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  escrow?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
-  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
-  isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
-  isCorporation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
-  location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>,
-  minVolume?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
-  issued?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
-  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
-  range?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  volumeRemain?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  volumeTotal?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  state?: Resolver<ResolversTypes['OrderState'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>;
+  duration?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  escrow?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>;
+  isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isCorporation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>;
+  minVolume?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  issued?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  price?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  range?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  volumeRemain?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  volumeTotal?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  state?: Resolver<ResolversTypes['OrderState'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type CharacterMarketOrdersResolvers<ContextType = any, ParentType extends ResolversParentTypes['CharacterMarketOrders'] = ResolversParentTypes['CharacterMarketOrders']> = {
-  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  orders?: Resolver<Array<ResolversTypes['CharacterMarketOrder']>, ParentType, ContextType>,
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  orders?: Resolver<Array<ResolversTypes['CharacterMarketOrder']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type ClientResolvers<ContextType = any, ParentType extends ResolversParentTypes['Client'] = ResolversParentTypes['Client']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  category?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  category?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type CorporationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Corporation'] = ResolversParentTypes['Corporation']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  alliance?: Resolver<Maybe<ResolversTypes['Alliance']>, ParentType, ContextType>,
-  dateFounded?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  memberCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  taxRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
-  ticker?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  alliance?: Resolver<Maybe<ResolversTypes['Alliance']>, ParentType, ContextType>;
+  dateFounded?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  memberCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  taxRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  ticker?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
-  name: 'Date'
+  name: 'Date';
 }
 
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
-  name: 'DateTime'
+  name: 'DateTime';
 }
 
 export type IndustryActivityResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndustryActivity'] = ResolversParentTypes['IndustryActivity']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type IndustryJobResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndustryJob'] = ResolversParentTypes['IndustryJob']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  activity?: Resolver<ResolversTypes['IndustryActivity'], ParentType, ContextType>,
-  cost?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
-  endDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
-  installer?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
-  licensedRuns?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
-  pauseDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>,
-  probability?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
-  product?: Resolver<Maybe<ResolversTypes['InvItem']>, ParentType, ContextType>,
-  startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
-  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  runs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  successfulRuns?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  activity?: Resolver<ResolversTypes['IndustryActivity'], ParentType, ContextType>;
+  cost?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  endDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  installer?: Resolver<ResolversTypes['Character'], ParentType, ContextType>;
+  licensedRuns?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  pauseDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  probability?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  product?: Resolver<Maybe<ResolversTypes['InvItem']>, ParentType, ContextType>;
+  startDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  runs?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  successfulRuns?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type IndustryJobsResolvers<ContextType = any, ParentType extends ResolversParentTypes['IndustryJobs'] = ResolversParentTypes['IndustryJobs']> = {
-  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  jobs?: Resolver<Array<ResolversTypes['IndustryJob']>, ParentType, ContextType>,
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  jobs?: Resolver<Array<ResolversTypes['IndustryJob']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type InvCategoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvCategory'] = ResolversParentTypes['InvCategory']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type InvGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvGroup'] = ResolversParentTypes['InvGroup']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  category?: Resolver<ResolversTypes['InvCategory'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  category?: Resolver<ResolversTypes['InvCategory'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type InvItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['InvItem'] = ResolversParentTypes['InvItem']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  mass?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
-  volume?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<InvItemVolumeArgs, 'packaged'>>,
-  invGroup?: Resolver<ResolversTypes['InvGroup'], ParentType, ContextType>,
-  marketPrice?: Resolver<Maybe<ResolversTypes['ItemMarketPrice']>, ParentType, ContextType, RequireFields<InvItemMarketPriceArgs, 'systemId'>>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  mass?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  volume?: Resolver<ResolversTypes['Float'], ParentType, ContextType, RequireFields<InvItemVolumeArgs, 'packaged'>>;
+  invGroup?: Resolver<ResolversTypes['InvGroup'], ParentType, ContextType>;
+  marketPrice?: Resolver<Maybe<ResolversTypes['ItemMarketPrice']>, ParentType, ContextType, RequireFields<InvItemMarketPriceArgs, 'systemId'>>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type ItemMarketPriceResolvers<ContextType = any, ParentType extends ResolversParentTypes['ItemMarketPrice'] = ResolversParentTypes['ItemMarketPrice']> = {
-  buy?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
-  sell?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>,
+  buy?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  sell?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type JournalEntriesResolvers<ContextType = any, ParentType extends ResolversParentTypes['JournalEntries'] = ResolversParentTypes['JournalEntries']> = {
-  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  entries?: Resolver<Array<ResolversTypes['JournalEntry']>, ParentType, ContextType>,
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  entries?: Resolver<Array<ResolversTypes['JournalEntry']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type JournalEntryResolvers<ContextType = any, ParentType extends ResolversParentTypes['JournalEntry'] = ResolversParentTypes['JournalEntry']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
-  balance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
-  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
-  date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
-  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  amount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  balance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>;
+  date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type MarketGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['MarketGroup'] = ResolversParentTypes['MarketGroup']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'code'>>,
-  updateCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>,
-  removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>,
-  register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
-  addItemsToWarehouse?: Resolver<Array<ResolversTypes['WarehouseItem']>, ParentType, ContextType, RequireFields<MutationAddItemsToWarehouseArgs, 'id' | 'input'>>,
-  updateItemsInWarehouse?: Resolver<Array<ResolversTypes['WarehouseItem']>, ParentType, ContextType, RequireFields<MutationUpdateItemsInWarehouseArgs, 'id' | 'input'>>,
-  removeItemsFromWarehouse?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationRemoveItemsFromWarehouseArgs, 'id' | 'itemIds'>>,
-  addWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationAddWarehouseArgs, 'name'>>,
-  removeWarehouse?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveWarehouseArgs, 'id'>>,
-  updateWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationUpdateWarehouseArgs, 'id' | 'name'>>,
+  addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'code'>>;
+  addItemsToWarehouse?: Resolver<Array<ResolversTypes['WarehouseItem']>, ParentType, ContextType, RequireFields<MutationAddItemsToWarehouseArgs, 'id' | 'input'>>;
+  addWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationAddWarehouseArgs, 'name'>>;
+  register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
+  removeCharacter?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveCharacterArgs, 'id'>>;
+  removeItemsFromWarehouse?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationRemoveItemsFromWarehouseArgs, 'id' | 'itemIds'>>;
+  removeWarehouse?: Resolver<ResolversTypes['ID'], ParentType, ContextType, RequireFields<MutationRemoveWarehouseArgs, 'id'>>;
+  updateCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>;
+  updateItemsInWarehouse?: Resolver<Array<ResolversTypes['WarehouseItem']>, ParentType, ContextType, RequireFields<MutationUpdateItemsInWarehouseArgs, 'id' | 'input'>>;
+  updateWarehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType, RequireFields<MutationUpdateWarehouseArgs, 'id' | 'name'>>;
 };
 
 export type ProcessingLogEntryResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProcessingLogEntry'] = ResolversParentTypes['ProcessingLogEntry']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
-  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType>,
-  category?: Resolver<ResolversTypes['ProcessingCategory'], ParentType, ContextType>,
-  status?: Resolver<ResolversTypes['ProcessingStatus'], ParentType, ContextType>,
-  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType>;
+  category?: Resolver<ResolversTypes['ProcessingCategory'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['ProcessingStatus'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  blueprints?: Resolver<ResolversTypes['BlueprintsResponse'], ParentType, ContextType, QueryBlueprintsArgs>,
-  buildInfo?: Resolver<Maybe<ResolversTypes['BuildInfo']>, ParentType, ContextType, RequireFields<QueryBuildInfoArgs, 'blueprintId'>>,
-  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>,
-  characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>,
-  industryJobs?: Resolver<ResolversTypes['IndustryJobs'], ParentType, ContextType, QueryIndustryJobsArgs>,
-  invItems?: Resolver<Array<ResolversTypes['InvItem']>, ParentType, ContextType, QueryInvItemsArgs>,
-  processingLogs?: Resolver<Array<ResolversTypes['ProcessingLogEntry']>, ParentType, ContextType, QueryProcessingLogsArgs>,
-  scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>,
-  userByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>,
-  characterMarketOrders?: Resolver<ResolversTypes['CharacterMarketOrders'], ParentType, ContextType, QueryCharacterMarketOrdersArgs>,
-  walletJournal?: Resolver<ResolversTypes['JournalEntries'], ParentType, ContextType, QueryWalletJournalArgs>,
-  walletTransactions?: Resolver<ResolversTypes['WalletTransactions'], ParentType, ContextType, QueryWalletTransactionsArgs>,
-  walletTransactionSummary?: Resolver<ResolversTypes['WalletTransactionSummary'], ParentType, ContextType, RequireFields<QueryWalletTransactionSummaryArgs, 'ids'>>,
-  walletTransactionIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType, QueryWalletTransactionIdsArgs>,
-  warehouseItems?: Resolver<Maybe<Array<ResolversTypes['WarehouseItem']>>, ParentType, ContextType, RequireFields<QueryWarehouseItemsArgs, 'itemIds'>>,
-  warehouse?: Resolver<Maybe<ResolversTypes['Warehouse']>, ParentType, ContextType, RequireFields<QueryWarehouseArgs, 'id'>>,
-  warehouses?: Resolver<Array<ResolversTypes['Warehouse']>, ParentType, ContextType>,
+  blueprints?: Resolver<ResolversTypes['BlueprintsResponse'], ParentType, ContextType, RequireFields<QueryBlueprintsArgs, never>>;
+  buildInfo?: Resolver<Maybe<ResolversTypes['BuildInfo']>, ParentType, ContextType, RequireFields<QueryBuildInfoArgs, 'blueprintId'>>;
+  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>;
+  characterMarketOrders?: Resolver<ResolversTypes['CharacterMarketOrders'], ParentType, ContextType, RequireFields<QueryCharacterMarketOrdersArgs, never>>;
+  characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>;
+  industryJobs?: Resolver<ResolversTypes['IndustryJobs'], ParentType, ContextType, RequireFields<QueryIndustryJobsArgs, never>>;
+  invItems?: Resolver<Array<ResolversTypes['InvItem']>, ParentType, ContextType, RequireFields<QueryInvItemsArgs, never>>;
+  processingLogs?: Resolver<Array<ResolversTypes['ProcessingLogEntry']>, ParentType, ContextType, RequireFields<QueryProcessingLogsArgs, never>>;
+  scopes?: Resolver<Array<ResolversTypes['Scope']>, ParentType, ContextType>;
+  userByEmail?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserByEmailArgs, 'email'>>;
+  walletJournal?: Resolver<ResolversTypes['JournalEntries'], ParentType, ContextType, RequireFields<QueryWalletJournalArgs, never>>;
+  walletTransactionIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<QueryWalletTransactionIdsArgs, never>>;
+  walletTransactionSummary?: Resolver<ResolversTypes['WalletTransactionSummary'], ParentType, ContextType, RequireFields<QueryWalletTransactionSummaryArgs, 'ids'>>;
+  walletTransactions?: Resolver<ResolversTypes['WalletTransactions'], ParentType, ContextType, RequireFields<QueryWalletTransactionsArgs, never>>;
+  warehouse?: Resolver<Maybe<ResolversTypes['Warehouse']>, ParentType, ContextType, RequireFields<QueryWarehouseArgs, 'id'>>;
+  warehouseItems?: Resolver<Maybe<Array<ResolversTypes['WarehouseItem']>>, ParentType, ContextType, RequireFields<QueryWarehouseItemsArgs, 'itemIds'>>;
+  warehouses?: Resolver<Array<ResolversTypes['Warehouse']>, ParentType, ContextType>;
 };
 
 export type ScopeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Scope'] = ResolversParentTypes['Scope']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type SkillResolvers<ContextType = any, ParentType extends ResolversParentTypes['Skill'] = ResolversParentTypes['Skill']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  multiplier?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
-  activeSkillLevel?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
-  trainedSkillLevel?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
-  skillPointsInSkill?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  multiplier?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  activeSkillLevel?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  trainedSkillLevel?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  skillPointsInSkill?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type SkillGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['SkillGroup'] = ResolversParentTypes['SkillGroup']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  skills?: Resolver<Array<ResolversTypes['Skill']>, ParentType, ContextType>,
-  totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
-  totalLevels?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
-  trainedSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  skills?: Resolver<Array<ResolversTypes['Skill']>, ParentType, ContextType>;
+  totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  totalLevels?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  trainedSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type SkillQueueItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['SkillQueueItem'] = ResolversParentTypes['SkillQueueItem']> = {
-  position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  finishDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>,
-  finishedLevel?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  levelEndSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  levelStartSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  skill?: Resolver<Maybe<ResolversTypes['Skill']>, ParentType, ContextType>,
-  startDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>,
-  trainingStartSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
+  position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  finishDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  finishedLevel?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  levelEndSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  levelStartSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  skill?: Resolver<Maybe<ResolversTypes['Skill']>, ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  trainingStartSp?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Time'], any> {
-  name: 'Time'
+  name: 'Time';
 }
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  status?: Resolver<ResolversTypes['UserStatus'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['UserStatus'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type WalletTransactionResolvers<ContextType = any, ParentType extends ResolversParentTypes['WalletTransaction'] = ResolversParentTypes['WalletTransaction']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  credit?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
-  client?: Resolver<ResolversTypes['Client'], ParentType, ContextType>,
-  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>,
-  date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>,
-  isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
-  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
-  location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>,
-  marketGroup?: Resolver<Maybe<ResolversTypes['MarketGroup']>, ParentType, ContextType>,
-  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  unitPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  credit?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  client?: Resolver<ResolversTypes['Client'], ParentType, ContextType>;
+  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>;
+  date?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  isBuy?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>;
+  location?: Resolver<ResolversTypes['Location'], ParentType, ContextType>;
+  marketGroup?: Resolver<Maybe<ResolversTypes['MarketGroup']>, ParentType, ContextType>;
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  unitPrice?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type WalletTransactionsResolvers<ContextType = any, ParentType extends ResolversParentTypes['WalletTransactions'] = ResolversParentTypes['WalletTransactions']> = {
-  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>,
-  transactions?: Resolver<Array<ResolversTypes['WalletTransaction']>, ParentType, ContextType>,
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lastUpdate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  transactions?: Resolver<Array<ResolversTypes['WalletTransaction']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type WalletTransactionSummaryResolvers<ContextType = any, ParentType extends ResolversParentTypes['WalletTransactionSummary'] = ResolversParentTypes['WalletTransactionSummary']> = {
-  items?: Resolver<Array<ResolversTypes['WalletTransactionSummaryItem']>, ParentType, ContextType>,
+  items?: Resolver<Array<ResolversTypes['WalletTransactionSummaryItem']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type WalletTransactionSummaryItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['WalletTransactionSummaryItem'] = ResolversParentTypes['WalletTransactionSummaryItem']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  credit?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  credit?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type WarehouseResolvers<ContextType = any, ParentType extends ResolversParentTypes['Warehouse'] = ResolversParentTypes['Warehouse']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
-  items?: Resolver<Array<ResolversTypes['WarehouseItem']>, ParentType, ContextType>,
-  summary?: Resolver<ResolversTypes['WarehouseSummary'], ParentType, ContextType>,
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  items?: Resolver<Array<ResolversTypes['WarehouseItem']>, ParentType, ContextType>;
+  summary?: Resolver<ResolversTypes['WarehouseSummary'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type WarehouseItemResolvers<ContextType = any, ParentType extends ResolversParentTypes['WarehouseItem'] = ResolversParentTypes['WarehouseItem']> = {
-  warehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType>,
-  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>,
-  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>,
-  unitCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+  warehouse?: Resolver<ResolversTypes['Warehouse'], ParentType, ContextType>;
+  item?: Resolver<ResolversTypes['InvItem'], ParentType, ContextType>;
+  quantity?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  unitCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type WarehouseSummaryResolvers<ContextType = any, ParentType extends ResolversParentTypes['WarehouseSummary'] = ResolversParentTypes['WarehouseSummary']> = {
-  totalCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
-  totalVolume?: Resolver<ResolversTypes['Float'], ParentType, ContextType>,
+  totalCost?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  totalVolume?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type Resolvers<ContextType = any> = {
-  Alliance?: AllianceResolvers<ContextType>,
-  Blueprint?: BlueprintResolvers<ContextType>,
-  BlueprintsResponse?: BlueprintsResponseResolvers<ContextType>,
-  BuildInfo?: BuildInfoResolvers<ContextType>,
-  BuildMaterial?: BuildMaterialResolvers<ContextType>,
-  Character?: CharacterResolvers<ContextType>,
-  CharacterMarketOrder?: CharacterMarketOrderResolvers<ContextType>,
-  CharacterMarketOrders?: CharacterMarketOrdersResolvers<ContextType>,
-  Client?: ClientResolvers<ContextType>,
-  Corporation?: CorporationResolvers<ContextType>,
-  Date?: GraphQLScalarType,
-  DateTime?: GraphQLScalarType,
-  IndustryActivity?: IndustryActivityResolvers<ContextType>,
-  IndustryJob?: IndustryJobResolvers<ContextType>,
-  IndustryJobs?: IndustryJobsResolvers<ContextType>,
-  InvCategory?: InvCategoryResolvers<ContextType>,
-  InvGroup?: InvGroupResolvers<ContextType>,
-  InvItem?: InvItemResolvers<ContextType>,
-  ItemMarketPrice?: ItemMarketPriceResolvers<ContextType>,
-  JournalEntries?: JournalEntriesResolvers<ContextType>,
-  JournalEntry?: JournalEntryResolvers<ContextType>,
-  Location?: LocationResolvers<ContextType>,
-  MarketGroup?: MarketGroupResolvers<ContextType>,
-  Mutation?: MutationResolvers<ContextType>,
-  ProcessingLogEntry?: ProcessingLogEntryResolvers<ContextType>,
-  Query?: QueryResolvers<ContextType>,
-  Scope?: ScopeResolvers<ContextType>,
-  Skill?: SkillResolvers<ContextType>,
-  SkillGroup?: SkillGroupResolvers<ContextType>,
-  SkillQueueItem?: SkillQueueItemResolvers<ContextType>,
-  Time?: GraphQLScalarType,
-  User?: UserResolvers<ContextType>,
-  WalletTransaction?: WalletTransactionResolvers<ContextType>,
-  WalletTransactions?: WalletTransactionsResolvers<ContextType>,
-  WalletTransactionSummary?: WalletTransactionSummaryResolvers<ContextType>,
-  WalletTransactionSummaryItem?: WalletTransactionSummaryItemResolvers<ContextType>,
-  Warehouse?: WarehouseResolvers<ContextType>,
-  WarehouseItem?: WarehouseItemResolvers<ContextType>,
-  WarehouseSummary?: WarehouseSummaryResolvers<ContextType>,
+  Alliance?: AllianceResolvers<ContextType>;
+  Blueprint?: BlueprintResolvers<ContextType>;
+  BlueprintsResponse?: BlueprintsResponseResolvers<ContextType>;
+  BuildInfo?: BuildInfoResolvers<ContextType>;
+  BuildMaterial?: BuildMaterialResolvers<ContextType>;
+  Character?: CharacterResolvers<ContextType>;
+  CharacterMarketOrder?: CharacterMarketOrderResolvers<ContextType>;
+  CharacterMarketOrders?: CharacterMarketOrdersResolvers<ContextType>;
+  Client?: ClientResolvers<ContextType>;
+  Corporation?: CorporationResolvers<ContextType>;
+  Date?: GraphQLScalarType;
+  DateTime?: GraphQLScalarType;
+  IndustryActivity?: IndustryActivityResolvers<ContextType>;
+  IndustryJob?: IndustryJobResolvers<ContextType>;
+  IndustryJobs?: IndustryJobsResolvers<ContextType>;
+  InvCategory?: InvCategoryResolvers<ContextType>;
+  InvGroup?: InvGroupResolvers<ContextType>;
+  InvItem?: InvItemResolvers<ContextType>;
+  ItemMarketPrice?: ItemMarketPriceResolvers<ContextType>;
+  JournalEntries?: JournalEntriesResolvers<ContextType>;
+  JournalEntry?: JournalEntryResolvers<ContextType>;
+  Location?: LocationResolvers<ContextType>;
+  MarketGroup?: MarketGroupResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
+  ProcessingLogEntry?: ProcessingLogEntryResolvers<ContextType>;
+  Query?: QueryResolvers<ContextType>;
+  Scope?: ScopeResolvers<ContextType>;
+  Skill?: SkillResolvers<ContextType>;
+  SkillGroup?: SkillGroupResolvers<ContextType>;
+  SkillQueueItem?: SkillQueueItemResolvers<ContextType>;
+  Time?: GraphQLScalarType;
+  User?: UserResolvers<ContextType>;
+  WalletTransaction?: WalletTransactionResolvers<ContextType>;
+  WalletTransactions?: WalletTransactionsResolvers<ContextType>;
+  WalletTransactionSummary?: WalletTransactionSummaryResolvers<ContextType>;
+  WalletTransactionSummaryItem?: WalletTransactionSummaryItemResolvers<ContextType>;
+  Warehouse?: WarehouseResolvers<ContextType>;
+  WarehouseItem?: WarehouseItemResolvers<ContextType>;
+  WarehouseSummary?: WarehouseSummaryResolvers<ContextType>;
 };
 
 
 /**
  * @deprecated
  * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
-*/
+ */
 export type IResolvers<ContextType = any> = Resolvers<ContextType>;
