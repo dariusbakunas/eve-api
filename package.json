@@ -24,7 +24,7 @@
     "start:market:processor": "ts-node -r dotenv/config ./src/jobs/marketOrderProcess.ts"
   },
   "engines": {
-    "node": "10.x.x"
+    "node": "12.x.x"
   },
   "husky": {
     "hooks": {
