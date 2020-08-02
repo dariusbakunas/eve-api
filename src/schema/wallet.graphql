@@ -166,7 +166,7 @@ type CharacterMarketOrders {
 input WalletTransactionFilter {
   ids: [ID!]
   item: String
-  characterId: ID
+  characterIds: [ID!]
   orderType: OrderType
 }
 

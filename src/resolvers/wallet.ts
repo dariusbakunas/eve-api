@@ -15,6 +15,7 @@ import {
   ResolversParentTypes,
   ResolversTypes,
   WalletJournalOrderBy,
+  WalletTransactionFilter,
   WalletTransactionOrderBy,
 } from '../__generated__/types';
 import { getCharacter } from './common';
@@ -64,6 +65,40 @@ interface IResolvers<Context> {
     character: Resolver<Character, JournalEntry, Context>;
   };
 }
+
+const applyTransactionFilter = (query: any, characterIds: number[], filter?: WalletTransactionFilter | null) => {
+  if (filter) {
+    if (filter.ids) {
+      query.whereIn('walletTransactions.id', filter.ids);
+    }
+
+    if (filter.orderType) {
+      if (filter.orderType === OrderType.Buy) {
+        query.where('walletTransactions.isBuy', 1);
+      } else {
+        query.where('walletTransactions.isBuy', 0);
+      }
+    }
+
+    if (filter.item) {
+      query.where('item.typeName', 'like', `%${filter.item}%`);
+    }
+
+    if (filter.characterIds && filter.characterIds.length) {
+      const validIds = new Set(characterIds);
+
+      if (filter.characterIds.every(id => validIds.has(+id))) {
+        query.where('walletTransactions.characterId', 'in', filter.characterIds);
+      } else {
+        throw new UserInputError('Invalid character id');
+      }
+    } else {
+      query.where('walletTransactions.characterId', 'in', characterIds);
+    }
+  } else {
+    query.where('walletTransactions.characterId', 'in', characterIds);
+  }
+};
 
 const getItem: (typeId: number, loaders: Loaders) => Promise<InvItemPartial> = async (typeId, loaders) => {
   const item: Maybe<InventoryItem> = await loaders.invItemLoader.load(typeId);
@@ -211,31 +246,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           .select('walletTransactions.id')
           .join('invTypes as item', 'item.typeID', 'walletTransactions.typeId');
 
-        if (filter) {
-          if (filter.orderType) {
-            if (filter.orderType === OrderType.Buy) {
-              query.where('walletTransactions.isBuy', 1);
-            } else {
-              query.where('walletTransactions.isBuy', 0);
-            }
-          }
-
-          if (filter.item) {
-            query.where('item.typeName', 'like', `%${filter.item}%`);
-          }
-
-          if (filter.characterId) {
-            if (characterIds.includes(+filter.characterId)) {
-              query.where('walletTransactions.characterId', filter.characterId);
-            } else {
-              throw new UserInputError('Invalid character id');
-            }
-          }
-        }
-
-        if (!filter || !filter.characterId) {
-          query.where('walletTransactions.characterId', 'in', characterIds);
-        }
+        applyTransactionFilter(query, characterIds, filter);
 
         return query.pluck('id');
       }
@@ -300,35 +311,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           .join('invTypes as item', 'item.typeID', 'walletTransactions.typeId')
           .join('invGroups as invGroup', 'item.groupID', 'invGroup.groupID');
 
-        if (filter) {
-          if (filter.ids) {
-            query.whereIn('walletTransactions.id', filter.ids);
-          }
-
-          if (filter.orderType) {
-            if (filter.orderType === OrderType.Buy) {
-              query.where('walletTransactions.isBuy', 1);
-            } else {
-              query.where('walletTransactions.isBuy', 0);
-            }
-          }
-
-          if (filter.item) {
-            query.where('item.typeName', 'like', `%${filter.item}%`);
-          }
-
-          if (filter.characterId) {
-            if (characterIds.includes(+filter.characterId)) {
-              query.where('walletTransactions.characterId', filter.characterId);
-            } else {
-              throw new UserInputError('Invalid character id');
-            }
-          }
-        }
-
-        if (!filter || !filter.characterId) {
-          query.where('walletTransactions.characterId', 'in', characterIds);
-        }
+        applyTransactionFilter(query, characterIds, filter);
 
         if (orderBy) {
           let orderByCol;

@@ -617,7 +617,7 @@ export type WalletTransaction = {
 export type WalletTransactionFilter = {
   ids?: Maybe<Array<Scalars['ID']>>,
   item?: Maybe<Scalars['String']>,
-  characterId?: Maybe<Scalars['ID']>,
+  characterIds?: Maybe<Array<Scalars['ID']>>,
   orderType?: Maybe<OrderType>,
 };
 
