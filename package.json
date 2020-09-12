@@ -72,7 +72,7 @@
     "morgan": "^1.9.1",
     "mysql2": "^2.0.0",
     "node-cache": "^5.0.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "objection": "^1.6.9",
     "sjcl": "^1.0.8",
     "winston": "^3.2.1"
