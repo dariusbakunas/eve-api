@@ -17,7 +17,6 @@ import { InventoryItem } from '../services/db/models/InventoryItem';
 import { InvGroup } from '../services/db/models/invGroup';
 import { IResolverContext, Maybe, MaybeArrayResolver, MaybeResolver } from '../types';
 import { JoinClause } from 'knex';
-import { raw } from 'objection';
 import { SkillMultiplier } from '../services/db/models/skillMultiplier';
 import { SkillQueueItem as SkillQueueItemDB } from '../services/db/models/skillQueueItem';
 import { UserInputError } from 'apollo-server-errors';
@@ -69,9 +68,7 @@ const LEVEL_V_SP = 256000;
 const resolverMap: ICharacterResolvers<IResolverContext> = {
   Query: {
     characters: async (_, args, { dataSources, user: { id } }) => {
-      return dataSources.db.Character.query()
-        .where('ownerId', id)
-        .orderBy('name');
+      return dataSources.db.Character.query().where('ownerId', id).orderBy('name');
     },
     character: async (_, { id }, { dataSources }) => {
       return dataSources.db.Character.query().findById(id);
@@ -178,10 +175,7 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
       return scopes.split(' ');
     },
     skillGroup: async ({ id: characterId }, { id }, { dataSources }) => {
-      const group: InvGroup = await dataSources.db.InvGroup.query()
-        .where('groupID', id)
-        .andWhere('categoryID', SKILL_GROUP_CATEGORY_ID)
-        .first();
+      const group: InvGroup = await dataSources.db.InvGroup.query().where('groupID', id).andWhere('categoryID', SKILL_GROUP_CATEGORY_ID).first();
       return {
         id: `${group.groupID}`,
         characterId,
@@ -194,38 +188,38 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
         .andWhere('categoryID', SKILL_GROUP_CATEGORY_ID)
         .orderBy('groupName');
 
-      return skillGroups.map(group => ({
+      return skillGroups.map((group) => ({
         id: `${group.groupID}`,
         characterId,
         name: group.groupName!, // all skill groups have names
       }));
     },
     skillQueue: async ({ id: characterId }, args, { dataSources }) => {
-      const queue: Array<SkillQueueItemDB> = await dataSources.db.SkillQueueItem.query()
-        .where('characterId', characterId)
-        .orderBy('queuePosition');
+      const queue: Array<SkillQueueItemDB> = await dataSources.db.SkillQueueItem.query().where('characterId', characterId).orderBy('queuePosition');
       return queue;
     },
   },
   SkillGroup: {
     skills: async ({ id, characterId }, args, { dataSources }) => {
+      const knex = dataSources.knex;
       const skills: Array<Skill> = await dataSources.db.InventoryItem.query()
         .select('*')
-        .leftJoin('characterSkills as characterSkill', function(this: JoinClause) {
-          this.on('invTypes.typeID', 'characterSkill.skillId').andOn('characterSkill.characterId', raw(characterId));
+        .leftJoin('characterSkills as characterSkill', function (this: JoinClause) {
+          this.on('invTypes.typeID', 'characterSkill.skillId');
+          this.andOn('characterSkill.characterId', knex.raw(characterId));
         })
         .where('groupID', id)
         .andWhere('published', true)
         .orderBy('typeName');
 
-      const skillIds = skills.map(skill => skill.typeID);
+      const skillIds = skills.map((skill) => skill.typeID);
       const multipliers: Array<SkillMultiplier> = await dataSources.db.SkillMultiplier.query().whereIn('skillId', skillIds);
       const multiplierMap = multipliers.reduce<{ [key: number]: number }>((acc, multiplier) => {
         acc[multiplier.skillId] = multiplier.multiplier;
         return acc;
       }, {});
 
-      return skills.map(skill => ({
+      return skills.map((skill) => ({
         id: `${skill.typeID}`,
         name: skill.typeName,
         multiplier: multiplierMap[skill.typeID],
@@ -235,22 +229,14 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
       }));
     },
     totalLevels: async ({ id }, args, { dataSources }) => {
-      const skills = await dataSources.db.InventoryItem.query()
-        .select('typeID')
-        .where('groupID', id)
-        .andWhere('published', true)
-        .as('skills');
+      const skills = await dataSources.db.InventoryItem.query().select('typeID').where('groupID', id).andWhere('published', true).as('skills');
       return skills.length * 5;
     },
     totalSp: async ({ id }, args, { dataSources }) => {
-      const skillSubquery = dataSources.db.InventoryItem.query()
-        .select('typeID')
-        .where('groupID', id)
-        .andWhere('published', true)
-        .as('skills');
+      const skillSubquery = dataSources.db.InventoryItem.query().select('typeID').where('groupID', id).andWhere('published', true).as('skills');
       const totalSp = await dataSources.db.SkillMultiplier.query()
         .sum('skillMultipliers.multiplier as totalSp')
-        .innerJoin(skillSubquery, function(this: JoinClause) {
+        .innerJoin(skillSubquery, function (this: JoinClause) {
           this.on('skills.typeID', 'skillMultipliers.skillId');
         })
         .pluck('totalSp')
@@ -261,8 +247,8 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
       return dataSources.db.InventoryItem.query()
         .sum('characterSkill.skillPointsInSkill as trainedSp')
         .as('trainedSp')
-        .rightJoin('characterSkills as characterSkill', function(this: JoinClause) {
-          this.on('invTypes.typeID', 'characterSkill.skillId').andOn('characterSkill.characterId', raw(characterId));
+        .rightJoin('characterSkills as characterSkill', function (this: JoinClause) {
+          this.on('invTypes.typeID', 'characterSkill.skillId').andOn('characterSkill.characterId', dataSources.knex.raw(characterId));
         })
         .where('groupID', id)
         .andWhere('published', true)

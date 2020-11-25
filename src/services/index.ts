@@ -18,9 +18,11 @@ import { Invitation } from './db/models/invitation';
 import { JobLogEntry } from './db/models/jobLogEntry';
 import { JournalEntry } from './db/models/journalEntry';
 import { Loaders } from './db/loaders';
+import { loadKnexConfig } from '../../loadKnexConfig';
 import { MarketGroup } from './db/models/marketGroup';
 import { MarketOrder } from './db/models/marketOrder';
 import { MarketPrice } from './db/models/MarketPrice';
+import { Model } from 'objection';
 import { NameCacheItem } from './db/models/nameCacheItem';
 import { Scope } from './db/models/scope';
 import { SkillMultiplier } from './db/models/skillMultiplier';
@@ -35,6 +37,7 @@ import Crypt from './crypt';
 import db from './db';
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
+import Knex from 'knex';
 
 export interface IDataSources {
   db: {
@@ -69,6 +72,7 @@ export interface IDataSources {
     Warehouse: typeof Warehouse;
     WarehouseItem: typeof WarehouseItem;
   };
+  knex: Knex;
   loaders: Loaders;
   auth0Api: Auth0API;
   esiAuth: EsiAuth;
@@ -77,9 +81,11 @@ export interface IDataSources {
   [key: string]: object;
 }
 
-export const dataSources: () => IDataSources = () => {
+export const dataSources: (knex: Knex) => IDataSources = (knex) => {
   const { config } = applicationConfig;
+
   return {
+    knex,
     db,
     auth0Api: new Auth0API(`https://${config.auth0Domain}`),
     esiAuth: new EsiAuth(config.eveLoginUrl),

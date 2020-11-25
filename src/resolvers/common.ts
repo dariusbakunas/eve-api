@@ -1,9 +1,8 @@
+import { applicationConfig } from '../utils/applicationConfig';
 import { Character } from '../services/db/models/character';
 import { IDataSources } from '../services';
 import { Loaders } from '../services/db/loaders';
-import { PartialUpdate } from 'objection';
 import logger from '../utils/logger';
-import { applicationConfig } from '../utils/applicationConfig';
 
 export const getAccessToken = async (
   characterId: number,
@@ -24,15 +23,13 @@ export const getAccessToken = async (
     // get new tokens
     const tokens = await esiAuth.getAccessToken(config.eveClientId, config.eveClientSecret, crypt.decrypt(refreshToken));
 
-    const update: PartialUpdate<Character> = {
+    const update: Partial<Character> = {
       accessToken: crypt.encrypt(tokens.access_token),
       refreshToken: crypt.encrypt(tokens.refresh_token),
       expiresAt: tokens.expires_in * 1000 + new Date().getTime(),
     };
 
-    await db.Character.query()
-      .findById(characterId)
-      .patch(update);
+    await db.Character.query().findById(characterId).patch(update);
 
     return tokens.access_token;
   }

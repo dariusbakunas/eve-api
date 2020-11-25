@@ -35,14 +35,17 @@ export interface IUserProfile {
   email_verified: boolean;
 }
 
-(async function() {
+(async function () {
+  let knex: Knex;
+
   try {
     await applicationConfig.load();
     const dbConfig = loadKnexConfig(applicationConfig.config);
-
-    Model.knex(Knex(dbConfig));
+    knex = Knex(dbConfig);
+    Model.knex(knex);
   } catch (e) {
     logger.error(e);
+    return;
   }
 
   const app = express();
@@ -97,8 +100,8 @@ export interface IUserProfile {
 
   const server = new ApolloServer({
     context: apolloContext,
-    dataSources,
-    formatError: err => {
+    dataSources: dataSources.bind(undefined, knex),
+    formatError: (err) => {
       // Don't give the specific errors to the client.
       Sentry.captureException(err);
       logger.error(err.message);

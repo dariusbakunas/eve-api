@@ -1,7 +1,7 @@
 import { ContextUser } from '../types';
 
 const user: ContextUser = {
-  id: '1111',
+  id: '3',
   email: 'test@gmail.com',
   status: 'ACTIVE',
 };

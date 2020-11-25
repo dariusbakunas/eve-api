@@ -5,9 +5,9 @@ import Cache from 'node-cache';
 import db from '../services/db/index';
 import request from '../utils/request';
 //import * as Sentry from '@sentry/node';
+import { applicationConfig } from '../utils/applicationConfig';
 import logger from '../utils/logger';
 import mockUser from './userMock';
-import { applicationConfig } from '../utils/applicationConfig';
 
 const cache = new Cache({
   stdTTL: 100,
