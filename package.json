@@ -18,9 +18,7 @@
     "db:seed": "node -r dotenv/config ./node_modules/knex/bin/cli.js seed:run --env development",
     "db:seed:staging": "node -r dotenv/config ./node_modules/knex/bin/cli.js seed:run --env staging",
     "db:seed:pd": "node -r dotenv/config ./node_modules/knex/bin/cli.js seed:run --env production",
-    "gen:types": "graphql-codegen --config codegen.yml",
-    "start:processor": "ts-node -r dotenv/config ./src/jobs/manual.ts",
-    "start:market:processor": "ts-node -r dotenv/config ./src/jobs/marketOrderProcess.ts"
+    "gen:types": "graphql-codegen --config codegen.yml"
   },
   "engines": {
     "node": "12.x.x"
