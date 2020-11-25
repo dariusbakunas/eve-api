@@ -69,11 +69,11 @@ class ApplicationConfig {
     projectId: string,
     secretNames: string[]
   ): Promise<Array<string>> {
-    return Promise.all(secretNames.map(secret => this.loadGCloudSecret(secretClient, projectId, secret)));
+    return Promise.all(secretNames.map((secret) => this.loadGCloudSecret(secretClient, projectId, secret)));
   }
 
   private validateConfig() {
-    REQUIRED_CONFIG.forEach(key => {
+    REQUIRED_CONFIG.forEach((key) => {
       const value = this.config[key];
 
       if (!value || value === '') {
