@@ -10,5 +10,5 @@ COPY package.json .
 COPY build ./build
 COPY node_modules ./node_modules
 
-EXPOSE 4000
+EXPOSE 8080
 CMD [ "npm", "start" ]

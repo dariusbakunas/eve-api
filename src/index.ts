@@ -122,7 +122,7 @@ export interface IUserProfile {
 
   app.use(Sentry.Handlers.errorHandler());
 
-  const port = process.env.PORT || 4000;
+  const port = process.env.PORT || 8080;
 
   app.listen({ port }, () => logger.info(`🚀 Server ready at http://localhost:${port}/graphql`));
 })();
