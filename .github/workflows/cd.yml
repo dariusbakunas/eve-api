@@ -7,7 +7,7 @@ on:
 
 env:
   GC_PROJECT_ID: ${{ secrets.GC_PROJECT_ID }}
-  IMAGE: eve-app
+  IMAGE: eve-api
 
 jobs:
   build:
