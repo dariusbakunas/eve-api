@@ -1,4 +1,6 @@
-FROM node:12-alpine
+FROM launcher.gcr.io/google/nodejs
+
+RUN install_node v12
 
 WORKDIR /usr/src/app
 
