@@ -113,7 +113,12 @@ export interface IUserProfile {
     schema: applyMiddleware(schema, shieldMiddleware),
   });
 
-  app.get('/health-check', (req, res) => {
+  app.get('/liveness_check', (req, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Status: OK!');
+  });
+
+  app.get('/readiness_check', (req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Status: OK!');
   });
