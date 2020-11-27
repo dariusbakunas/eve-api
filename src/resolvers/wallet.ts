@@ -31,14 +31,33 @@ import { WalletTransaction as WalletTransactionDB } from '../services/db/models/
 interface IResolvers<Context> {
   Query: {
     characterMarketOrders: Resolver<
-      Maybe<ResolversTypes['CharacterMarketOrders']>,
+      Maybe<{
+        total: number;
+        orders: Array<CharacterMarketOrder>;
+      }>,
       ResolversParentTypes['Query'],
       Context,
       QueryCharacterMarketOrdersArgs
     >;
-    walletJournal: Resolver<Maybe<ResolversTypes['JournalEntries']>, ResolversParentTypes['Query'], Context, QueryWalletJournalArgs>;
-    walletTransactions: Resolver<Maybe<ResolversTypes['WalletTransactions']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionsArgs>;
-    walletTransactionIds: Resolver<Array<ResolversTypes['ID']>, ResolversParentTypes['Query'], Context, QueryWalletTransactionIdsArgs>;
+    walletJournal: Resolver<
+      Maybe<{
+        total: number;
+        entries: Array<JournalEntry>;
+      }>,
+      ResolversParentTypes['Query'],
+      Context,
+      QueryWalletJournalArgs
+    >;
+    walletTransactions: Resolver<
+      Maybe<{
+        total: number;
+        transactions: Array<WalletTransactionDB>;
+      }>,
+      ResolversParentTypes['Query'],
+      Context,
+      QueryWalletTransactionsArgs
+    >;
+    walletTransactionIds: Resolver<Array<number>, ResolversParentTypes['Query'], Context, QueryWalletTransactionIdsArgs>;
     walletTransactionSummary: Resolver<
       ResolversTypes['WalletTransactionSummary'],
       ResolversParentTypes['Query'],
@@ -87,7 +106,7 @@ const applyTransactionFilter = (query: any, characterIds: number[], filter?: Wal
     if (filter.characterIds && filter.characterIds.length) {
       const validIds = new Set(characterIds);
 
-      if (filter.characterIds.every(id => validIds.has(+id))) {
+      if (filter.characterIds.every((id) => validIds.has(+id))) {
         query.where('walletTransactions.characterId', 'in', filter.characterIds);
       } else {
         throw new UserInputError('Invalid character id');
@@ -117,7 +136,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       const characterIds = await dataSources.db.Character.query()
         .select('id')
         .where('ownerId', user.id)
-        .pluck('id');
+        .then((characters) => characters.map((character) => character.id));
 
       if (characterIds.length) {
         const query = dataSources.db.CharacterMarketOrder.query()
@@ -166,7 +185,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           }
         }
 
-        const orders = await query.page(index, size);
+        const orders = await query.page(index || 0, size || 10);
 
         return {
           total: orders.total,
@@ -185,7 +204,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       const characterIds = await dataSources.db.Character.query()
         .select('id')
         .where('ownerId', user.id)
-        .pluck('id');
+        .then((characters) => characters.map((character) => character.id));
 
       if (characterIds.length) {
         const query = dataSources.db.JournalEntry.query().select('journalEntries.*');
@@ -222,7 +241,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           }
         }
 
-        const entries = await query.page(index, size);
+        const entries = await query.page(index || 0, size || 0);
 
         return {
           total: entries.total,
@@ -239,7 +258,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       const characterIds = await dataSources.db.Character.query()
         .select('id')
         .where('ownerId', user.id)
-        .pluck('id');
+        .then((characters) => characters.map((character) => character.id));
 
       if (characterIds.length) {
         const query = dataSources.db.WalletTransaction.query()
@@ -248,7 +267,7 @@ const resolverMap: IResolvers<IResolverContext> = {
 
         applyTransactionFilter(query, characterIds, filter);
 
-        return query.pluck('id');
+        return query.then((transactions) => transactions.map((transaction) => transaction.id));
       }
 
       return [];
@@ -257,7 +276,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       const characterIds = await dataSources.db.Character.query()
         .select('id')
         .where('ownerId', user.id)
-        .pluck('id');
+        .then((characters) => characters.map((character) => character.id));
 
       const transactions = dataSources.db.WalletTransaction.query()
         .select(
@@ -272,15 +291,15 @@ const resolverMap: IResolvers<IResolverContext> = {
         .whereIn('walletTransactions.characterId', characterIds)
         .as('transactions');
 
-      const result: Array<{ id: string; name: string; quantity: number; credit: number }> = await dataSources.db.WalletTransaction.query()
+      const result = ((await dataSources.db.WalletTransaction.query()
         .select('transactions.typeID as id', 'transactions.typeName as name')
         .sum('walletTransactions.quantity as quantity')
         .sum('transactions.credit as credit')
-        .innerJoin(transactions, function(this: JoinClause) {
+        .innerJoin(transactions, function (this: JoinClause) {
           this.on('transactions.id', 'walletTransactions.id');
         })
         .groupBy('transactions.typeID', 'transactions.typeName', 'walletTransactions.isBuy')
-        .orderBy('transactions.typeName');
+        .orderBy('transactions.typeName')) as unknown) as Array<{ id: string; name: string; quantity: number; credit: number }>;
 
       return {
         items: result,
@@ -292,7 +311,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       const characterIds = await dataSources.db.Character.query()
         .select('id')
         .where('ownerId', user.id)
-        .pluck('id');
+        .then((characters) => characters.map((character) => character.id));
 
       if (characterIds.length) {
         const query = dataSources.db.WalletTransaction.query()
@@ -347,7 +366,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           }
         }
 
-        const transactions = await query.page(index, size);
+        const transactions = await query.page(index || 0, size || 10);
 
         return {
           total: transactions.total,
@@ -373,7 +392,7 @@ const resolverMap: IResolvers<IResolverContext> = {
     item: async (parent, args, { dataSources }) => {
       return getItem(parent.typeId, dataSources.loaders);
     },
-    location: parent => {
+    location: (parent) => {
       return {
         id: `${parent.locationId}`,
         name: parent.locationName || 'Unknown Station',
@@ -405,7 +424,7 @@ const resolverMap: IResolvers<IResolverContext> = {
         groupName: parent.groupName,
       };
     },
-    location: parent => {
+    location: (parent) => {
       return {
         id: `${parent.locationId}`,
         name: parent.locationName || 'Unknown Station',
@@ -430,10 +449,7 @@ const resolverMap: IResolvers<IResolverContext> = {
   },
   WalletTransactions: {
     lastUpdate: async (parent, args, { dataSources, user: { id } }) => {
-      const characterIds = await dataSources.db.Character.query()
-        .select('id')
-        .where('ownerId', id)
-        .pluck('id');
+      const characterIds = await dataSources.db.Character.query().select('id').where('ownerId', id).pluck('id');
 
       if (characterIds.length) {
         const lastUpdate = await dataSources.db.JobLogEntry.query()

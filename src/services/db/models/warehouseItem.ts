@@ -1,8 +1,7 @@
 import { Model } from 'objection';
 import { Warehouse } from './warehouse';
-import BaseModel from './base';
 
-export class WarehouseItem extends BaseModel {
+export class WarehouseItem extends Model {
   static tableName = 'warehouseItems';
 
   static get idColumn() {

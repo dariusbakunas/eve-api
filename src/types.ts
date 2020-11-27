@@ -15,7 +15,7 @@ export interface IResolverContext {
 }
 
 export interface ContextUser {
-  id?: string;
+  id: string;
   email: string;
   status: 'ACTIVE' | 'INACTIVE' | 'GUEST' | 'NOT_VERIFIED';
 }
@@ -45,4 +45,4 @@ export type InvItemPartial = Pick<InventoryItem, 'typeID' | 'typeName' | 'groupI
 export type InvGroupPartial = Pick<InvGroup, 'groupID' | 'groupName' | 'categoryID'>;
 export type InvCategoryPartial = Pick<InvCategory, 'categoryID' | 'categoryName'>;
 export type WarehouseItemPartial = Pick<WarehouseItem, 'warehouseId' | 'typeId' | 'unitPrice' | 'quantity'>;
-export type IndustryJobPartial = Pick<IndustryJob, 'id' | 'activityId' | 'blueprintId' | 'blueprintLocationId' | 'productTypeId' >
+export type IndustryJobPartial = Pick<IndustryJob, 'id' | 'activityId' | 'blueprintId' | 'blueprintLocationId' | 'productTypeId'>;

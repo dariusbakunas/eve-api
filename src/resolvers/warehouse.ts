@@ -32,7 +32,7 @@ interface IResolvers<Context> {
     >;
   };
   Mutation: {
-    addWarehouse: Resolver<ResolversTypes['Warehouse'], ResolversParentTypes['Mutation'], Context, RequireFields<MutationAddWarehouseArgs, 'name'>>;
+    addWarehouse: Resolver<WarehouseDB, ResolversParentTypes['Mutation'], Context, RequireFields<MutationAddWarehouseArgs, 'name'>>;
     addItemsToWarehouse: Resolver<
       Array<WarehouseItemPartial>,
       ResolversParentTypes['Mutation'],
@@ -52,12 +52,7 @@ interface IResolvers<Context> {
       RequireFields<MutationRemoveItemsFromWarehouseArgs, 'id' | 'itemIds'>
     >;
     removeWarehouse: Resolver<ResolversTypes['ID'], ResolversParentTypes['Mutation'], Context, RequireFields<MutationRemoveWarehouseArgs, 'id'>>;
-    updateWarehouse?: Resolver<
-      ResolversTypes['Warehouse'],
-      ResolversParentTypes['Mutation'],
-      Context,
-      RequireFields<MutationUpdateWarehouseArgs, 'id' | 'name'>
-    >;
+    updateWarehouse?: Resolver<WarehouseDB, ResolversParentTypes['Mutation'], Context, RequireFields<MutationUpdateWarehouseArgs, 'id' | 'name'>>;
   };
   Warehouse: {
     items: Resolver<Array<WarehouseItemPartial>, WarehouseDB, Context>;
@@ -85,9 +80,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       }
     },
     warehouses: async (_parent, args, { dataSources, user: { id } }) => {
-      return dataSources.db.Warehouse.query()
-        .where('ownerId', id)
-        .orderBy('name');
+      return dataSources.db.Warehouse.query().where('ownerId', id).orderBy('name');
     },
     warehouseItems: async (_parent, { itemIds, warehouseIds: warehouseIdFilter }, { dataSources, user: { id } }) => {
       const warehouseIds = warehouseIdFilter
@@ -96,7 +89,7 @@ const resolverMap: IResolvers<IResolverContext> = {
             .select('id')
             .where('ownerId', id)
             .orderBy('name')
-            .pluck('id');
+            .then((warehouses) => warehouses.map((warehouse) => warehouse.id));
 
       const items: Array<WarehouseItemPartial> = await dataSources.db.WarehouseItem.query()
         .where('warehouseId', 'in', warehouseIds)
@@ -111,7 +104,7 @@ const resolverMap: IResolvers<IResolverContext> = {
     addWarehouse: async (_, { name }, { dataSources: { db }, user: { id: userId } }) => {
       const user = await db.User.query().findById(userId);
 
-      return user.$relatedQuery('warehouses').insert({
+      return user.$relatedQuery<WarehouseDB>('warehouses').insert({
         name: name,
       });
     },
@@ -119,7 +112,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       const knex = WarehouseItemDB.knex();
       const result: WarehouseItemPartial[] = [];
 
-      return transaction(knex, async trx => {
+      return transaction(knex, async (trx) => {
         for (let i = 0; i < input.length; i++) {
           const item = input[i];
 
@@ -130,10 +123,7 @@ const resolverMap: IResolvers<IResolverContext> = {
             unitPrice: +item.unitCost,
           };
 
-          await db.WarehouseItem.query(trx)
-            .patch(update)
-            .where('typeId', item.id)
-            .andWhere('warehouseId', id);
+          await db.WarehouseItem.query(trx).patch(update).where('typeId', item.id).andWhere('warehouseId', id);
 
           result.push(update);
         }
@@ -143,14 +133,12 @@ const resolverMap: IResolvers<IResolverContext> = {
     },
     addItemsToWarehouse: async (_, { id, input }, { dataSources: { db } }) => {
       const knex = WarehouseItemDB.knex();
-      const newItemIds = input.map(item => item.id);
+      const newItemIds = input.map((item) => item.id);
 
       const result: WarehouseItemPartial[] = [];
 
-      return transaction(knex, async trx => {
-        const existingItems: WarehouseItemDB[] = await db.WarehouseItem.query(trx)
-          .whereIn('typeId', newItemIds)
-          .andWhere('warehouseId', id);
+      return transaction(knex, async (trx) => {
+        const existingItems: WarehouseItemDB[] = await db.WarehouseItem.query(trx).whereIn('typeId', newItemIds).andWhere('warehouseId', id);
 
         const existingItemMap = existingItems.reduce<{ [key: string]: WarehouseItemDB }>((acc, item) => {
           acc[item.typeId] = item;
@@ -172,10 +160,7 @@ const resolverMap: IResolvers<IResolverContext> = {
               unitPrice: newCost,
             };
 
-            await db.WarehouseItem.query(trx)
-              .patch(update)
-              .where('typeId', inputItem.id)
-              .andWhere('warehouseId', id);
+            await db.WarehouseItem.query(trx).patch(update).where('typeId', inputItem.id).andWhere('warehouseId', id);
 
             result.push(update);
           } else {
@@ -196,10 +181,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       });
     },
     removeItemsFromWarehouse: async (_, { id, itemIds }, { dataSources: { db } }) => {
-      await db.WarehouseItem.query()
-        .delete()
-        .whereIn('typeId', itemIds)
-        .andWhere('warehouseId', id);
+      await db.WarehouseItem.query().delete().whereIn('typeId', itemIds).andWhere('warehouseId', id);
       return itemIds;
     },
     removeWarehouse: async (_, { id }, { dataSources: { db } }) => {
@@ -215,13 +197,10 @@ const resolverMap: IResolvers<IResolverContext> = {
   },
   Warehouse: {
     items: async ({ id }, args, { dataSources: { db } }): Promise<Array<WarehouseItemPartial>> => {
-      return db.WarehouseItem.query()
-        .where('warehouseId', id)
-        .join('invTypes as item', 'item.typeID', 'warehouseItems.typeId')
-        .orderBy('typeName');
+      return db.WarehouseItem.query().where('warehouseId', id).join('invTypes as item', 'item.typeID', 'warehouseItems.typeId').orderBy('typeName');
     },
     summary: async ({ id }, args, { dataSources: { db } }) => {
-      const summary = await db.WarehouseItem.query()
+      const summary = ((await db.WarehouseItem.query()
         .select(
           raw('sum(warehouseItems.unitPrice * warehouseItems.quantity) as totalCost'),
           raw('sum(warehouseItems.quantity * coalesce(sV.volume, invTypes.volume)) as totalVolume')
@@ -230,7 +209,10 @@ const resolverMap: IResolvers<IResolverContext> = {
         .leftJoin('shipVolumes as sV', 'sV.groupId', 'invTypes.groupID')
         .where('warehouseItems.warehouseId', id)
         .groupBy('warehouseItems.warehouseId')
-        .first();
+        .first()) as unknown) as {
+        totalCost: number;
+        totalVolume: number;
+      };
 
       return (
         summary || {

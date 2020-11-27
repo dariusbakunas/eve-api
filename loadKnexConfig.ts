@@ -10,11 +10,12 @@ export const loadKnexConfig = (applicationConfig: IApplicationConfig): Knex.Conf
       password: applicationConfig.dbSecret,
       timezone: '+00:00',
     },
+    debug: true,
     pool: {
       min: 2,
       max: 10,
-      afterCreate: function(connection: any, callback: (err: any, connection: any) => void) {
-        connection.query("SET time_zone='+00:00';", function(err: any) {
+      afterCreate: function (connection: any, callback: (err: any, connection: any) => void) {
+        connection.query("SET time_zone='+00:00';", function (err: any) {
           callback(err, connection);
         });
       },

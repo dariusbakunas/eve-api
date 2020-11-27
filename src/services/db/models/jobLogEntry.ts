@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class JobLogEntry extends BaseModel {
+export class JobLogEntry extends Model {
   static tableName = 'jobLogs';
 
   readonly id!: number;

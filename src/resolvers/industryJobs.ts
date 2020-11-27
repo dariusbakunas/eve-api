@@ -24,7 +24,7 @@ const resolverMap: IIndustryJobResolvers<IResolverContext> = {
       const characterIds = await dataSources.db.Character.query()
         .select('id')
         .where('ownerId', user.id)
-        .pluck('id');
+        .then((characters) => characters.map((character) => character.id));
 
       if (characterIds.length) {
         const query = dataSources.db.IndustryJob.query()
@@ -47,7 +47,7 @@ const resolverMap: IIndustryJobResolvers<IResolverContext> = {
           query.where('industryJobs.installerId', 'in', characterIds);
         }
 
-        const industryJobs = await query.page(index, size);
+        const industryJobs = await query.page(index || 0, size || 10);
 
         return {
           total: industryJobs.total,

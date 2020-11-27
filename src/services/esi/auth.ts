@@ -1,5 +1,22 @@
 import { RESTDataSource } from 'apollo-datasource-rest';
 
+interface ITokens {
+  access_token: string;
+  expires_in: number;
+  token_type: string;
+  refresh_token: string;
+}
+
+interface ITokenVerifyResponse {
+  CharacterID: number;
+  CharacterName: string;
+  ExpiresOn: string;
+  Scopes: string;
+  TokenType: string;
+  CharacterOwnerHash: string;
+  IntellectualProperty: string;
+}
+
 class EsiAuth extends RESTDataSource {
   constructor(baseUrl: string) {
     super();
@@ -7,10 +24,10 @@ class EsiAuth extends RESTDataSource {
   }
 
   // TODO: move clientId and secret to constructor
-  async getCharacterTokens(clientId: string, clientSecret: string, code: string) {
+  getCharacterTokens(clientId: string, clientSecret: string, code: string) {
     const authBuffer = Buffer.from(`${clientId}:${clientSecret}`);
 
-    return this.post(
+    return this.post<ITokens>(
       '/oauth/token',
       JSON.stringify({
         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -26,7 +43,7 @@ class EsiAuth extends RESTDataSource {
     );
   }
 
-  async getAccessToken(clientId: string, clientSecret: string, refreshToken: string) {
+  getAccessToken(clientId: string, clientSecret: string, refreshToken: string) {
     const authBuffer = Buffer.from(`${clientId}:${clientSecret}`);
 
     return this.post(
@@ -46,8 +63,8 @@ class EsiAuth extends RESTDataSource {
     );
   }
 
-  async verifyToken(accessToken: string) {
-    return this.get('/oauth/verify', undefined, {
+  verifyToken(accessToken: string) {
+    return this.get<ITokenVerifyResponse>('/oauth/verify', undefined, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',

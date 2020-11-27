@@ -123,7 +123,7 @@ class EsiAPI extends RESTDataSource {
   }
 
   async getAllianceInfo(allianceId: number): Promise<IEsiAllianceInfo> {
-    return this.get(`/alliances/${allianceId}`);
+    return this.get<IEsiAllianceInfo>(`/alliances/${allianceId}`);
   }
 }
 

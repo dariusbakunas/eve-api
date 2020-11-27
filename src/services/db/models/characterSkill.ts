@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class CharacterSkill extends BaseModel {
+export class CharacterSkill extends Model {
   static tableName = 'characterSkills';
 
   activeSkillLevel!: number;

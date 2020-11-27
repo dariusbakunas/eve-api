@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class Blueprint extends BaseModel {
+export class Blueprint extends Model {
   static tableName = 'blueprints';
 
   readonly id!: number;

@@ -1,5 +1,5 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class Scope extends BaseModel {
+export class Scope extends Model {
   static tableName = 'scopes';
 }

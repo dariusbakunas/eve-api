@@ -7,7 +7,7 @@ import { UserInputError } from 'apollo-server-errors';
 
 interface IProcessingResolvers<Context> {
   Query: {
-    processingLogs: Resolver<Array<ResolversTypes['ProcessingLogEntry']>, JobLogEntry, Context, QueryProcessingLogsArgs>;
+    processingLogs: Resolver<Array<JobLogEntry>, unknown, Context, QueryProcessingLogsArgs>;
   };
   ProcessingLogEntry: {
     character: Resolver<Maybe<Partial<Character>>, JobLogEntry, Context>;
@@ -20,14 +20,14 @@ const resolverMap: IProcessingResolvers<IResolverContext> = {
       const characterIds = await dataSources.db.Character.query()
         .select('id')
         .where('ownerId', id)
-        .pluck('id');
+        .then((characters) => characters.map((character) => character.id));
 
       if (characterIds.length) {
         const query = dataSources.db.JobLogEntry.query().select('jobLogs.*');
         const validIds = new Set(characterIds);
 
         if (filter && filter.characterIds && filter.characterIds.length) {
-          if (filter.characterIds.every(id => validIds.has(+id))) {
+          if (filter.characterIds.every((id) => validIds.has(+id))) {
             query.where('jobLogs.characterId', 'in', filter.characterIds);
           } else {
             throw new UserInputError('Invalid character id');

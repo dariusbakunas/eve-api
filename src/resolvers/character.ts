@@ -1,5 +1,6 @@
 import { applicationConfig } from '../utils/applicationConfig';
 import { Character } from '../services/db/models/character';
+import { CharacterSkill } from '../services/db/models/characterSkill';
 import {
   CharacterSkillGroupArgs,
   MutationAddCharacterArgs,
@@ -39,8 +40,8 @@ interface ICharacterResolvers<Context> {
     character: MaybeResolver<Character, ResolversParentTypes['Query'], Context, RequireFields<QueryCharacterArgs, 'id'>>;
   };
   Mutation: {
-    addCharacter: Resolver<ResolversTypes['Character'], unknown, Context, RequireFields<MutationAddCharacterArgs, 'code'>>;
-    updateCharacter: Resolver<ResolversTypes['Character'], unknown, Context, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>;
+    addCharacter: Resolver<Character, unknown, Context, RequireFields<MutationAddCharacterArgs, 'code'>>;
+    updateCharacter: Resolver<Character, unknown, Context, RequireFields<MutationUpdateCharacterArgs, 'id' | 'code'>>;
     removeCharacter: Resolver<ResolversTypes['ID'], unknown, Context, RequireFields<MutationRemoveCharacterArgs, 'id'>>;
   };
   Character: {
@@ -81,7 +82,7 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
         const tokens = await esiAuth.getCharacterTokens(config.eveClientId, config.eveClientSecret, code);
         const { access_token: accessToken, refresh_token: refreshToken, expires_in: expiresIn } = tokens;
         const expiresAt = expiresIn * 1000 + new Date(Date.now()).getTime();
-        const { CharacterID, CharacterName, Scopes } = await esiAuth.verifyToken(accessToken);
+        const { CharacterID: characterId, CharacterName: characterName, Scopes: scopes } = await esiAuth.verifyToken(accessToken);
 
         const {
           ancestry_id: ancestryId,
@@ -95,12 +96,12 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
           faction_id: factionId,
           security_status: securityStatus,
           title,
-        } = await esiApi.getCharacterInfo(CharacterID);
+        } = await esiApi.getCharacterInfo(characterId);
 
         const user = await db.User.query().findById(userId);
 
-        return user.$relatedQuery('characters').insert({
-          id: CharacterID,
+        const character: Partial<Character> = {
+          id: characterId,
           expiresAt,
           corporationId,
           allianceId,
@@ -108,16 +109,18 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
           factionId,
           securityStatus,
           title,
-          name: CharacterName,
+          name: characterName,
           accessToken: crypt.encrypt(accessToken),
           refreshToken: crypt.encrypt(refreshToken),
-          scopes: Scopes,
+          scopes: scopes,
           ancestryId,
           bloodlineId,
           birthday: moment(birthday).toDate(),
           gender,
           raceId,
-        });
+        };
+
+        return user.$relatedQuery<Character>('characters').insert(character);
       } catch (e) {
         if (e.extensions && e.extensions.response) {
           const { url, body } = e.extensions.response;
@@ -233,18 +236,22 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
       return skills.length * 5;
     },
     totalSp: async ({ id }, args, { dataSources }) => {
+      interface IMultiplier {
+        totalSp: number;
+      }
+
       const skillSubquery = dataSources.db.InventoryItem.query().select('typeID').where('groupID', id).andWhere('published', true).as('skills');
-      const totalSp = await dataSources.db.SkillMultiplier.query()
+      const multiplier = ((await dataSources.db.SkillMultiplier.query()
         .sum('skillMultipliers.multiplier as totalSp')
         .innerJoin(skillSubquery, function (this: JoinClause) {
           this.on('skills.typeID', 'skillMultipliers.skillId');
         })
-        .pluck('totalSp')
-        .first();
-      return totalSp * LEVEL_V_SP;
+        .first()) as unknown) as IMultiplier;
+
+      return multiplier.totalSp * LEVEL_V_SP;
     },
     trainedSp: async ({ id, characterId }, args, { dataSources }) => {
-      return dataSources.db.InventoryItem.query()
+      return (dataSources.db.InventoryItem.query()
         .sum('characterSkill.skillPointsInSkill as trainedSp')
         .as('trainedSp')
         .rightJoin('characterSkills as characterSkill', function (this: JoinClause) {
@@ -254,20 +261,25 @@ const resolverMap: ICharacterResolvers<IResolverContext> = {
         .andWhere('published', true)
         .orderBy('typeName')
         .pluck('trainedSp')
-        .first();
+        .first() as unknown) as number;
     },
   },
   SkillQueueItem: {
     position: property('queuePosition'),
     skill: async ({ characterId, skillId }, args, { dataSources }) => {
+      interface ISkill extends CharacterSkill {
+        typeName: string;
+        multiplier: number;
+      }
+
       // TODO: create skill loader
-      const skill = await dataSources.db.CharacterSkill.query()
+      const skill = ((await dataSources.db.CharacterSkill.query()
         .select('characterSkills.*', 'skillMultipliers.multiplier', 'invTypes.typeName')
         .join('invTypes', 'invTypes.typeID', 'characterSkills.skillId')
         .join('skillMultipliers', 'skillMultipliers.skillId', 'characterSkills.skillId')
         .where('characterId', characterId)
         .where('characterSkills.skillId', skillId)
-        .first();
+        .first()) as unknown) as ISkill;
 
       // TODO: skill may be undefined
 

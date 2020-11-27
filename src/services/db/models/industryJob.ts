@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class IndustryJob extends BaseModel {
+export class IndustryJob extends Model {
   static tableName = 'industryJobs';
 
   readonly id!: number;

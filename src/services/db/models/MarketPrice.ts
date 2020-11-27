@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class MarketPrice extends BaseModel {
+export class MarketPrice extends Model {
   static tableName = 'marketPrices';
 
   buyPrice!: number;

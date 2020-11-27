@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class CitadelCacheItem extends BaseModel {
+export class CitadelCacheItem extends Model {
   static tableName = 'citadelCache';
 
   readonly id!: number;

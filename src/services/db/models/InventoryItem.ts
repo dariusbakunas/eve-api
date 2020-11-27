@@ -1,8 +1,7 @@
 import { InvGroup } from './invGroup';
 import { Model } from 'objection';
-import BaseModel from './base';
 
-export class InventoryItem extends BaseModel {
+export class InventoryItem extends Model {
   static tableName = 'invTypes';
 
   static get idColumn() {

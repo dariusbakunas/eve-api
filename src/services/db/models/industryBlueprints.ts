@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class IndustryBlueprint extends BaseModel {
+export class IndustryBlueprint extends Model {
   static tableName = 'industryBlueprints';
 
   typeID!: number;

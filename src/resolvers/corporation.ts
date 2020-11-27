@@ -1,12 +1,14 @@
-import { Alliance, Maybe, Resolver, ResolversTypes } from '../__generated__/types';
+import { Alliance } from '../services/db/models/alliance';
 import { Corporation } from '../services/db/models/corporation';
 import { IResolverContext } from '../types';
+import { Maybe, Resolver, ResolversTypes } from '../__generated__/types';
+import moment from 'moment';
 import property from 'lodash.property';
 
 //TODO: add esiApi type definitions
 interface IResolvers<Context> {
   Corporation: {
-    alliance: Resolver<Maybe<ResolversTypes['Alliance']>, Corporation, Context>;
+    alliance: Resolver<Maybe<Partial<Alliance>>, Corporation, Context>;
     memberCount: Resolver<ResolversTypes['Int'], { member_count: number }, Context>;
     dateFounded: Resolver<Maybe<ResolversTypes['DateTime']>, { date_founded: Date }, Context>;
     taxRate: Resolver<ResolversTypes['Float'], { tax_rate: number }, Context>;
@@ -27,13 +29,14 @@ const resolverMap: IResolvers<IResolverContext> = {
         return alliance;
       } else {
         const allianceInfo = await dataSources.esiApi.getAllianceInfo(allianceId);
-
-        const alliance: Partial<Alliance> = {
-          id: `${allianceId}`,
-          ...allianceInfo,
-        };
-
-        return alliance;
+        return Promise.resolve({
+          creatorCorporationId: allianceInfo.creator_corporation_id,
+          executorCorporationId: allianceInfo.executor_corporation_id,
+          name: allianceInfo.name,
+          dateFounded: moment(allianceInfo.date_founded).toDate(),
+          factionId: allianceInfo.faction_id,
+          ticker: allianceInfo.ticker,
+        });
       }
     },
     memberCount: property('member_count'),

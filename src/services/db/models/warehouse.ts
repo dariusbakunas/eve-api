@@ -1,9 +1,8 @@
 import { Model } from 'objection';
 import { User } from './user';
 import { WarehouseItem } from './warehouseItem';
-import BaseModel from './base';
 
-export class Warehouse extends BaseModel {
+export class Warehouse extends Model {
   static tableName = 'warehouses';
 
   static relationMappings = {

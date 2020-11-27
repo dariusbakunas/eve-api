@@ -61,6 +61,7 @@ const apolloContext: ContextFunction<ContextParams, ApolloContext> = async ({ re
 
       if (!emailVerified) {
         user = {
+          id: '-1',
           email,
           status: 'NOT_VERIFIED',
         };
@@ -74,6 +75,7 @@ const apolloContext: ContextFunction<ContextParams, ApolloContext> = async ({ re
 
       if (!dbUser) {
         user = {
+          id: '-1',
           email,
           status: 'GUEST',
         };

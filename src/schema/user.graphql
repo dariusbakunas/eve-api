@@ -1,6 +1,7 @@
 enum UserStatus {
   ACTIVE
   INACTIVE
+  GUEST
   NOT_VERIFIED
 }
 

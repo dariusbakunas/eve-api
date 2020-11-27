@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class NameCacheItem extends BaseModel {
+export class NameCacheItem extends Model {
   static tableName = 'nameCache';
 
   readonly id!: number;

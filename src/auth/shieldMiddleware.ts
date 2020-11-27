@@ -7,45 +7,37 @@ const allow = rule()(() => true);
 const deny = rule()(() => false);
 
 const isCharacterOwner = rule()(async (parent, { id }, { user, dataSources }: ApolloContext & { dataSources: IDataSources }) => {
-  const result = await dataSources.db.Character.query()
-    .where('id', '=', id)
-    .andWhere('ownerId', '=', user!.id)
-    .count('*')
-    .pluck('count(*)')
-    .first();
+  const result = await dataSources.db.Character.query().where('id', '=', id).andWhere('ownerId', '=', user!.id).count('*').pluck('count(*)').first();
 
   const count = (result as unknown) as number;
   return count === 1;
 });
 
 const isWarehouseOwner = rule()(async (parent, { id }, { user, dataSources }: ApolloContext & { dataSources: IDataSources }) => {
-  const result = await dataSources.db.Warehouse.query()
-    .where('id', '=', id)
-    .andWhere('ownerId', '=', user!.id)
-    .count('*')
-    .pluck('count(*)')
-    .first();
+  const result = await dataSources.db.Warehouse.query().where('id', '=', id).andWhere('ownerId', '=', user!.id).count('*').pluck('count(*)').first();
 
   const count = (result as unknown) as number;
   return count === 1;
 });
 
-const isMultipleWarehouseOwner = rule()(async (parent, { warehouseIds }, { user, dataSources }: ApolloContext & { dataSources: IDataSources }) => {
-  if (!warehouseIds) {
-    return true;
+const isMultipleWarehouseOwner = rule()(
+  async (parent, { warehouseIds }: { warehouseIds: number[] }, { user, dataSources }: ApolloContext & { dataSources: IDataSources }) => {
+    if (!warehouseIds) {
+      return true;
+    }
+
+    const idSet = new Set(warehouseIds);
+
+    const result = await dataSources.db.Warehouse.query()
+      .where('id', 'in', [...idSet])
+      .andWhere('ownerId', '=', user!.id)
+      .count('*')
+      .pluck('count(*)')
+      .first();
+    const count = (result as unknown) as number;
+    return count === idSet.size;
   }
-
-  const idSet = new Set(warehouseIds);
-
-  const result = await dataSources.db.Warehouse.query()
-    .where('id', 'in', [...idSet])
-    .andWhere('ownerId', '=', user!.id)
-    .count('*')
-    .pluck('count(*)')
-    .first();
-  const count = (result as unknown) as number;
-  return count === idSet.size;
-});
+);
 
 const isActiveUser = rule({ cache: 'contextual' })((parent, args, { user }: ApolloContext) => !!user && user.status === 'ACTIVE');
 

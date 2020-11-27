@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class Station extends BaseModel {
+export class Station extends Model {
   static tableName = 'staStations';
 
   static get idColumn() {

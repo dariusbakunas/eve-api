@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class CharacterMarketOrder extends BaseModel {
+export class CharacterMarketOrder extends Model {
   static tableName = 'characterMarketOrders';
 
   readonly id!: number;

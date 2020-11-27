@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class WalletTransaction extends BaseModel {
+export class WalletTransaction extends Model {
   static tableName = 'walletTransactions';
 
   readonly id!: number;

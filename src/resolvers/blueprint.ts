@@ -60,7 +60,7 @@ const resolverMap: IResolvers<IResolverContext> = {
       const characterIds = await dataSources.db.Character.query()
         .select('id')
         .where('ownerId', user.id)
-        .pluck('id');
+        .then((characters) => characters.map((it) => it.id));
 
       if (characterIds.length) {
         const query = dataSources.db.Blueprint.query()
@@ -114,7 +114,7 @@ const resolverMap: IResolvers<IResolverContext> = {
           }
         }
 
-        const blueprints = await query.page(index, size);
+        const blueprints = await query.page(index || 0, size || 10);
 
         return {
           total: blueprints.total,
@@ -143,9 +143,7 @@ const resolverMap: IResolvers<IResolverContext> = {
         const materials = await dataSources.db.IndustryActivityMaterial.query()
           .where('typeID', blueprintId)
           .where('activityID', 'in', [BUILD_ACTIVITY_ID, REACTION_ACTIVITY_ID]);
-        const industryBlueprint = await dataSources.db.IndustryBlueprint.query()
-          .where('typeID', blueprintId)
-          .first();
+        const industryBlueprint = await dataSources.db.IndustryBlueprint.query().where('typeID', blueprintId).first();
 
         return {
           materials: materials.map((material: IndustryActivityMaterial) => ({

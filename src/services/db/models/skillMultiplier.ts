@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class SkillMultiplier extends BaseModel {
+export class SkillMultiplier extends Model {
   static tableName = 'skillMultipliers';
 
   readonly skillId!: number;

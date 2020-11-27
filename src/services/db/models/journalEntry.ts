@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class JournalEntry extends BaseModel {
+export class JournalEntry extends Model {
   static tableName = 'journalEntries';
 
   readonly id!: number;

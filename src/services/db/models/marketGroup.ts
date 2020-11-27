@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class MarketGroup extends BaseModel {
+export class MarketGroup extends Model {
   static tableName = 'invMarketGroups';
 
   static get idColumn() {

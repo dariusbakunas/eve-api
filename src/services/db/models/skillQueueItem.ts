@@ -1,6 +1,6 @@
-import BaseModel from './base';
+import { Model } from 'objection';
 
-export class SkillQueueItem extends BaseModel {
+export class SkillQueueItem extends Model {
   static tableName = 'characterSkillQueue';
 
   skillId!: number;
