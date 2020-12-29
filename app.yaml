@@ -5,6 +5,9 @@ env: flex
 manual_scaling:
   instances: 1
 
+beta_settings:
+  cloud_sql_instances: personal-248114:us-east1:eve-kit-pd
+
 resources:
   cpu: 1
   memory_gb: 1
