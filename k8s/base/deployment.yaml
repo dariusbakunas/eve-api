@@ -1,0 +1,85 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eve-warehouse-api-v1
+  labels:
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      version: v1
+  template:
+    metadata:
+      labels:
+        version: v1
+    spec:
+      serviceAccountName: eve-warehouse-api
+      containers:
+        - name: eve-warehouse-api
+          image: eve-api-image
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 4000
+          livenessProbe:
+            httpGet:
+              path: /.well-known/apollo/server-health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /.well-known/apollo/server-health
+              port: http
+          env:
+            - name: PORT
+              value: '4000'
+            - name: AUTH0_DOMAIN
+              valueFrom:
+                secretKeyRef:
+                  name: eve-warehouse-api-secret
+                  key: AUTH0_DOMAIN
+            - name: AUTH0_AUDIENCE
+              valueFrom:
+                secretKeyRef:
+                  name: eve-warehouse-api-secret
+                  key: AUTH0_AUDIENCE
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: eve-warehouse-api-secret
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: eve-warehouse-api-secret
+                  key: DB_PASSWORD
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: eve-warehouse-api-secret
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: eve-warehouse-api-secret
+                  key: DB_NAME
+            - name: EVE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: eve-warehouse-api-secret
+                  key: EVE_CLIENT_ID
+            - name: EVE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: eve-warehouse-api-secret
+                  key: EVE_CLIENT_SECRET
+            - name: EVE_ESI_URL
+              value: 'https://esi.evetech.net/latest'
+            - name: TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: eve-warehouse-api-secret
+                  key: TOKEN_SECRET
+            - name: EVE_LOGIN_URL
+              value: 'https://login.eveonline.com'
