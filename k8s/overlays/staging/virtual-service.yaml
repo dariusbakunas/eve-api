@@ -1,0 +1,12 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: eve-warehouse-api
+spec:
+  hosts:
+    - staging-eve-warehouse-api
+  http:
+    - route:
+        - destination:
+            host: staging-eve-warehouse-api
+            subset: v1

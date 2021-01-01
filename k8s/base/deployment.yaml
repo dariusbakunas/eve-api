@@ -17,7 +17,7 @@ spec:
     spec:
       serviceAccountName: eve-warehouse-api
       containers:
-        - name: eve-warehouse-api
+        - name: api
           image: eve-api-image
           imagePullPolicy: IfNotPresent
           ports:
