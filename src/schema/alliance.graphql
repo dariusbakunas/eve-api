@@ -1,5 +1,0 @@
-type Alliance {
-  id: ID!
-  name: String!
-  ticker: String!
-}

@@ -1,9 +1,0 @@
-type Corporation {
-  id: ID!
-  alliance: Alliance
-  dateFounded: DateTime
-  name: String!
-  memberCount: Int!
-  taxRate: Float!
-  ticker: String!
-}

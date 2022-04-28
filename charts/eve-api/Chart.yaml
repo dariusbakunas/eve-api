@@ -1,5 +1,0 @@
-apiVersion: v1
-appVersion: "0.0.1"
-description: Eve GraphQL API Service
-name: eve-api
-version: 0.0.1
