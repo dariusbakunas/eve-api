@@ -31,3 +31,7 @@ Open `.env` then edit it with your settings. You will need:
 - EVE_CLIENT_SECRET=
 - EVE_LOGIN_URL=https://login.eveonline.com
 - EVE_ESI_URL=https://esi.evetech.net/latest
+
+## References
+
+* [apollo-server-fastify](https://www.apollographql.com/docs/apollo-server/integrations/middleware/#apollo-server-fastify)

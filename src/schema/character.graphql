@@ -1,0 +1,18 @@
+type Character {
+  id: ID!
+#  corporation: Corporation!
+  name: String!
+  gender: String!
+  scopes: [String!]
+  birthday: DateTime!
+  securityStatus: Float!
+#  skillGroups: [SkillGroup!]!
+#  skillGroup(id: ID!): SkillGroup
+#  skillQueue: [SkillQueueItem!]!
+  totalSp: Int
+}
+
+extend type Query {
+  character(id: ID!): Character
+  characters: [Character!]!
+}
