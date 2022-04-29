@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "ignore": ["*.test.js"],
+  "execMap": {
+    "ts": "cross-env NODE_ENV=development ts-node -r dotenv/config src/index.ts"
+  }
+}

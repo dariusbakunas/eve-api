@@ -1,0 +1,36 @@
+{
+  "name": "eve-api",
+  "version": "0.0.1",
+  "description": "EVE GraphQL Server",
+  "main": "src/index.ts",
+  "repository": "git@github.com:dariusbakunas/eve-api.git",
+  "author": "Darius Bakunas-Milanowski <bakunas@gmail.com>",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "@types/graphql": "^14.5.0",
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
+    "@typescript-eslint/parser": "^5.21.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.0",
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "nodemon": "^2.0.15",
+    "prettier": "2.6.2",
+    "ts-node": "^10.7.0"
+  },
+  "dependencies": {
+    "@types/node": "^17.0.30",
+    "apollo-server-core": "^3.6.7",
+    "apollo-server-fastify": "^3.6.7",
+    "fastify": "^3.29.0",
+    "graphql": "^16.4.0",
+    "install": "^0.13.0",
+    "npm": "^8.8.0",
+    "pino": "^7.11.0",
+    "pino-pretty": "^7.6.1",
+    "typescript": "^4.6.4"
+  },
+  "scripts": {
+    "dev": "nodemon"
+  }
+}
