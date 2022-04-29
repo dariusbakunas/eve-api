@@ -4,6 +4,8 @@ import { ApolloServerPlugin } from 'apollo-server-plugin-base';
 import Fastify, { FastifyInstance } from 'fastify'
 import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
+import {PrismaClient} from "prisma/prisma-client/scripts/default-index";
+import { dataSources } from "./services";
 
 const fastifyServer: FastifyInstance = Fastify({
   logger: {
@@ -39,6 +41,7 @@ async function startApolloServer(typeDefs, resolvers) {
       fastifyAppClosePlugin(fastifyServer),
       ApolloServerPluginDrainHttpServer({ httpServer: fastifyServer.server }),
     ],
+    dataSources: () => dataSources(),
   });
 
   await server.start();

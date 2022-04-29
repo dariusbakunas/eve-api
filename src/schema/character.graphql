@@ -13,6 +13,6 @@ type Character {
 }
 
 extend type Query {
-  character(id: ID!): Character
+#  character(id: ID!): Character
   characters: [Character!]!
 }
