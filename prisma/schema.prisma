@@ -3,11 +3,13 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["evesde", "warehouse"]
 }
 
 model Character {
@@ -31,4 +33,6 @@ model Character {
   securityStatus Int?
   title          String?
   totalSp        Int?
+
+  @@schema("warehouse")
 }

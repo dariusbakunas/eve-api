@@ -1,54 +1,49 @@
-import { ApolloServer } from 'apollo-server-fastify';
-import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
-import { ApolloServerPlugin } from 'apollo-server-plugin-base';
-import Fastify, { FastifyInstance } from 'fastify'
+import { ApolloServer, GraphQLRequestContext, GraphQLRequestListener } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
 import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
-import {PrismaClient} from "prisma/prisma-client/scripts/default-index";
-import { dataSources } from "./services";
-
-const fastifyServer: FastifyInstance = Fastify({
-  logger: {
-    prettyPrint:
-      process.env.NODE_ENV === 'development'
-        ? {
-          translateTime: 'HH:MM:ss Z',
-          ignore: 'pid,hostname'
-        }
-        : false
-  }
-})
-
-function fastifyAppClosePlugin(app: FastifyInstance): ApolloServerPlugin {
-  return {
-    async serverWillStart() {
-      return {
-        async drainServer() {
-          await app.close();
-        },
-      };
-    },
-  };
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-async function startApolloServer(typeDefs, resolvers) {
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    plugins: [
-      fastifyAppClosePlugin(fastifyServer),
-      ApolloServerPluginDrainHttpServer({ httpServer: fastifyServer.server }),
-    ],
-    dataSources: () => dataSources(),
-  });
-
-  await server.start();
-  fastifyServer.register(server.createHandler());
-  await fastifyServer.listen(3000);
-}
+import { dataSources, IDataSources } from "./services";
+import Pino from 'pino';
+import { GraphQLRequestContextDidEncounterErrors } from '@apollo/server/src/externalTypes/requestPipeline';
 
 const typeDefs = loadSchema();
 
-void startApolloServer(typeDefs, resolvers);
+interface ContextValue {
+  dataSources: IDataSources;
+}
+
+async function startApolloServer() {
+  const server = new ApolloServer<ContextValue>({
+    typeDefs,
+    resolvers,
+    csrfPrevention: true,
+    includeStacktraceInErrorResponses: true,
+    logger: Pino().child({}),
+    plugins: [
+      {
+        requestDidStart(ctx: GraphQLRequestContext<ContextValue>): Promise<GraphQLRequestListener<ContextValue> | void> {
+
+
+          return Promise.resolve({
+            async didEncounterErrors({ errors }: GraphQLRequestContextDidEncounterErrors<ContextValue>) {
+              errors.forEach((error) => logger.warn(error));
+            },
+          });
+        }
+      }
+    ]
+  });
+
+  const { url } = await startStandaloneServer(server, {
+    context: async ({ req }) => {
+      return {
+        dataSources: dataSources(),
+      };
+    },
+    listen: { port: 4000 },
+  });
+
+  console.log(`🚀  Server ready at ${url}`);
+}
+
+void startApolloServer();

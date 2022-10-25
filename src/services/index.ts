@@ -1,7 +1,6 @@
 import { PrismaClient } from "prisma/prisma-client/scripts/default-index";
-import {DataSources} from "apollo-server-core/dist/graphqlOptions";
 
-export interface IDataSources extends DataSources<object> {
+export interface IDataSources {
   db: PrismaClient,
 }
 
