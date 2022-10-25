@@ -38,6 +38,7 @@
   },
   "scripts": {
     "dev": "nodemon",
+    "build": "tsc -p . && cp -r ./src/schema/*.graphql ./build/schema",
     "gen:types": "graphql-codegen --config codegen.yml"
   }
 }
