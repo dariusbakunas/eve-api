@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["multiSchema"]
 }
 
@@ -33,6 +30,1223 @@ model Character {
   securityStatus Int?
   title          String?
   totalSp        Int?
+  ownerId        Int
+  owner          User     @relation(fields: [ownerId], references: [id])
+
+  @@schema("warehouse")
+}
+
+model User {
+  id         Int         @id @default(autoincrement())
+  username   String      @unique
+  email      String      @unique
+  status     UserStatus  @default(INACTIVE)
+  characters Character[]
+
+  @@schema("warehouse")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model agtAgentTypes {
+  agentTypeID Int
+  agentType   String? @db.VarChar(50)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model agtAgents {
+  agentID       Int
+  divisionID    Int?
+  corporationID Int?
+  locationID    Int?
+  level         Int?
+  quality       Int?
+  agentTypeID   Int?
+  isLocator     Boolean?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model agtAgentsInSpace {
+  agentID       Int
+  dungeonID     Int?
+  solarSystemID Int?
+  spawnPointID  Int?
+  typeID        Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model agtResearchAgents {
+  agentID Int
+  typeID  Int
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model certCerts {
+  certID      Int
+  description String?
+  groupID     Int?
+  name        String? @db.VarChar(255)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model certMasteries {
+  typeID       Int?
+  masteryLevel Int?
+  certID       Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model certSkills {
+  certID        Int?
+  skillID       Int?
+  certLevelInt  Int?
+  skillLevel    Int?
+  certLevelText String? @db.VarChar(8)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model chrAncestries {
+  ancestryID       Int
+  ancestryName     String? @db.VarChar(100)
+  bloodlineID      Int?
+  description      String? @db.VarChar(1000)
+  perception       Int?
+  willpower        Int?
+  charisma         Int?
+  memory           Int?
+  intelligence     Int?
+  iconID           Int?
+  shortDescription String? @db.VarChar(500)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model chrAttributes {
+  attributeID      Int
+  attributeName    String? @db.VarChar(100)
+  description      String? @db.VarChar(1000)
+  iconID           Int?
+  shortDescription String? @db.VarChar(500)
+  notes            String? @db.VarChar(500)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model chrBloodlines {
+  bloodlineID            Int
+  bloodlineName          String? @db.VarChar(100)
+  raceID                 Int?
+  description            String? @db.VarChar(1000)
+  maleDescription        String? @db.VarChar(1000)
+  femaleDescription      String? @db.VarChar(1000)
+  shipTypeID             Int?
+  corporationID          Int?
+  perception             Int?
+  willpower              Int?
+  charisma               Int?
+  memory                 Int?
+  intelligence           Int?
+  iconID                 Int?
+  shortDescription       String? @db.VarChar(500)
+  shortMaleDescription   String? @db.VarChar(500)
+  shortFemaleDescription String? @db.VarChar(500)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model chrFactions {
+  factionID            Int
+  factionName          String? @db.VarChar(100)
+  description          String? @db.VarChar(1000)
+  raceIDs              Int?
+  solarSystemID        Int?
+  corporationID        Int?
+  sizeFactor           Float?
+  stationCount         Int?
+  stationSystemCount   Int?
+  militiaCorporationID Int?
+  iconID               Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model chrRaces {
+  raceID           Int
+  raceName         String? @db.VarChar(100)
+  description      String? @db.VarChar(1000)
+  iconID           Int?
+  shortDescription String? @db.VarChar(500)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model crpActivities {
+  activityID   Int
+  activityName String? @db.VarChar(100)
+  description  String? @db.VarChar(1000)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model crpNPCCorporationDivisions {
+  corporationID Int
+  divisionID    Int
+  size          Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model crpNPCCorporationResearchFields {
+  skillID       Int
+  corporationID Int
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model crpNPCCorporationTrades {
+  corporationID Int
+  typeID        Int
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model crpNPCCorporations {
+  corporationID      Int
+  size               String?  @db.Char(1)
+  extent             String?  @db.Char(1)
+  solarSystemID      Int?
+  investorID1        Int?
+  investorShares1    Int?
+  investorID2        Int?
+  investorShares2    Int?
+  investorID3        Int?
+  investorShares3    Int?
+  investorID4        Int?
+  investorShares4    Int?
+  friendID           Int?
+  enemyID            Int?
+  publicShares       Int?
+  initialPrice       Int?
+  minSecurity        Float?
+  scattered          Boolean?
+  fringe             Int?
+  corridor           Int?
+  hub                Int?
+  border             Int?
+  factionID          Int?
+  sizeFactor         Float?
+  stationCount       Int?
+  stationSystemCount Int?
+  description        String?  @db.VarChar(4000)
+  iconID             Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model crpNPCDivisions {
+  divisionID   Int
+  divisionName String? @db.VarChar(100)
+  description  String? @db.VarChar(1000)
+  leaderType   String? @db.VarChar(100)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model dgmAttributeCategories {
+  categoryID          Int
+  categoryName        String? @db.VarChar(50)
+  categoryDescription String? @db.VarChar(200)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model dgmAttributeTypes {
+  attributeID   Int
+  attributeName String?  @db.VarChar(100)
+  description   String?  @db.VarChar(1000)
+  iconID        Int?
+  defaultValue  Float?
+  published     Boolean?
+  displayName   String?  @db.VarChar(150)
+  unitID        Int?
+  stackable     Boolean?
+  highIsGood    Boolean?
+  categoryID    Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model dgmEffects {
+  effectID                       Int
+  effectName                     String?  @db.VarChar(400)
+  effectCategory                 Int?
+  preExpression                  Int?
+  postExpression                 Int?
+  description                    String?  @db.VarChar(1000)
+  guid                           String?  @db.VarChar(60)
+  iconID                         Int?
+  isOffensive                    Boolean?
+  isAssistance                   Boolean?
+  durationAttributeID            Int?
+  trackingSpeedAttributeID       Int?
+  dischargeAttributeID           Int?
+  rangeAttributeID               Int?
+  falloffAttributeID             Int?
+  disallowAutoRepeat             Boolean?
+  published                      Boolean?
+  displayName                    String?  @db.VarChar(100)
+  isWarpSafe                     Boolean?
+  rangeChance                    Boolean?
+  electronicChance               Boolean?
+  propulsionChance               Boolean?
+  distribution                   Int?
+  sfxName                        String?  @db.VarChar(20)
+  npcUsageChanceAttributeID      Int?
+  npcActivationChanceAttributeID Int?
+  fittingUsageChanceAttributeID  Int?
+  modifierInfo                   String?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model dgmExpressions {
+  expressionID          Int
+  operandID             Int?
+  arg1                  Int?
+  arg2                  Int?
+  expressionValue       String? @db.VarChar(100)
+  description           String? @db.VarChar(1000)
+  expressionName        String? @db.VarChar(500)
+  expressionTypeID      Int?
+  expressionGroupID     Int?
+  expressionAttributeID Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model dgmTypeAttributes {
+  typeID      Int
+  attributeID Int
+  valueInt    Int?
+  valueFloat  Float?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model dgmTypeEffects {
+  typeID    Int
+  effectID  Int
+  isDefault Boolean?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eveGraphics {
+  graphicID      Int
+  sofFactionName String? @db.VarChar(100)
+  graphicFile    String? @db.VarChar(256)
+  sofHullName    String? @db.VarChar(100)
+  sofRaceName    String? @db.VarChar(100)
+  description    String?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eveIcons {
+  iconID      Int
+  iconFile    String? @db.VarChar(500)
+  description String?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model eveUnits {
+  unitID      Int
+  unitName    String? @db.VarChar(100)
+  displayName String? @db.VarChar(50)
+  description String? @db.VarChar(1000)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model industryActivity {
+  typeID     Int
+  activityID Int
+  time       Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model industryActivityMaterials {
+  typeID         Int?
+  activityID     Int?
+  materialTypeID Int?
+  quantity       Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model industryActivityProbabilities {
+  typeID        Int?
+  activityID    Int?
+  productTypeID Int?
+  probability   Decimal? @db.Decimal(3, 2)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model industryActivityProducts {
+  typeID        Int?
+  activityID    Int?
+  productTypeID Int?
+  quantity      Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model industryActivityRaces {
+  typeID        Int?
+  activityID    Int?
+  productTypeID Int?
+  raceID        Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model industryActivitySkills {
+  typeID     Int?
+  activityID Int?
+  skillID    Int?
+  level      Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model industryBlueprints {
+  typeID             Int
+  maxProductionLimit Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invCategories {
+  categoryID   Int
+  categoryName String?  @db.VarChar(100)
+  iconID       Int?
+  published    Boolean?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invContrabandTypes {
+  factionID        Int
+  typeID           Int
+  standingLoss     Float?
+  confiscateMinSec Float?
+  fineByValue      Float?
+  attackMinSec     Float?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invControlTowerResourcePurposes {
+  purpose     Int
+  purposeText String? @db.VarChar(100)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invControlTowerResources {
+  controlTowerTypeID Int
+  resourceTypeID     Int
+  purpose            Int?
+  quantity           Int?
+  minSecurityLevel   Float?
+  factionID          Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invFlags {
+  flagID   Int
+  flagName String? @db.VarChar(200)
+  flagText String? @db.VarChar(100)
+  orderID  Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invGroups {
+  groupID              Int
+  categoryID           Int?
+  groupName            String?  @db.VarChar(100)
+  iconID               Int?
+  useBasePrice         Boolean?
+  anchored             Boolean?
+  anchorable           Boolean?
+  fittableNonSingleton Boolean?
+  published            Boolean?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invItems {
+  itemID     Int
+  typeID     Int
+  ownerID    Int
+  locationID Int
+  flagID     Int
+  quantity   Int
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invMarketGroups {
+  marketGroupID   Int
+  parentGroupID   Int?
+  marketGroupName String?  @db.VarChar(100)
+  description     String?  @db.VarChar(3000)
+  iconID          Int?
+  hasTypes        Boolean?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invMetaGroups {
+  metaGroupID   Int
+  metaGroupName String? @db.VarChar(100)
+  description   String? @db.VarChar(1000)
+  iconID        Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invMetaTypes {
+  typeID       Int
+  parentTypeID Int?
+  metaGroupID  Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invNames {
+  itemID   Int
+  itemName String @db.VarChar(200)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invPositions {
+  itemID Int
+  x      Float
+  y      Float
+  z      Float
+  yaw    Float? @db.Real
+  pitch  Float? @db.Real
+  roll   Float? @db.Real
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invTraits {
+  traitID   Int     @default(autoincrement())
+  typeID    Int?
+  skillID   Int?
+  bonus     Float?
+  bonusText String?
+  unitID    Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invTypeMaterials {
+  typeID         Int
+  materialTypeID Int
+  quantity       Int
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invTypeReactions {
+  reactionTypeID Int
+  input          Boolean
+  typeID         Int
+  quantity       Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invTypes {
+  typeID        Int
+  groupID       Int?
+  typeName      String?  @db.VarChar(100)
+  description   String?
+  mass          Float?
+  volume        Float?
+  capacity      Float?
+  portionSize   Int?
+  raceID        Int?
+  basePrice     Decimal? @db.Decimal(19, 4)
+  published     Boolean?
+  marketGroupID Int?
+  iconID        Int?
+  soundID       Int?
+  graphicID     Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invUniqueNames {
+  itemID   Int
+  itemName String @db.VarChar(200)
+  groupID  Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model invVolumes {
+  typeID Int
+  volume Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapCelestialGraphics {
+  celestialID  Int
+  heightMap1   Int?
+  heightMap2   Int?
+  shaderPreset Int?
+  population   Boolean?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapCelestialStatistics {
+  celestialID    Int
+  temperature    Float?
+  spectralClass  String?  @db.VarChar(10)
+  luminosity     Float?
+  age            Float?
+  life           Float?
+  orbitRadius    Float?
+  eccentricity   Float?
+  massDust       Float?
+  massGas        Float?
+  fragmented     Boolean?
+  density        Float?
+  surfaceGravity Float?
+  escapeVelocity Float?
+  orbitPeriod    Float?
+  rotationRate   Float?
+  locked         Boolean?
+  pressure       Float?
+  radius         Float?
+  mass           Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapConstellationJumps {
+  fromRegionID        Int?
+  fromConstellationID Int
+  toConstellationID   Int
+  toRegionID          Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapConstellations {
+  regionID          Int?
+  constellationID   Int
+  constellationName String? @db.VarChar(100)
+  x                 Float?
+  y                 Float?
+  z                 Float?
+  xMin              Float?
+  xMax              Float?
+  yMin              Float?
+  yMax              Float?
+  zMin              Float?
+  zMax              Float?
+  factionID         Int?
+  radius            Float?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapDenormalize {
+  itemID          Int
+  typeID          Int?
+  groupID         Int?
+  solarSystemID   Int?
+  constellationID Int?
+  regionID        Int?
+  orbitID         Int?
+  x               Float?
+  y               Float?
+  z               Float?
+  radius          Float?
+  itemName        String? @db.VarChar(100)
+  security        Float?
+  celestialIndex  Int?
+  orbitIndex      Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapJumps {
+  stargateID    Int
+  destinationID Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapLandmarks {
+  landmarkID   Int
+  landmarkName String? @db.VarChar(100)
+  description  String?
+  locationID   Int?
+  x            Float?
+  y            Float?
+  z            Float?
+  iconID       Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapLocationScenes {
+  locationID Int
+  graphicID  Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapLocationWormholeClasses {
+  locationID      Int
+  wormholeClassID Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapRegionJumps {
+  fromRegionID Int
+  toRegionID   Int
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapRegions {
+  regionID   Int
+  regionName String? @db.VarChar(100)
+  x          Float?
+  y          Float?
+  z          Float?
+  xMin       Float?
+  xMax       Float?
+  yMin       Float?
+  yMax       Float?
+  zMin       Float?
+  zMax       Float?
+  factionID  Int?
+  nebula     Int?
+  radius     Float?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapSolarSystemJumps {
+  fromRegionID        Int?
+  fromConstellationID Int?
+  fromSolarSystemID   Int
+  toSolarSystemID     Int
+  toConstellationID   Int?
+  toRegionID          Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapSolarSystems {
+  regionID        Int?
+  constellationID Int?
+  solarSystemID   Int
+  solarSystemName String?  @db.VarChar(100)
+  x               Float?
+  y               Float?
+  z               Float?
+  xMin            Float?
+  xMax            Float?
+  yMin            Float?
+  yMax            Float?
+  zMin            Float?
+  zMax            Float?
+  luminosity      Float?
+  border          Boolean?
+  fringe          Boolean?
+  corridor        Boolean?
+  hub             Boolean?
+  international   Boolean?
+  regional        Boolean?
+  constellation   Boolean?
+  security        Float?
+  factionID       Int?
+  radius          Float?
+  sunTypeID       Int?
+  securityClass   String?  @db.VarChar(2)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model mapUniverse {
+  universeID   Int
+  universeName String? @db.VarChar(100)
+  x            Float?
+  y            Float?
+  z            Float?
+  xMin         Float?
+  xMax         Float?
+  yMin         Float?
+  yMax         Float?
+  zMin         Float?
+  zMax         Float?
+  radius       Float?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model planetSchematics {
+  schematicID   Int
+  schematicName String? @db.VarChar(255)
+  cycleTime     Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model planetSchematicsPinMap {
+  schematicID Int
+  pinTypeID   Int
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model planetSchematicsTypeMap {
+  schematicID Int
+  typeID      Int
+  quantity    Int?
+  isInput     Boolean?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model ramActivities {
+  activityID   Int
+  activityName String?  @db.VarChar(100)
+  iconNo       String?  @db.VarChar(5)
+  description  String?  @db.VarChar(1000)
+  published    Boolean?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model ramAssemblyLineStations {
+  stationID          Int
+  assemblyLineTypeID Int
+  quantity           Int?
+  stationTypeID      Int?
+  ownerID            Int?
+  solarSystemID      Int?
+  regionID           Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model ramAssemblyLineTypeDetailPerCategory {
+  assemblyLineTypeID Int
+  categoryID         Int
+  timeMultiplier     Float?
+  materialMultiplier Float?
+  costMultiplier     Float?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model ramAssemblyLineTypeDetailPerGroup {
+  assemblyLineTypeID Int
+  groupID            Int
+  timeMultiplier     Float?
+  materialMultiplier Float?
+  costMultiplier     Float?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model ramAssemblyLineTypes {
+  assemblyLineTypeID     Int
+  assemblyLineTypeName   String? @db.VarChar(100)
+  description            String? @db.VarChar(1000)
+  baseTimeMultiplier     Float?
+  baseMaterialMultiplier Float?
+  baseCostMultiplier     Float?
+  volume                 Float?
+  activityID             Int?
+  minCostPerHour         Float?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model ramInstallationTypeContents {
+  installationTypeID Int
+  assemblyLineTypeID Int
+  quantity           Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model skinLicense {
+  licenseTypeID Int
+  duration      Int?
+  skinID        Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model skinMaterials {
+  skinMaterialID Int
+  displayNameID  Int?
+  materialSetID  Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model skinShip {
+  skinID Int?
+  typeID Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model skins {
+  skinID         Int
+  internalName   String? @db.VarChar(70)
+  skinMaterialID Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model staOperationServices {
+  operationID Int
+  serviceID   Int
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model staOperations {
+  activityID            Int?
+  operationID           Int
+  operationName         String? @db.VarChar(100)
+  description           String? @db.VarChar(1000)
+  fringe                Int?
+  corridor              Int?
+  hub                   Int?
+  border                Int?
+  ratio                 Int?
+  caldariStationTypeID  Int?
+  minmatarStationTypeID Int?
+  amarrStationTypeID    Int?
+  gallenteStationTypeID Int?
+  joveStationTypeID     Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model staServices {
+  serviceID   Int
+  serviceName String? @db.VarChar(100)
+  description String? @db.VarChar(1000)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model staStationTypes {
+  stationTypeID          Int
+  dockEntryX             Float?
+  dockEntryY             Float?
+  dockEntryZ             Float?
+  dockOrientationX       Float?
+  dockOrientationY       Float?
+  dockOrientationZ       Float?
+  operationID            Int?
+  officeSlots            Int?
+  reprocessingEfficiency Float?
+  conquerable            Boolean?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model staStations {
+  stationID                BigInt
+  security                 Float?
+  dockingCostPerVolume     Float?
+  maxShipVolumeDockable    Float?
+  officeRentalCost         Int?
+  operationID              Int?
+  stationTypeID            Int?
+  corporationID            Int?
+  solarSystemID            Int?
+  constellationID          Int?
+  regionID                 Int?
+  stationName              String? @db.VarChar(100)
+  x                        Float?
+  y                        Float?
+  z                        Float?
+  reprocessingEfficiency   Float?
+  reprocessingStationsTake Float?
+  reprocessingHangarFlag   Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model translationTables {
+  sourceTable      String  @db.VarChar(200)
+  destinationTable String? @db.VarChar(200)
+  translatedKey    String  @db.VarChar(200)
+  tcGroupID        Int?
+  tcID             Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model trnTranslationColumns {
+  tcGroupID  Int?
+  tcID       Int
+  tableName  String  @db.VarChar(256)
+  columnName String  @db.VarChar(128)
+  masterID   String? @db.VarChar(128)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model trnTranslationLanguages {
+  numericLanguageID Int
+  languageID        String? @db.VarChar(50)
+  languageName      String? @db.VarChar(200)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model trnTranslations {
+  tcID       Int
+  keyID      Int
+  languageID String @db.VarChar(50)
+  text       String
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model warCombatZoneSystems {
+  solarSystemID Int
+  combatZoneID  Int?
+
+  @@ignore
+  @@schema("evesde")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model warCombatZones {
+  combatZoneID   Int
+  combatZoneName String? @db.VarChar(100)
+  factionID      Int?
+  centerSystemID Int?
+  description    String? @db.VarChar(500)
+
+  @@ignore
+  @@schema("evesde")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
 
   @@schema("warehouse")
 }
