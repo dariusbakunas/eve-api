@@ -5,7 +5,7 @@ type Character {
   gender: String!
   scopes: [String!]
   birthday: DateTime!
-  securityStatus: Float!
+  securityStatus: Float
 #  skillGroups: [SkillGroup!]!
 #  skillGroup(id: ID!): SkillGroup
 #  skillQueue: [SkillQueueItem!]!

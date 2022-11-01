@@ -23,7 +23,7 @@ export type Character = {
   id: Scalars['ID'];
   name: Scalars['String'];
   scopes?: Maybe<Array<Scalars['String']>>;
-  securityStatus: Scalars['Float'];
+  securityStatus?: Maybe<Scalars['Float']>;
   totalSp?: Maybe<Scalars['Int']>;
 };
 
@@ -133,7 +133,7 @@ export type CharacterResolvers<ContextType = any, ParentType extends ResolversPa
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   scopes?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
-  securityStatus?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  securityStatus?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

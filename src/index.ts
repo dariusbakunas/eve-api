@@ -6,38 +6,38 @@ import cors from 'cors';
 import { json } from 'body-parser';
 import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
-import { dataSources, IDataSources } from "./services";
+import { dataSources } from "./services";
 import Pino from 'pino';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { auth, UnauthorizedError } from 'express-oauth2-jwt-bearer';
-import { ContextUser, getUser } from './auth/getUser';
+import { getUser } from './auth/getUser';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { applyMiddleware } from 'graphql-middleware';
 import { permissions } from './auth/permissions';
+import { IResolverContext } from './common';
+import config from './config'
 
 const typeDefs = loadSchema();
-
-export interface ApolloContext {
-  dataSources: IDataSources;
-  user: ContextUser;
-}
 
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
 });
 
+const auth0domain = config.get('auth0domain');
+const apiAudience = config.get('apiAudience');
+
 async function startApolloServer() {
   const app = express();
 
   const checkJwt = auth({
-    audience: 'https://eve-api',
-    issuerBaseURL: `https://eve-app.auth0.com/`,
-    jwksUri: "https://eve-app.auth0.com/.well-known/jwks.json",
+    audience: apiAudience,
+    issuerBaseURL: `${auth0domain}`,
+    jwksUri: `${auth0domain}/.well-known/jwks.json`,
   });
 
   const httpServer = http.createServer(app);
-  const server = new ApolloServer<ApolloContext>({
+  const server = new ApolloServer<IResolverContext>({
     schema: applyMiddleware(schema, permissions),
     csrfPrevention: true,
     includeStacktraceInErrorResponses: true,
@@ -56,7 +56,7 @@ async function startApolloServer() {
       context: async ({ req }) => {
         const ds = dataSources();
         const token = req.headers.authorization || '';
-        const user = await getUser(ds.db, 'eve-app.auth0.com', token, req.auth?.payload.sub);
+        const user = await getUser(ds.db, auth0domain, token, req.auth?.payload.sub);
 
         return {
           dataSources: ds,
@@ -75,7 +75,7 @@ async function startApolloServer() {
     }
   });
 
-  const port = process.env.PORT || 4000;
+  const port = config.get('port');
 
   await new Promise<void>((resolve) => httpServer.listen({ port: port }, resolve));
   console.log(`🚀 Server ready at http://localhost:${port}/graphql`);

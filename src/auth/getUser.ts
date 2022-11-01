@@ -27,10 +27,11 @@ interface UserResponse {
 export const getUser = async (db: IDataSources["db"], auth0domain: string, token: string, sub?: string) => {
   const options = {
     method: 'GET',
-    url: `https://${auth0domain}/userinfo`,
+    url: `${auth0domain}/userinfo`,
     headers: {authorization: token}
   };
 
+  // caching is only used to reduce auth0 calls
   let user = sub ? cache.get<ContextUser>(sub): null;
 
   if (user) {
