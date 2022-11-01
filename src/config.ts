@@ -1,5 +1,27 @@
 import convict from 'convict';
 
+/**
+ * To require an env var
+ * use
+ *    default: '',
+ *    format: 'required-string',
+ */
+convict.addFormats({
+  'required-string': {
+    validate: (val: string): void => {
+      if (val === '') {
+        throw new Error('Required value cannot be empty')
+      }
+    },
+    coerce: (val: string | null): string | undefined => {
+      if (val === null) {
+        return undefined
+      }
+      return val
+    }
+  }
+})
+
 const config = convict({
   env: {
     doc: 'The application environment.',
@@ -9,14 +31,14 @@ const config = convict({
   },
   auth0domain: {
     doc: 'Auth0 domain',
-    format: String,
-    default: 'https://eve-app.auth0.com',
+    format: 'required-string',
+    default: '',
     nullable: false,
   },
   apiAudience: {
     doc: 'API audience for validating JWT token',
-    format: String,
-    default: 'https://eve-api',
+    format: 'required-string',
+    default: '',
     nullable: false,
   },
   port: {

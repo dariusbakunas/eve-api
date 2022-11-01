@@ -1,3 +1,4 @@
 {
-  "auth0domain": "https://eve-app.auth0.com"
+  "auth0domain": "https://eve-app.auth0.com",
+  "apiAudience": "https://eve-api"
 }
