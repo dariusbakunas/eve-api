@@ -2,8 +2,9 @@
   "auth0domain": "https://eve-app.auth0.com",
   "apiAudience": "https://eve-api",
   "db": {
-    "host": "dpg-cdbsl1ha6gdjgo8q6ou0-a.ohio-postgres.render.com",
+    "host": "dpg-cdbsl1ha6gdjgo8q6ou0-a",
     "name": "eve_warehouse_dev",
-    "user": "dev"
+    "user": "dev",
+    "password": "/etc/secrets/db_psw"
   }
 }

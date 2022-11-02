@@ -54,7 +54,7 @@ async function startApolloServer() {
     json(),
     expressMiddleware(server, {
       context: async ({ req }) => {
-        const ds = dataSources();
+        const ds = dataSources(`postgres://${config.get('db.user')}:${config.get('db.password')}@${config.get('db.host')}/${config.get('db.name')}`);
         const token = req.headers.authorization || '';
         const user = await getUser(ds.db, auth0domain, token, req.auth?.payload.sub);
 
