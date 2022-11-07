@@ -1,57 +1,11 @@
--- CreateSchema
-CREATE SCHEMA IF NOT EXISTS "evesde";
-
--- CreateSchema
-CREATE SCHEMA IF NOT EXISTS "warehouse";
-
--- CreateEnum
-CREATE TYPE "warehouse"."UserStatus" AS ENUM ('ACTIVE', 'INACTIVE');
-
 -- CreateTable
-CREATE TABLE "warehouse"."Character" (
-    "id" SERIAL NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "accessToken" TEXT NOT NULL,
-    "refreshToken" TEXT NOT NULL,
-    "tokenExpiresAt" INTEGER NOT NULL,
-    "allianceId" INTEGER,
-    "ancestryId" INTEGER NOT NULL,
-    "birthday" TIMESTAMP(3) NOT NULL,
-    "bloodlineId" INTEGER NOT NULL,
-    "corporationId" INTEGER NOT NULL,
-    "description" TEXT,
-    "factionId" INTEGER,
-    "gender" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "raceId" INTEGER NOT NULL,
-    "scopes" TEXT NOT NULL,
-    "securityStatus" INTEGER,
-    "title" TEXT,
-    "totalSp" INTEGER,
-    "ownerId" INTEGER NOT NULL,
-
-    CONSTRAINT "Character_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "warehouse"."User" (
-    "id" SERIAL NOT NULL,
-    "username" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "status" "warehouse"."UserStatus" NOT NULL DEFAULT 'INACTIVE',
-
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "evesde"."agtAgentTypes" (
+CREATE TABLE "agtAgentTypes" (
     "agentTypeID" INTEGER NOT NULL,
     "agentType" VARCHAR(50)
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."agtAgents" (
+CREATE TABLE "agtAgents" (
     "agentID" INTEGER NOT NULL,
     "divisionID" INTEGER,
     "corporationID" INTEGER,
@@ -63,7 +17,7 @@ CREATE TABLE "evesde"."agtAgents" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."agtAgentsInSpace" (
+CREATE TABLE "agtAgentsInSpace" (
     "agentID" INTEGER NOT NULL,
     "dungeonID" INTEGER,
     "solarSystemID" INTEGER,
@@ -72,13 +26,13 @@ CREATE TABLE "evesde"."agtAgentsInSpace" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."agtResearchAgents" (
+CREATE TABLE "agtResearchAgents" (
     "agentID" INTEGER NOT NULL,
     "typeID" INTEGER NOT NULL
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."certCerts" (
+CREATE TABLE "certCerts" (
     "certID" INTEGER NOT NULL,
     "description" TEXT,
     "groupID" INTEGER,
@@ -86,14 +40,14 @@ CREATE TABLE "evesde"."certCerts" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."certMasteries" (
+CREATE TABLE "certMasteries" (
     "typeID" INTEGER,
     "masteryLevel" INTEGER,
     "certID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."certSkills" (
+CREATE TABLE "certSkills" (
     "certID" INTEGER,
     "skillID" INTEGER,
     "certLevelInt" INTEGER,
@@ -102,7 +56,7 @@ CREATE TABLE "evesde"."certSkills" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."chrAncestries" (
+CREATE TABLE "chrAncestries" (
     "ancestryID" INTEGER NOT NULL,
     "ancestryName" VARCHAR(100),
     "bloodlineID" INTEGER,
@@ -117,7 +71,7 @@ CREATE TABLE "evesde"."chrAncestries" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."chrAttributes" (
+CREATE TABLE "chrAttributes" (
     "attributeID" INTEGER NOT NULL,
     "attributeName" VARCHAR(100),
     "description" VARCHAR(1000),
@@ -127,7 +81,7 @@ CREATE TABLE "evesde"."chrAttributes" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."chrBloodlines" (
+CREATE TABLE "chrBloodlines" (
     "bloodlineID" INTEGER NOT NULL,
     "bloodlineName" VARCHAR(100),
     "raceID" INTEGER,
@@ -148,7 +102,7 @@ CREATE TABLE "evesde"."chrBloodlines" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."chrFactions" (
+CREATE TABLE "chrFactions" (
     "factionID" INTEGER NOT NULL,
     "factionName" VARCHAR(100),
     "description" VARCHAR(1000),
@@ -163,7 +117,7 @@ CREATE TABLE "evesde"."chrFactions" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."chrRaces" (
+CREATE TABLE "chrRaces" (
     "raceID" INTEGER NOT NULL,
     "raceName" VARCHAR(100),
     "description" VARCHAR(1000),
@@ -172,33 +126,33 @@ CREATE TABLE "evesde"."chrRaces" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."crpActivities" (
+CREATE TABLE "crpActivities" (
     "activityID" INTEGER NOT NULL,
     "activityName" VARCHAR(100),
     "description" VARCHAR(1000)
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."crpNPCCorporationDivisions" (
+CREATE TABLE "crpNPCCorporationDivisions" (
     "corporationID" INTEGER NOT NULL,
     "divisionID" INTEGER NOT NULL,
     "size" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."crpNPCCorporationResearchFields" (
+CREATE TABLE "crpNPCCorporationResearchFields" (
     "skillID" INTEGER NOT NULL,
     "corporationID" INTEGER NOT NULL
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."crpNPCCorporationTrades" (
+CREATE TABLE "crpNPCCorporationTrades" (
     "corporationID" INTEGER NOT NULL,
     "typeID" INTEGER NOT NULL
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."crpNPCCorporations" (
+CREATE TABLE "crpNPCCorporations" (
     "corporationID" INTEGER NOT NULL,
     "size" CHAR(1),
     "extent" CHAR(1),
@@ -230,7 +184,7 @@ CREATE TABLE "evesde"."crpNPCCorporations" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."crpNPCDivisions" (
+CREATE TABLE "crpNPCDivisions" (
     "divisionID" INTEGER NOT NULL,
     "divisionName" VARCHAR(100),
     "description" VARCHAR(1000),
@@ -238,14 +192,14 @@ CREATE TABLE "evesde"."crpNPCDivisions" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."dgmAttributeCategories" (
+CREATE TABLE "dgmAttributeCategories" (
     "categoryID" INTEGER NOT NULL,
     "categoryName" VARCHAR(50),
     "categoryDescription" VARCHAR(200)
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."dgmAttributeTypes" (
+CREATE TABLE "dgmAttributeTypes" (
     "attributeID" INTEGER NOT NULL,
     "attributeName" VARCHAR(100),
     "description" VARCHAR(1000),
@@ -260,7 +214,7 @@ CREATE TABLE "evesde"."dgmAttributeTypes" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."dgmEffects" (
+CREATE TABLE "dgmEffects" (
     "effectID" INTEGER NOT NULL,
     "effectName" VARCHAR(400),
     "effectCategory" INTEGER,
@@ -292,7 +246,7 @@ CREATE TABLE "evesde"."dgmEffects" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."dgmExpressions" (
+CREATE TABLE "dgmExpressions" (
     "expressionID" INTEGER NOT NULL,
     "operandID" INTEGER,
     "arg1" INTEGER,
@@ -306,7 +260,7 @@ CREATE TABLE "evesde"."dgmExpressions" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."dgmTypeAttributes" (
+CREATE TABLE "dgmTypeAttributes" (
     "typeID" INTEGER NOT NULL,
     "attributeID" INTEGER NOT NULL,
     "valueInt" INTEGER,
@@ -314,14 +268,14 @@ CREATE TABLE "evesde"."dgmTypeAttributes" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."dgmTypeEffects" (
+CREATE TABLE "dgmTypeEffects" (
     "typeID" INTEGER NOT NULL,
     "effectID" INTEGER NOT NULL,
     "isDefault" BOOLEAN
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."eveGraphics" (
+CREATE TABLE "eveGraphics" (
     "graphicID" INTEGER NOT NULL,
     "sofFactionName" VARCHAR(100),
     "graphicFile" VARCHAR(256),
@@ -331,14 +285,14 @@ CREATE TABLE "evesde"."eveGraphics" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."eveIcons" (
+CREATE TABLE "eveIcons" (
     "iconID" INTEGER NOT NULL,
     "iconFile" VARCHAR(500),
     "description" TEXT
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."eveUnits" (
+CREATE TABLE "eveUnits" (
     "unitID" INTEGER NOT NULL,
     "unitName" VARCHAR(100),
     "displayName" VARCHAR(50),
@@ -346,14 +300,14 @@ CREATE TABLE "evesde"."eveUnits" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."industryActivity" (
+CREATE TABLE "industryActivity" (
     "typeID" INTEGER NOT NULL,
     "activityID" INTEGER NOT NULL,
     "time" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."industryActivityMaterials" (
+CREATE TABLE "industryActivityMaterials" (
     "typeID" INTEGER,
     "activityID" INTEGER,
     "materialTypeID" INTEGER,
@@ -361,7 +315,7 @@ CREATE TABLE "evesde"."industryActivityMaterials" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."industryActivityProbabilities" (
+CREATE TABLE "industryActivityProbabilities" (
     "typeID" INTEGER,
     "activityID" INTEGER,
     "productTypeID" INTEGER,
@@ -369,7 +323,7 @@ CREATE TABLE "evesde"."industryActivityProbabilities" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."industryActivityProducts" (
+CREATE TABLE "industryActivityProducts" (
     "typeID" INTEGER,
     "activityID" INTEGER,
     "productTypeID" INTEGER,
@@ -377,7 +331,7 @@ CREATE TABLE "evesde"."industryActivityProducts" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."industryActivityRaces" (
+CREATE TABLE "industryActivityRaces" (
     "typeID" INTEGER,
     "activityID" INTEGER,
     "productTypeID" INTEGER,
@@ -385,7 +339,7 @@ CREATE TABLE "evesde"."industryActivityRaces" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."industryActivitySkills" (
+CREATE TABLE "industryActivitySkills" (
     "typeID" INTEGER,
     "activityID" INTEGER,
     "skillID" INTEGER,
@@ -393,13 +347,13 @@ CREATE TABLE "evesde"."industryActivitySkills" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."industryBlueprints" (
+CREATE TABLE "industryBlueprints" (
     "typeID" INTEGER NOT NULL,
     "maxProductionLimit" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invCategories" (
+CREATE TABLE "invCategories" (
     "categoryID" INTEGER NOT NULL,
     "categoryName" VARCHAR(100),
     "iconID" INTEGER,
@@ -407,7 +361,7 @@ CREATE TABLE "evesde"."invCategories" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invContrabandTypes" (
+CREATE TABLE "invContrabandTypes" (
     "factionID" INTEGER NOT NULL,
     "typeID" INTEGER NOT NULL,
     "standingLoss" DOUBLE PRECISION,
@@ -417,13 +371,13 @@ CREATE TABLE "evesde"."invContrabandTypes" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invControlTowerResourcePurposes" (
+CREATE TABLE "invControlTowerResourcePurposes" (
     "purpose" INTEGER NOT NULL,
     "purposeText" VARCHAR(100)
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invControlTowerResources" (
+CREATE TABLE "invControlTowerResources" (
     "controlTowerTypeID" INTEGER NOT NULL,
     "resourceTypeID" INTEGER NOT NULL,
     "purpose" INTEGER,
@@ -433,7 +387,7 @@ CREATE TABLE "evesde"."invControlTowerResources" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invFlags" (
+CREATE TABLE "invFlags" (
     "flagID" INTEGER NOT NULL,
     "flagName" VARCHAR(200),
     "flagText" VARCHAR(100),
@@ -441,7 +395,7 @@ CREATE TABLE "evesde"."invFlags" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invGroups" (
+CREATE TABLE "invGroups" (
     "groupID" INTEGER NOT NULL,
     "categoryID" INTEGER,
     "groupName" VARCHAR(100),
@@ -454,7 +408,7 @@ CREATE TABLE "evesde"."invGroups" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invItems" (
+CREATE TABLE "invItems" (
     "itemID" INTEGER NOT NULL,
     "typeID" INTEGER NOT NULL,
     "ownerID" INTEGER NOT NULL,
@@ -464,7 +418,7 @@ CREATE TABLE "evesde"."invItems" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invMarketGroups" (
+CREATE TABLE "invMarketGroups" (
     "marketGroupID" INTEGER NOT NULL,
     "parentGroupID" INTEGER,
     "marketGroupName" VARCHAR(100),
@@ -474,7 +428,7 @@ CREATE TABLE "evesde"."invMarketGroups" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invMetaGroups" (
+CREATE TABLE "invMetaGroups" (
     "metaGroupID" INTEGER NOT NULL,
     "metaGroupName" VARCHAR(100),
     "description" VARCHAR(1000),
@@ -482,20 +436,20 @@ CREATE TABLE "evesde"."invMetaGroups" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invMetaTypes" (
+CREATE TABLE "invMetaTypes" (
     "typeID" INTEGER NOT NULL,
     "parentTypeID" INTEGER,
     "metaGroupID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invNames" (
+CREATE TABLE "invNames" (
     "itemID" INTEGER NOT NULL,
     "itemName" VARCHAR(200) NOT NULL
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invPositions" (
+CREATE TABLE "invPositions" (
     "itemID" INTEGER NOT NULL,
     "x" DOUBLE PRECISION NOT NULL,
     "y" DOUBLE PRECISION NOT NULL,
@@ -506,7 +460,7 @@ CREATE TABLE "evesde"."invPositions" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invTraits" (
+CREATE TABLE "invTraits" (
     "traitID" SERIAL NOT NULL,
     "typeID" INTEGER,
     "skillID" INTEGER,
@@ -516,14 +470,14 @@ CREATE TABLE "evesde"."invTraits" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invTypeMaterials" (
+CREATE TABLE "invTypeMaterials" (
     "typeID" INTEGER NOT NULL,
     "materialTypeID" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invTypeReactions" (
+CREATE TABLE "invTypeReactions" (
     "reactionTypeID" INTEGER NOT NULL,
     "input" BOOLEAN NOT NULL,
     "typeID" INTEGER NOT NULL,
@@ -531,7 +485,7 @@ CREATE TABLE "evesde"."invTypeReactions" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invTypes" (
+CREATE TABLE "invTypes" (
     "typeID" INTEGER NOT NULL,
     "groupID" INTEGER,
     "typeName" VARCHAR(100),
@@ -550,20 +504,20 @@ CREATE TABLE "evesde"."invTypes" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invUniqueNames" (
+CREATE TABLE "invUniqueNames" (
     "itemID" INTEGER NOT NULL,
     "itemName" VARCHAR(200) NOT NULL,
     "groupID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."invVolumes" (
+CREATE TABLE "invVolumes" (
     "typeID" INTEGER NOT NULL,
     "volume" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapCelestialGraphics" (
+CREATE TABLE "mapCelestialGraphics" (
     "celestialID" INTEGER NOT NULL,
     "heightMap1" INTEGER,
     "heightMap2" INTEGER,
@@ -572,7 +526,7 @@ CREATE TABLE "evesde"."mapCelestialGraphics" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapCelestialStatistics" (
+CREATE TABLE "mapCelestialStatistics" (
     "celestialID" INTEGER NOT NULL,
     "temperature" DOUBLE PRECISION,
     "spectralClass" VARCHAR(10),
@@ -596,7 +550,7 @@ CREATE TABLE "evesde"."mapCelestialStatistics" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapConstellationJumps" (
+CREATE TABLE "mapConstellationJumps" (
     "fromRegionID" INTEGER,
     "fromConstellationID" INTEGER NOT NULL,
     "toConstellationID" INTEGER NOT NULL,
@@ -604,7 +558,7 @@ CREATE TABLE "evesde"."mapConstellationJumps" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapConstellations" (
+CREATE TABLE "mapConstellations" (
     "regionID" INTEGER,
     "constellationID" INTEGER NOT NULL,
     "constellationName" VARCHAR(100),
@@ -622,7 +576,7 @@ CREATE TABLE "evesde"."mapConstellations" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapDenormalize" (
+CREATE TABLE "mapDenormalize" (
     "itemID" INTEGER NOT NULL,
     "typeID" INTEGER,
     "groupID" INTEGER,
@@ -641,13 +595,13 @@ CREATE TABLE "evesde"."mapDenormalize" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapJumps" (
+CREATE TABLE "mapJumps" (
     "stargateID" INTEGER NOT NULL,
     "destinationID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapLandmarks" (
+CREATE TABLE "mapLandmarks" (
     "landmarkID" INTEGER NOT NULL,
     "landmarkName" VARCHAR(100),
     "description" TEXT,
@@ -659,25 +613,25 @@ CREATE TABLE "evesde"."mapLandmarks" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapLocationScenes" (
+CREATE TABLE "mapLocationScenes" (
     "locationID" INTEGER NOT NULL,
     "graphicID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapLocationWormholeClasses" (
+CREATE TABLE "mapLocationWormholeClasses" (
     "locationID" INTEGER NOT NULL,
     "wormholeClassID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapRegionJumps" (
+CREATE TABLE "mapRegionJumps" (
     "fromRegionID" INTEGER NOT NULL,
     "toRegionID" INTEGER NOT NULL
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapRegions" (
+CREATE TABLE "mapRegions" (
     "regionID" INTEGER NOT NULL,
     "regionName" VARCHAR(100),
     "x" DOUBLE PRECISION,
@@ -695,7 +649,7 @@ CREATE TABLE "evesde"."mapRegions" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapSolarSystemJumps" (
+CREATE TABLE "mapSolarSystemJumps" (
     "fromRegionID" INTEGER,
     "fromConstellationID" INTEGER,
     "fromSolarSystemID" INTEGER NOT NULL,
@@ -705,7 +659,7 @@ CREATE TABLE "evesde"."mapSolarSystemJumps" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapSolarSystems" (
+CREATE TABLE "mapSolarSystems" (
     "regionID" INTEGER,
     "constellationID" INTEGER,
     "solarSystemID" INTEGER NOT NULL,
@@ -735,7 +689,7 @@ CREATE TABLE "evesde"."mapSolarSystems" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."mapUniverse" (
+CREATE TABLE "mapUniverse" (
     "universeID" INTEGER NOT NULL,
     "universeName" VARCHAR(100),
     "x" DOUBLE PRECISION,
@@ -751,20 +705,20 @@ CREATE TABLE "evesde"."mapUniverse" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."planetSchematics" (
+CREATE TABLE "planetSchematics" (
     "schematicID" INTEGER NOT NULL,
     "schematicName" VARCHAR(255),
     "cycleTime" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."planetSchematicsPinMap" (
+CREATE TABLE "planetSchematicsPinMap" (
     "schematicID" INTEGER NOT NULL,
     "pinTypeID" INTEGER NOT NULL
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."planetSchematicsTypeMap" (
+CREATE TABLE "planetSchematicsTypeMap" (
     "schematicID" INTEGER NOT NULL,
     "typeID" INTEGER NOT NULL,
     "quantity" INTEGER,
@@ -772,7 +726,7 @@ CREATE TABLE "evesde"."planetSchematicsTypeMap" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."ramActivities" (
+CREATE TABLE "ramActivities" (
     "activityID" INTEGER NOT NULL,
     "activityName" VARCHAR(100),
     "iconNo" VARCHAR(5),
@@ -781,7 +735,7 @@ CREATE TABLE "evesde"."ramActivities" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."ramAssemblyLineStations" (
+CREATE TABLE "ramAssemblyLineStations" (
     "stationID" INTEGER NOT NULL,
     "assemblyLineTypeID" INTEGER NOT NULL,
     "quantity" INTEGER,
@@ -792,7 +746,7 @@ CREATE TABLE "evesde"."ramAssemblyLineStations" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."ramAssemblyLineTypeDetailPerCategory" (
+CREATE TABLE "ramAssemblyLineTypeDetailPerCategory" (
     "assemblyLineTypeID" INTEGER NOT NULL,
     "categoryID" INTEGER NOT NULL,
     "timeMultiplier" DOUBLE PRECISION,
@@ -801,7 +755,7 @@ CREATE TABLE "evesde"."ramAssemblyLineTypeDetailPerCategory" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."ramAssemblyLineTypeDetailPerGroup" (
+CREATE TABLE "ramAssemblyLineTypeDetailPerGroup" (
     "assemblyLineTypeID" INTEGER NOT NULL,
     "groupID" INTEGER NOT NULL,
     "timeMultiplier" DOUBLE PRECISION,
@@ -810,7 +764,7 @@ CREATE TABLE "evesde"."ramAssemblyLineTypeDetailPerGroup" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."ramAssemblyLineTypes" (
+CREATE TABLE "ramAssemblyLineTypes" (
     "assemblyLineTypeID" INTEGER NOT NULL,
     "assemblyLineTypeName" VARCHAR(100),
     "description" VARCHAR(1000),
@@ -823,47 +777,47 @@ CREATE TABLE "evesde"."ramAssemblyLineTypes" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."ramInstallationTypeContents" (
+CREATE TABLE "ramInstallationTypeContents" (
     "installationTypeID" INTEGER NOT NULL,
     "assemblyLineTypeID" INTEGER NOT NULL,
     "quantity" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."skinLicense" (
+CREATE TABLE "skinLicense" (
     "licenseTypeID" INTEGER NOT NULL,
     "duration" INTEGER,
     "skinID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."skinMaterials" (
+CREATE TABLE "skinMaterials" (
     "skinMaterialID" INTEGER NOT NULL,
     "displayNameID" INTEGER,
     "materialSetID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."skinShip" (
+CREATE TABLE "skinShip" (
     "skinID" INTEGER,
     "typeID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."skins" (
+CREATE TABLE "skins" (
     "skinID" INTEGER NOT NULL,
     "internalName" VARCHAR(70),
     "skinMaterialID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."staOperationServices" (
+CREATE TABLE "staOperationServices" (
     "operationID" INTEGER NOT NULL,
     "serviceID" INTEGER NOT NULL
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."staOperations" (
+CREATE TABLE "staOperations" (
     "activityID" INTEGER,
     "operationID" INTEGER NOT NULL,
     "operationName" VARCHAR(100),
@@ -881,14 +835,14 @@ CREATE TABLE "evesde"."staOperations" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."staServices" (
+CREATE TABLE "staServices" (
     "serviceID" INTEGER NOT NULL,
     "serviceName" VARCHAR(100),
     "description" VARCHAR(1000)
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."staStationTypes" (
+CREATE TABLE "staStationTypes" (
     "stationTypeID" INTEGER NOT NULL,
     "dockEntryX" DOUBLE PRECISION,
     "dockEntryY" DOUBLE PRECISION,
@@ -903,7 +857,7 @@ CREATE TABLE "evesde"."staStationTypes" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."staStations" (
+CREATE TABLE "staStations" (
     "stationID" BIGINT NOT NULL,
     "security" DOUBLE PRECISION,
     "dockingCostPerVolume" DOUBLE PRECISION,
@@ -925,7 +879,7 @@ CREATE TABLE "evesde"."staStations" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."translationTables" (
+CREATE TABLE "translationTables" (
     "sourceTable" VARCHAR(200) NOT NULL,
     "destinationTable" VARCHAR(200),
     "translatedKey" VARCHAR(200) NOT NULL,
@@ -934,7 +888,7 @@ CREATE TABLE "evesde"."translationTables" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."trnTranslationColumns" (
+CREATE TABLE "trnTranslationColumns" (
     "tcGroupID" INTEGER,
     "tcID" INTEGER NOT NULL,
     "tableName" VARCHAR(256) NOT NULL,
@@ -943,14 +897,14 @@ CREATE TABLE "evesde"."trnTranslationColumns" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."trnTranslationLanguages" (
+CREATE TABLE "trnTranslationLanguages" (
     "numericLanguageID" INTEGER NOT NULL,
     "languageID" VARCHAR(50),
     "languageName" VARCHAR(200)
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."trnTranslations" (
+CREATE TABLE "trnTranslations" (
     "tcID" INTEGER NOT NULL,
     "keyID" INTEGER NOT NULL,
     "languageID" VARCHAR(50) NOT NULL,
@@ -958,25 +912,16 @@ CREATE TABLE "evesde"."trnTranslations" (
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."warCombatZoneSystems" (
+CREATE TABLE "warCombatZoneSystems" (
     "solarSystemID" INTEGER NOT NULL,
     "combatZoneID" INTEGER
 );
 
 -- CreateTable
-CREATE TABLE "evesde"."warCombatZones" (
+CREATE TABLE "warCombatZones" (
     "combatZoneID" INTEGER NOT NULL,
     "combatZoneName" VARCHAR(100),
     "factionID" INTEGER,
     "centerSystemID" INTEGER,
     "description" VARCHAR(500)
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_username_key" ON "warehouse"."User"("username");
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "warehouse"."User"("email");
-
--- AddForeignKey
-ALTER TABLE "warehouse"."Character" ADD CONSTRAINT "Character_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "warehouse"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
