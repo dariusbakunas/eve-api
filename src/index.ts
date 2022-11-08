@@ -54,7 +54,14 @@ async function startApolloServer() {
     json(),
     expressMiddleware(server, {
       context: async ({ req }) => {
-        const ds = dataSources(`postgres://${config.get('db.user')}:${config.get('db.password')}@${config.get('db.host')}/${config.get('db.name')}`);
+        const ds = dataSources({
+          dbURL: `postgres://${config.get('db.user')}:${config.get('db.password')}@${config.get('db.host')}/${config.get('db.name')}`,
+          eveEsiURL: config.get('eve.esiURL'),
+          eveLoginURL: config.get('eve.loginURL'),
+          clientID: config.get('eve.clientID'),
+          clientSecret: config.get('eve.clientSecret'),
+          cryptSecret: config.get('cryptSecret'),
+        });
         const token = req.headers.authorization || '';
         const user = await getUser(ds.db, auth0domain, token, req.auth?.payload.sub);
 

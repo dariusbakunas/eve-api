@@ -75,6 +75,35 @@ const config = convict({
     default: '',
     nullable: false,
   },
+  eve: {
+    esiURL: {
+      doc: 'EVE ESI URL',
+      format: String,
+      default: 'https://esi.evetech.net/latest'
+    },
+    loginURL: {
+      doc: 'EVE login URL',
+      format: String,
+      default: 'https://login.eveonline.com'
+    },
+    clientID: {
+      doc: 'EVE client ID',
+      format: 'required-string',
+      default: ''
+    },
+    clientSecret: {
+      doc: 'EVE client secret',
+      format: 'secret-string',
+      default: '',
+      env: 'EVE_CLIENT_SECRET'
+    }
+  },
+  cryptSecret: {
+    doc: 'Secret used to encrypt/decrypt EVE esi tokens',
+    format: 'secret-string',
+    default: '',
+    env: 'CRYPT_SECRET'
+  },
   db: {
     host: {
       doc: 'Database host name/IP',
