@@ -7,6 +7,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id         Int         @id @default(autoincrement())
+  username   String      @unique
+  email      String      @unique
+  status     UserStatus  @default(INACTIVE)
+  characters Character[]
+}
+
+model Character {
+  id             Int      @id @default(autoincrement())
+  esiId          Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  accessToken    String
+  refreshToken   String
+  tokenExpiresAt Int
+  allianceId     Int?
+  ancestryId     Int
+  birthday       DateTime
+  bloodlineId    Int
+  corporationId  Int
+  description    String?
+  factionId      Int?
+  gender         String
+  name           String
+  raceId         Int
+  scopes         String
+  securityStatus Int?
+  title          String?
+  totalSp        Int?
+  ownerId        Int
+  owner          User     @relation(fields: [ownerId], references: [id])
+}
+
 model agtAgentTypes {
   agentTypeID Int     @id
   agentType   String? @db.VarChar(50)
