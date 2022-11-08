@@ -4,6 +4,7 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -25,6 +26,16 @@ export type Character = {
   scopes?: Maybe<Array<Scalars['String']>>;
   securityStatus?: Maybe<Scalars['Float']>;
   totalSp?: Maybe<Scalars['Int']>;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  addCharacter: Character;
+};
+
+
+export type MutationAddCharacterArgs = {
+  code: Scalars['String'];
 };
 
 export type Query = {
@@ -108,6 +119,7 @@ export type ResolversTypes = {
   Float: ResolverTypeWrapper<Scalars['Float']>;
   ID: ResolverTypeWrapper<Scalars['ID']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Time: ResolverTypeWrapper<Scalars['Time']>;
@@ -122,6 +134,7 @@ export type ResolversParentTypes = {
   Float: Scalars['Float'];
   ID: Scalars['ID'];
   Int: Scalars['Int'];
+  Mutation: {};
   Query: {};
   String: Scalars['String'];
   Time: Scalars['Time'];
@@ -146,6 +159,10 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'code'>>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>;
 };
@@ -158,6 +175,7 @@ export type Resolvers<ContextType = any> = {
   Character?: CharacterResolvers<ContextType>;
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
+  Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Time?: GraphQLScalarType;
 };

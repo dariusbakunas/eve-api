@@ -16,3 +16,7 @@ extend type Query {
 #  character(id: ID!): Character
   characters: [Character!]!
 }
+
+extend type Mutation {
+  addCharacter(code: String!): Character!
+}
