@@ -1,4 +1,5 @@
-import { RESTDataSource } from 'apollo-datasource-rest';
+import { RESTDataSource } from '@apollo/datasource-rest';
+import { DataSourceConfig } from '@apollo/datasource-rest/src/RESTDataSource';
 
 interface ITokens {
   access_token: string;
@@ -17,12 +18,13 @@ interface ITokenVerifyResponse {
   IntellectualProperty: string;
 }
 
+// https://www.apollographql.com/docs/apollo-server/data/fetching-rest
 class EsiAuth extends RESTDataSource {
   private readonly clientID: string;
   private readonly clientSecret: string;
 
-  constructor(baseUrl: string, clientID: string, clientSecret: string) {
-    super();
+  constructor(baseUrl: string, clientID: string, clientSecret: string, config?: DataSourceConfig) {
+    super(config);
     this.baseURL = baseUrl;
     this.clientID = clientID;
     this.clientSecret = clientSecret;
@@ -33,21 +35,21 @@ class EsiAuth extends RESTDataSource {
 
     return this.post<ITokens>(
       '/oauth/token',
-      JSON.stringify({
-        grant_type: 'authorization_code',
-        code,
-      }),
       {
+        body: {
+          grant_type: 'authorization_code',
+          code,
+        },
         headers: {
           Authorization: `Basic ${authBuffer.toString('base64')}`,
-          'Content-Type': 'application/json',
+          'content-type': 'application/json',
         },
-      }
+      },
     );
   }
 
   verifyToken(accessToken: string) {
-    return this.get<ITokenVerifyResponse>('/oauth/verify', undefined, {
+    return this.get<ITokenVerifyResponse>('/oauth/verify', {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
 import Crypt from './esi/crypt';
+import { KeyValueCache } from '@apollo/utils.keyvaluecache';
 
 export interface IDataSources {
   db: PrismaClient,
@@ -10,7 +11,7 @@ export interface IDataSources {
   crypt: Crypt,
 }
 
-export const dataSources = (options: { dbURL: string, eveEsiURL: string, eveLoginURL: string, clientID: string, clientSecret: string, cryptSecret: string }) => {
+export const dataSources = (options: { dbURL: string, eveEsiURL: string, eveLoginURL: string, clientID: string, clientSecret: string, cryptSecret: string, cache: KeyValueCache }) => {
   const dataSources: IDataSources = {
     db: new PrismaClient({
       datasources: {
@@ -19,8 +20,8 @@ export const dataSources = (options: { dbURL: string, eveEsiURL: string, eveLogi
         }
       }
     }),
-    esiApi: new EsiAPI(options.eveEsiURL),
-    esiAuth: new EsiAuth(options.eveLoginURL, options.clientID, options.clientSecret),
+    esiApi: new EsiAPI(options.eveEsiURL, { cache: options.cache }),
+    esiAuth: new EsiAuth(options.eveLoginURL, options.clientID, options.clientSecret, { cache: options.cache }),
     crypt: new Crypt(options.cryptSecret),
   };
 
