@@ -1,11 +1,14 @@
 type Character {
   id: ID!
-#  corporation: Corporation!
+  corporation: Corporation!
+  esiId: String!
   name: String!
   gender: String!
   scopes: [String!]
   birthday: DateTime!
   securityStatus: Float
+  accessToken: String!
+  refreshToken: String!
 #  skillGroups: [SkillGroup!]!
 #  skillGroup(id: ID!): SkillGroup
 #  skillQueue: [SkillQueueItem!]!
@@ -13,7 +16,7 @@ type Character {
 }
 
 extend type Query {
-#  character(id: ID!): Character
+  character(id: ID!): Character
   characters: [Character!]!
 }
 

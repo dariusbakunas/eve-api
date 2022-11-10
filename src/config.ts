@@ -63,6 +63,12 @@ const config = convict({
     default: 'development',
     env: 'NODE_ENV'
   },
+  introspection: {
+    doc: 'Disable auth for introspection',
+    format: ['true', 'false'],
+    default: 'false',
+    env: 'INTROSPECTION'
+  },
   auth0domain: {
     doc: 'Auth0 domain',
     format: 'required-string',

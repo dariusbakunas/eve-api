@@ -1,20 +1,15 @@
 import { Resolvers } from '../__generated__/types';
 import { IResolverContext } from "../common";
+import { GraphQLError } from 'graphql';
 
 export const characterResolvers: Resolvers<IResolverContext> = {
   Query: {
     characters: async (_, args, { dataSources: { db}, user: { id: userID } }) => {
-      const characters = await db.character.findMany({
+      return db.character.findMany({
         where: {
           ownerId: userID,
         }
       });
-
-      return characters.map((character) => ({
-        ...character,
-        id: `${character.id}`,
-        scopes: character.scopes.split(' '),
-      }));
     }
   },
   Mutation: {
@@ -24,48 +19,126 @@ export const characterResolvers: Resolvers<IResolverContext> = {
       const expiresAt = expiresIn * 1000 + new Date(Date.now()).getTime();
       const { CharacterID: characterId, CharacterName: characterName, Scopes: scopes } = await esiAuth.verifyToken(accessToken);
 
-      const {
-        ancestry_id: ancestryId,
-        bloodline_id: bloodlineId,
-        birthday,
-        description,
-        gender,
-        race_id: raceId,
-        corporation_id: corporationId,
-        alliance_id: allianceId,
-        faction_id: factionId,
-        security_status: securityStatus,
-        title,
-      } = await esiApi.getCharacterInfo(characterId);
+      const characterInfo = await esiApi.getCharacterInfo(characterId);
+
+      const { corporation_id, alliance_id } = characterInfo;
+      const esiCorporation = await esiApi.getCorporationInfo(corporation_id);
 
       const character = await db.character.create({
         data: {
-          ownerId: userID,
           esiId: characterId,
           tokenExpiresAt: expiresAt,
-          ancestryId,
+          ancestryId: characterInfo.ancestry_id,
           name: characterName,
           scopes,
-          gender,
-          bloodlineId,
-          birthday,
-          description,
-          raceId,
-          corporationId,
-          allianceId,
-          factionId,
-          securityStatus,
-          title,
+          gender: characterInfo.gender,
+          bloodlineId: characterInfo.bloodline_id,
+          birthday: characterInfo.birthday,
+          description: characterInfo.description,
+          raceId: characterInfo.race_id,
+          factionId: characterInfo.faction_id,
+          securityStatus: characterInfo.security_status,
+          title: characterInfo.title,
           accessToken: crypt.encrypt(accessToken),
-          refreshToken: crypt.encrypt(refreshToken)
+          refreshToken: crypt.encrypt(refreshToken),
+          owner: {
+            connect: {
+              id: userID,
+            }
+          },
+          corporation: {
+            connectOrCreate: {
+              where: {
+                id: corporation_id,
+              },
+              create: {
+                id: corporation_id,
+                ceoId: esiCorporation.ceo_id,
+                memberCount: esiCorporation.member_count,
+                taxRate: esiCorporation.tax_rate,
+                warEligible: !!esiCorporation.war_eligible,
+                name: esiCorporation.name,
+                creatorId: esiCorporation.creator_id,
+                ticker: esiCorporation.ticker
+              }
+            }
+          },
         }
       });
 
-      return {
-        ...character,
-        id: `${character.id}`,
-        scopes: character.scopes.split(' '),
+      if (alliance_id) {
+        // upsert, connect to corp and character
+        const esiAlliance = await esiApi.getAllianceInfo(alliance_id);
+
+        await db.character.update({
+          where: {
+            id: character.id,
+          },
+          data: {
+            alliance: {
+              connectOrCreate: {
+                where: {
+                  id: alliance_id,
+                },
+                create: {
+                  id: alliance_id,
+                  creatorCorporationId: esiAlliance.creator_corporation_id,
+                  creatorId: esiAlliance.creator_id,
+                  name: esiAlliance.name,
+                  dateFounded: esiAlliance.date_founded,
+                  executorCorporationId: esiAlliance.executor_corporation_id,
+                  factionId: esiAlliance.faction_id,
+                  ticker: esiAlliance.ticker,
+                }
+              }
+            }
+          }
+        });
+
+        await db.corporation.update({
+          where: {
+            id: corporation_id,
+          },
+          data: {
+            alliance: {
+              connect: {
+                id: alliance_id
+              }
+            }
+          }
+        });
       }
+
+      return character;
+    }
+  },
+  Character: {
+    scopes: async ({ scopes }) =>{
+      return scopes.split(' ');
+    },
+    accessToken: async ({ accessToken: encryptedToken }, _, { dataSources: { crypt }}) => {
+      return crypt.decrypt(encryptedToken);
+    },
+    refreshToken: async ({ refreshToken: encryptedToken }, _, { dataSources: { crypt }}) => {
+      return crypt.decrypt(encryptedToken);
+    },
+    corporation: async ({ corporationId }, args, { dataSources: { db, esiApi } }) => {
+      const corporation = await db.corporation.findUnique({
+        where: {
+          id: corporationId
+        }
+      });
+
+      // TODO: should we create one if not found?
+      if (!corporation) {
+        throw new GraphQLError(`Corporation id: '${corporationId}' not found`, {
+          extensions: {
+            code: 'DB_ERROR',
+          },
+        });
+      }
+
+      return corporation;
     }
   }
 }
