@@ -21,15 +21,15 @@ model User {
 }
 
 model Character {
-  id             Int      @id @default(autoincrement())
+  id             Int         @id @default(autoincrement())
   esiId          Int
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
   accessToken    String
   refreshToken   String
   tokenExpiresAt Int
   allianceId     Int?
-  ancestryId     Int
+  ancestryId     Int?
   birthday       DateTime
   bloodlineId    Int
   corporationId  Int
@@ -39,11 +39,46 @@ model Character {
   name           String
   raceId         Int
   scopes         String
-  securityStatus Int?
+  securityStatus Decimal?
   title          String?
   totalSp        Int?
   ownerId        Int
-  owner          User     @relation(fields: [ownerId], references: [id])
+  owner          User        @relation(fields: [ownerId], references: [id])
+  corporation    Corporation @relation(fields: [corporationId], references: [id])
+  alliance       Alliance?   @relation(fields: [allianceId], references: [id])
+}
+
+model Alliance {
+  id                    Int           @id
+  creatorCorporationId  Int
+  creatorId             Int
+  name                  String
+  dateFounded           DateTime
+  executorCorporationId Int?
+  factionId             Int?
+  ticker                String
+  Corporation           Corporation[]
+  Character             Character[]
+}
+
+model Corporation {
+  id            Int         @id
+  allianceId    Int?
+  alliance      Alliance?   @relation(fields: [allianceId], references: [id])
+  ceoId         Int
+  creatorId     Int
+  dateFounded   DateTime?
+  description   String?
+  factionId     Int?
+  homeStationId Int?
+  memberCount   Int
+  name          String
+  shares        Int?
+  taxRate       Decimal
+  ticker        String
+  url           String?
+  warEligible   Boolean
+  Character     Character[]
 }
 
 model agtAgentTypes {
