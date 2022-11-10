@@ -3,6 +3,14 @@ schema: "./src/schema/*.graphql"
 documents: null
 generates:
   src/__generated__/types.ts:
+    config:
+      useIndexSignature: true
+#      defaultMapper: Partial<{T}>
+      mapperTypeSuffix: Model
+      mappers:
+        Alliance: '@prisma/client/index.d#Alliance'
+        Character: '@prisma/client/index.d#Character'
+        Corporation: '@prisma/client/index.d#Corporation'
     plugins:
       - "typescript"
       - "typescript-resolvers"

@@ -1,4 +1,5 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { Alliance as AllianceModel, Character as CharacterModel, Corporation as CorporationModel } from '@prisma/client/index.d';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -17,15 +18,37 @@ export type Scalars = {
   Time: any;
 };
 
+export type Alliance = {
+  __typename?: 'Alliance';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  ticker: Scalars['String'];
+};
+
 export type Character = {
   __typename?: 'Character';
+  accessToken: Scalars['String'];
   birthday: Scalars['DateTime'];
+  corporation: Corporation;
+  esiId: Scalars['String'];
   gender: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
+  refreshToken: Scalars['String'];
   scopes?: Maybe<Array<Scalars['String']>>;
   securityStatus?: Maybe<Scalars['Float']>;
   totalSp?: Maybe<Scalars['Int']>;
+};
+
+export type Corporation = {
+  __typename?: 'Corporation';
+  alliance?: Maybe<Alliance>;
+  dateFounded?: Maybe<Scalars['DateTime']>;
+  id: Scalars['ID'];
+  memberCount: Scalars['Int'];
+  name: Scalars['String'];
+  taxRate: Scalars['Float'];
+  ticker: Scalars['String'];
 };
 
 export type Mutation = {
@@ -40,10 +63,17 @@ export type MutationAddCharacterArgs = {
 
 export type Query = {
   __typename?: 'Query';
+  character?: Maybe<Character>;
   characters: Array<Character>;
 };
 
 
+export type QueryCharacterArgs = {
+  id: Scalars['ID'];
+};
+
+export type WithIndex<TObject> = TObject & Record<string, any>;
+export type ResolversObject<TObject> = WithIndex<TObject>;
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
@@ -111,9 +141,11 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 ) => TResult | Promise<TResult>;
 
 /** Mapping between all available schema types and the resolvers types */
-export type ResolversTypes = {
+export type ResolversTypes = ResolversObject<{
+  Alliance: ResolverTypeWrapper<AllianceModel>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-  Character: ResolverTypeWrapper<Character>;
+  Character: ResolverTypeWrapper<CharacterModel>;
+  Corporation: ResolverTypeWrapper<CorporationModel>;
   Date: ResolverTypeWrapper<Scalars['Date']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
@@ -123,12 +155,14 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Time: ResolverTypeWrapper<Scalars['Time']>;
-};
+}>;
 
 /** Mapping between all available schema types and the resolvers parents */
-export type ResolversParentTypes = {
+export type ResolversParentTypes = ResolversObject<{
+  Alliance: AllianceModel;
   Boolean: Scalars['Boolean'];
-  Character: Character;
+  Character: CharacterModel;
+  Corporation: CorporationModel;
   Date: Scalars['Date'];
   DateTime: Scalars['DateTime'];
   Float: Scalars['Float'];
@@ -138,18 +172,40 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String'];
   Time: Scalars['Time'];
-};
+}>;
 
-export type CharacterResolvers<ContextType = any, ParentType extends ResolversParentTypes['Character'] = ResolversParentTypes['Character']> = {
+export type AllianceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Alliance'] = ResolversParentTypes['Alliance']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  ticker?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type CharacterResolvers<ContextType = any, ParentType extends ResolversParentTypes['Character'] = ResolversParentTypes['Character']> = ResolversObject<{
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   birthday?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  corporation?: Resolver<ResolversTypes['Corporation'], ParentType, ContextType>;
+  esiId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   gender?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   scopes?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   securityStatus?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
+}>;
+
+export type CorporationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Corporation'] = ResolversParentTypes['Corporation']> = ResolversObject<{
+  alliance?: Resolver<Maybe<ResolversTypes['Alliance']>, ParentType, ContextType>;
+  dateFounded?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  memberCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  taxRate?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  ticker?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
 
 export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Date'], any> {
   name: 'Date';
@@ -159,24 +215,27 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
-export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   addCharacter?: Resolver<ResolversTypes['Character'], ParentType, ContextType, RequireFields<MutationAddCharacterArgs, 'code'>>;
-};
+}>;
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>;
   characters?: Resolver<Array<ResolversTypes['Character']>, ParentType, ContextType>;
-};
+}>;
 
 export interface TimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Time'], any> {
   name: 'Time';
 }
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = any> = ResolversObject<{
+  Alliance?: AllianceResolvers<ContextType>;
   Character?: CharacterResolvers<ContextType>;
+  Corporation?: CorporationResolvers<ContextType>;
   Date?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Time?: GraphQLScalarType;
-};
+}>;
 
