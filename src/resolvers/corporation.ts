@@ -1,5 +1,5 @@
 import type { Resolvers } from '../__generated__/types';
-import type { IResolverContext } from '../common';
+import type { IResolverContext } from '../services/context';
 
 export const corporationResolvers: Resolvers<IResolverContext> = {
   Corporation: {

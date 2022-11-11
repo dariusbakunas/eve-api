@@ -1,5 +1,5 @@
 import { and, rule, shield } from 'graphql-shield';
-import type { IResolverContext } from '../common';
+import type { IResolverContext } from '../services/context';
 
 const allow = rule()(() => true);
 const deny = rule()(() => false);

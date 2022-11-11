@@ -2,7 +2,6 @@ import type { MockContext } from '../services/contextMock';
 import type { IResolverContext } from '../services/context';
 import { mockContext } from '../services/contextMock';
 import { createMockCharacter } from '../services/db/modelMocks';
-import { Character } from '@prisma/client';
 import { ApolloServer } from '@apollo/server';
 import { loadSchema } from '../schema/loadSchema';
 import resolvers from '../resolvers';
