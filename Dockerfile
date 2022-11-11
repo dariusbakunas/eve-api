@@ -1,6 +1,6 @@
 FROM node:16.18.1-bullseye-slim AS build
 
-LABEL test=true
+LABEL build=eve-api
 
 RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
 WORKDIR /usr/src/app

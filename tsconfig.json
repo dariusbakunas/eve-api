@@ -104,6 +104,7 @@
     "node_modules",
     "coverage",
     "build",
-    "babel.config.js"
+    "babel.config.js",
+    "src/**/*.test.ts"
   ]
 }

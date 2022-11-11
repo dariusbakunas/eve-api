@@ -56,7 +56,7 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "build": "prisma generate && tsc -p . && cp -r ./src/schema/*.graphql ./build/schema",
+    "build": "rm -rf build && prisma generate && tsc -p . && cp -r ./src/schema/*.graphql ./build/schema",
     "gen:types": "graphql-codegen --config codegen.yml",
     "test": "jest"
   }
