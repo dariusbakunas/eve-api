@@ -4,8 +4,9 @@ LABEL build=eve-api
 
 RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
 WORKDIR /usr/src/app
-COPY . /usr/src/app/
+COPY package.json yarn.lock /usr/src/app/
 RUN yarn
+COPY . /usr/src/app/
 RUN yarn build && yarn test
 
 # clean all depencies
