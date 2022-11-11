@@ -1,10 +1,15 @@
 import type { Request } from 'express';
-import { dataSources } from './index';
+import { dataSources, IDataSources } from './index';
 import config from '../config';
 import { ContextUser, getUser } from '../auth/getUser';
 import type { KeyValueCache } from '@apollo/utils.keyvaluecache';
 
-export const context = async (req: Request, cache: KeyValueCache<string>) => {
+export interface IResolverContext {
+  dataSources: IDataSources;
+  user: ContextUser;
+}
+
+export const context = async (req: Request, cache: KeyValueCache<string>): Promise<IResolverContext> => {
   const auth0domain = config.get('auth0domain');
 
   const ds = dataSources({

@@ -6,16 +6,14 @@ import cors from 'cors';
 import { json } from 'body-parser';
 import { loadSchema } from './schema/loadSchema';
 import resolvers from './resolvers';
-import { dataSources } from "./services";
 import Pino from 'pino';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { auth, UnauthorizedError } from 'express-oauth2-jwt-bearer';
-import { ContextUser, getUser } from './auth/getUser';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { applyMiddleware } from 'graphql-middleware';
 import { permissions } from './auth/permissions';
-import type { IResolverContext } from './common';
 import config from './config'
+import { context, IResolverContext } from './services/context';
 
 const typeDefs = loadSchema();
 
@@ -55,38 +53,7 @@ async function startApolloServer() {
     expressMiddleware(server, {
       context: async ({ req }) => {
         const { cache } = server;
-
-        const ds = dataSources({
-          dbURL: `postgres://${config.get('db.user')}:${config.get('db.password')}@${config.get('db.host')}/${config.get('db.name')}`,
-          eveEsiURL: config.get('eve.esiURL'),
-          eveLoginURL: config.get('eve.loginURL'),
-          clientID: config.get('eve.clientID'),
-          clientSecret: config.get('eve.clientSecret'),
-          cryptSecret: config.get('cryptSecret'),
-          cache,
-        });
-
-        if (config.get('introspection') === 'true') {
-          const user: ContextUser = {
-            id: -1,
-            email: 'introspection',
-            status: 'INACTIVE',
-            username: 'introspection'
-          }
-
-          return {
-            dataSources: ds,
-            user,
-          }
-        }
-
-        const token = req.headers.authorization || '';
-        const user = await getUser(ds.db, auth0domain, token, req.auth?.payload.sub);
-
-        return {
-          dataSources: ds,
-          user,
-        };
+        return context(req, cache);
       },
     }),
   );

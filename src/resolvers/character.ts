@@ -1,6 +1,6 @@
 import type { Resolvers } from '../__generated__/types';
-import type { IResolverContext } from "../common";
 import { GraphQLError } from 'graphql';
+import type { IResolverContext } from '../services/context';
 
 export const characterResolvers: Resolvers<IResolverContext> = {
   Query: {
