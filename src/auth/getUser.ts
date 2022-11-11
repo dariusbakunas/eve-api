@@ -1,6 +1,6 @@
 import Cache from 'node-cache';
 import axios from 'axios';
-import { IDataSources } from '../services';
+import type { IDataSources } from '../services';
 
 const cache = new Cache({
   stdTTL: 100,

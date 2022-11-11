@@ -14,7 +14,7 @@ import { ContextUser, getUser } from './auth/getUser';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { applyMiddleware } from 'graphql-middleware';
 import { permissions } from './auth/permissions';
-import { IResolverContext } from './common';
+import type { IResolverContext } from './common';
 import config from './config'
 
 const typeDefs = loadSchema();
@@ -49,7 +49,7 @@ async function startApolloServer() {
 
   app.use(
     '/graphql',
-    //checkJwt,
+    checkJwt,
     cors<cors.CorsRequest>(),
     json(),
     expressMiddleware(server, {
@@ -91,7 +91,7 @@ async function startApolloServer() {
     }),
   );
 
-  app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+  app.use((err: unknown, _: Request, res: Response, next: NextFunction) => {
     if (err instanceof UnauthorizedError) {
       console.log(err);
       res.status(err.statusCode).json({ message: err.message });

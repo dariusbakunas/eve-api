@@ -1,6 +1,6 @@
 import { RESTDataSource } from '@apollo/datasource-rest';
-import { IEsiAllianceInfo, IEsiCharacterInfo, IEsiCorporationInfo } from './types';
-import { DataSourceConfig } from '@apollo/datasource-rest/src/RESTDataSource';
+import type { IEsiAllianceInfo, IEsiCharacterInfo, IEsiCorporationInfo } from './types';
+import type { DataSourceConfig } from '@apollo/datasource-rest/src/RESTDataSource';
 
 // https://www.apollographql.com/docs/apollo-server/data/fetching-rest
 class EsiAPI extends RESTDataSource {

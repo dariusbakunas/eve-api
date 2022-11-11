@@ -1,9 +1,9 @@
-import { Resolvers } from '../__generated__/types';
-import { IResolverContext } from '../common';
+import type { Resolvers } from '../__generated__/types';
+import type { IResolverContext } from '../common';
 
 export const corporationResolvers: Resolvers<IResolverContext> = {
   Corporation: {
-    alliance: async ({ allianceId }, _, { dataSources: { db, esiApi }}) => {
+    alliance: async ({ allianceId }, _, { dataSources: { db }}) => {
       if (allianceId) {
        return db.alliance.findUnique({
           where: {

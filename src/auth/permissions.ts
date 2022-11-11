@@ -1,12 +1,12 @@
 import { and, rule, shield } from 'graphql-shield';
-import { IResolverContext } from '../common';
+import type { IResolverContext } from '../common';
 
 const allow = rule()(() => true);
 const deny = rule()(() => false);
 
-const isActiveUser = rule({ cache: 'contextual' })((parent, args, { user }: IResolverContext) => !!user && user.status === 'ACTIVE');
+const isActiveUser = rule({ cache: 'contextual' })((_, __, { user }: IResolverContext) => !!user && user.status === 'ACTIVE');
 
-const isCharacterOwner = rule()(async (parent, { id }, { user, dataSources: { db } }: IResolverContext) => {
+const isCharacterOwner = rule()(async (_, { id }, { user, dataSources: { db } }: IResolverContext) => {
   const count = await db.character.count({
     where: {
       id: id,

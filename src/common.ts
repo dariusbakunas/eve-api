@@ -1,5 +1,5 @@
-import { IDataSources } from "./services";
-import { ContextUser } from './auth/getUser';
+import type { IDataSources } from "./services";
+import type { ContextUser } from './auth/getUser';
 
 export interface IResolverContext {
   dataSources: IDataSources;

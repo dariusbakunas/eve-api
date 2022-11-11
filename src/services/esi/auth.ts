@@ -1,5 +1,5 @@
 import { RESTDataSource } from '@apollo/datasource-rest';
-import { DataSourceConfig } from '@apollo/datasource-rest/src/RESTDataSource';
+import type { DataSourceConfig } from '@apollo/datasource-rest/src/RESTDataSource';
 
 interface ITokens {
   access_token: string;

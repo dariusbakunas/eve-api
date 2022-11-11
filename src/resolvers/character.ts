@@ -1,10 +1,10 @@
-import { Resolvers } from '../__generated__/types';
-import { IResolverContext } from "../common";
+import type { Resolvers } from '../__generated__/types';
+import type { IResolverContext } from "../common";
 import { GraphQLError } from 'graphql';
 
 export const characterResolvers: Resolvers<IResolverContext> = {
   Query: {
-    characters: async (_, args, { dataSources: { db}, user: { id: userID } }) => {
+    characters: async (_, __, { dataSources: { db}, user: { id: userID } }) => {
       return db.character.findMany({
         where: {
           ownerId: userID,
@@ -122,7 +122,7 @@ export const characterResolvers: Resolvers<IResolverContext> = {
     refreshToken: async ({ refreshToken: encryptedToken }, _, { dataSources: { crypt }}) => {
       return crypt.decrypt(encryptedToken);
     },
-    corporation: async ({ corporationId }, args, { dataSources: { db, esiApi } }) => {
+    corporation: async ({ corporationId }, _, { dataSources: { db } }) => {
       const corporation = await db.corporation.findUnique({
         where: {
           id: corporationId

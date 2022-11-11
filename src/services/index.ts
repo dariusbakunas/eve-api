@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
 import Crypt from './esi/crypt';
-import { KeyValueCache } from '@apollo/utils.keyvaluecache';
+import type { KeyValueCache } from '@apollo/utils.keyvaluecache';
 
 export interface IDataSources {
   db: PrismaClient,
