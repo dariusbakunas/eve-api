@@ -5,7 +5,8 @@ LABEL test=true
 RUN apt-get update && apt-get install -y --no-install-recommends dumb-init
 WORKDIR /usr/src/app
 COPY . /usr/src/app/
-RUN yarn && yarn build && yarn test
+RUN yarn
+RUN yarn build && yarn test
 
 # clean all depencies
 RUN rm -rf node_modules && yarn cache clean && yarn install --production
