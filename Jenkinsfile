@@ -13,9 +13,16 @@ pipeline {
       stage('Build') {
         steps {
           script{
-            app = docker.build("eve-api:${BUILD_NUMBER}")
+            app = docker.build("dariusbakunas/eve-api")
           }
         }
+      }
+
+      stage('Push image') {
+          docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+              app.push("${env.BUILD_NUMBER}")
+              app.push("latest")
+          }
       }
     }
 
