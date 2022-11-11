@@ -26,7 +26,6 @@ jobs:
           command: yarn test
       - store_test_results:
           path: .
-      - coveralls/upload
       - setup_remote_docker:
           docker_layer_caching: true
       - run: |
@@ -34,6 +33,20 @@ jobs:
           docker build -t dariusbakunas/eve-api:$TAG .
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
           docker push dariusbakunas/eve-api:$TAG
+  done:
+    docker:
+      - image: 'circleci/node:16.13.0'
+    steps:
+      - coveralls/upload
+
 notify:
   webhooks:
     - url: https://coveralls.io/webhook?repo_token=${COVERALLS_REPO_TOKEN}
+
+workflows:
+  build_and_report:
+    jobs:
+      - build
+      - done:
+          requires:
+            - build
