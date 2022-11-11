@@ -4,7 +4,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/node:16.16.0
+      - image: node:16.18.1-bullseye-slim
     working_directory: ~/eve-api
     steps:
       - checkout
@@ -28,16 +28,12 @@ jobs:
           path: .
       - setup_remote_docker:
           docker_layer_caching: true
+      - coveralls/upload
       - run: |
           TAG=0.1.$CIRCLE_BUILD_NUM
           docker build -t dariusbakunas/eve-api:$TAG .
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
           docker push dariusbakunas/eve-api:$TAG
-  done:
-    docker:
-      - image: 'circleci/node:16.13.0'
-    steps:
-      - coveralls/upload
 
 notify:
   webhooks:
@@ -47,6 +43,3 @@ workflows:
   build_and_report:
     jobs:
       - build
-      - done:
-          requires:
-            - build

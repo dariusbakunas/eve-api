@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 COPY package.json yarn.lock /usr/src/app/
 RUN yarn
 COPY . /usr/src/app/
-RUN yarn build && yarn test
+RUN yarn build
 
 # clean all depencies
 RUN rm -rf node_modules && yarn cache clean && yarn install --production
