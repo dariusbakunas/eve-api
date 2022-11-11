@@ -4,9 +4,26 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/node:16.16.0
+      - image: cimg/node:16.16.0
     steps:
       - checkout
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install dependencies
+          command: yarn install --immutable
+      - run:
+          name: Run tests
+          command: yarn test
+      - coveralls/upload
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - .yarn/cache
+            - .yarn/unplugged
       - setup_remote_docker:
           docker_layer_caching: true
       - run: |
@@ -14,4 +31,3 @@ jobs:
           docker build -t dariusbakunas/eve-api:$TAG .
           echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
           docker push dariusbakunas/eve-api:$TAG
-      - coveralls/upload
