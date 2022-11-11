@@ -12,8 +12,10 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'yarn install --frozen-lockfile'
-                sh 'yarn test'
+                nvm (16.16.0) {
+                    sh 'yarn install --frozen-lockfile'
+                    sh 'yarn test'
+                }
             }
         }
 
