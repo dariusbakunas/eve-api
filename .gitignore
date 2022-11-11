@@ -237,3 +237,4 @@ $RECYCLE.BIN/
 build/
 redis/
 .vscode/
+junit.xml
