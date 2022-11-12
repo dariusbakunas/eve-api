@@ -4,3 +4,4 @@ nodemon.json
 .prettierignore
 .prettierrc.json
 !node_modules/@prisma
+!node_modules/.prisma
