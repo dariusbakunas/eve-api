@@ -14,6 +14,18 @@ import { applyMiddleware } from 'graphql-middleware';
 import { permissions } from './auth/permissions';
 import config from './config'
 import { context, IResolverContext } from './services/context';
+import expressPino from "express-pino-logger";
+
+export const logRequest = expressPino({
+  level: "info",
+  enabled: true,
+  serializers: {
+    req: (req) => ({
+      method: req.method,
+      url: req.url,
+    }),
+  },
+});
 
 const typeDefs = loadSchema();
 
@@ -27,6 +39,7 @@ const apiAudience = config.get('apiAudience');
 
 async function startApolloServer() {
   const app = express();
+  app.use(logRequest);
 
   const checkJwt = auth({
     audience: apiAudience,
