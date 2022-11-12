@@ -2,9 +2,11 @@
   "auth0domain": "https://eve-app.auth0.com",
   "apiAudience": "https://eve-api",
   "db": {
-    "host": "dpg-cdbsl1ha6gdjgo8q6ou0-a",
-    "name": "eve_warehouse_dev",
-    "user": "dev",
-    "password": "/etc/secrets/db_psw"
+    "host": "dev.local.geekspace.us",
+    "name": "eve_warehouse?schema=evesde",
+    "user": "postgres"
+  },
+  "eve": {
+    "clientID": "889dde8bdb8c42c6b6a2c13734ef3707"
   }
 }
