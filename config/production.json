@@ -2,7 +2,7 @@
   "auth0domain": "https://eve-app.auth0.com",
   "apiAudience": "https://eve-api",
   "db": {
-    "host": "dev.local.geekspace.us",
+    "host": "pgsql-db-1",
     "name": "eve_warehouse?schema=evesde",
     "user": "postgres"
   },
