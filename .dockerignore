@@ -1,6 +1,6 @@
-node_modeules
-Jenkinsfile
+node_modules
 nodemon.json
 .editorconfig
 .prettierignore
 .prettierrc.json
+!node_modules/@prisma
