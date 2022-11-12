@@ -4,7 +4,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: node:16.18.1-bullseye-slim
+      - image: cimg/node:16.16.0
     working_directory: ~/eve-api
     steps:
       - checkout
@@ -25,7 +25,7 @@ jobs:
           name: Run tests
           command: yarn test
       - store_test_results:
-          path: .
+          path: junit.xml
       - setup_remote_docker:
           docker_layer_caching: true
       - coveralls/upload

@@ -238,3 +238,4 @@ build/
 redis/
 .vscode/
 junit.xml
+reports/
