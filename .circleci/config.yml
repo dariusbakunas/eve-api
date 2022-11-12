@@ -1,6 +1,4 @@
 version: 2.1
-orbs:
-  coveralls: coveralls/coveralls@1.0.6
 jobs:
   build:
     docker:
@@ -25,10 +23,12 @@ jobs:
           name: Run tests
           command: yarn test
       - store_test_results:
-          path: junit.xml
+          path: reports
+      - run:
+          name: Coveralls
+          command: yarn coveralls
       - setup_remote_docker:
           docker_layer_caching: true
-      - coveralls/upload
       - run: |
           TAG=0.1.$CIRCLE_BUILD_NUM
           docker build -t dariusbakunas/eve-api:$TAG .
