@@ -16,6 +16,7 @@ USER node
 WORKDIR /usr/src/app
 COPY --chown=node:node --from=build /usr/src/app/node_modules /usr/src/app/node_modules
 COPY --chown=node:node node_modules/@prisma/client /usr/src/app/node_modules/@prisma/client
+COPY --chown=node:node node_modules/.prisma/client /usr/src/app/node_modules/.prisma/client
 COPY --chown=node:node build /usr/src/app/build
 COPY --chown=node:node config /usr/src/app/config
 CMD ["dumb-init", "node", "build/index.js"]
