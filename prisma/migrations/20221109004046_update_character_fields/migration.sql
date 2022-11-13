@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Character" ALTER COLUMN "ancestryId" DROP NOT NULL,
-ALTER COLUMN "securityStatus" SET DATA TYPE DECIMAL(65,30);

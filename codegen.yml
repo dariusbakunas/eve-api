@@ -8,9 +8,9 @@ generates:
 #      defaultMapper: Partial<{T}>
       mapperTypeSuffix: Model
       mappers:
-        Alliance: '@prisma/client/index.d#Alliance'
-        Character: '@prisma/client/index.d#Character'
-        Corporation: '@prisma/client/index.d#Corporation'
+        Alliance: '@dariusbakunas/eve-db#Alliance'
+        Character: '@dariusbakunas/eve-db#Character'
+        Corporation: '@dariusbakunas/eve-db#Corporation'
     plugins:
       - "typescript"
       - "typescript-resolvers"

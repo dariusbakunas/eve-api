@@ -1,9 +1,9 @@
-import type { PrismaClient } from '@prisma/client'
 import EsiAPI from './esi/api';
 import EsiAuth from './esi/auth';
 import Crypt from './esi/crypt';
 import type { KeyValueCache } from '@apollo/utils.keyvaluecache';
-import { createClient } from './db/client';
+import { createClient } from '@dariusbakunas/eve-db';
+import type { PrismaClient } from '@dariusbakunas/eve-db';
 
 export interface IDataSources {
   db: PrismaClient,

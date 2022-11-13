@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Corporation" ALTER COLUMN "taxRate" SET DATA TYPE DECIMAL(65,30);

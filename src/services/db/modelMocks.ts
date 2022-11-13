@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Character, Prisma } from '@prisma/client';
+import { Character, Prisma } from '@dariusbakunas/eve-db';
 
 // export const createMockCorporation = (): Corporation => {
 //   return {
