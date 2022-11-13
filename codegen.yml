@@ -5,6 +5,7 @@ generates:
   src/__generated__/types.ts:
     config:
       useIndexSignature: true
+      useTypeImports: true
 #      defaultMapper: Partial<{T}>
       mapperTypeSuffix: Model
       mappers:
