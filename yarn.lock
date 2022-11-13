@@ -1229,10 +1229,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@dariusbakunas/eve-db@^1.0.5":
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/@dariusbakunas/eve-db/-/eve-db-1.0.6.tgz#05bb749db881f5e034951866c36602c45b70f653"
-  integrity sha512-BNv1l427xDiGZPdW0ODIxG/brA6tOjcfVGrkdiX1mX5+Wc31QdEHDYmMzfuM5RIflZqhtJ7kQzGlXHKYulNWbg==
+"@dariusbakunas/eve-db@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@dariusbakunas/eve-db/-/eve-db-1.0.7.tgz#4fa7b89e6cbddfc4539d25c3811702b8917d835c"
+  integrity sha512-1CARqL5LxHKs3HermyoHLCXkH+mz0+fgKSzjaIZrQXdcshzI/ZF1xPnGyHEUS9ns9pxV3L0od21hqRHRpiqfvA==
   dependencies:
     "@prisma/client" "4.6.1"
 

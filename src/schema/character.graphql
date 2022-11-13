@@ -7,8 +7,6 @@ type Character {
   scopes: [String!]
   birthday: DateTime!
   securityStatus: Float
-  accessToken: String!
-  refreshToken: String!
 #  skillGroups: [SkillGroup!]!
 #  skillGroup(id: ID!): SkillGroup
 #  skillQueue: [SkillQueueItem!]!

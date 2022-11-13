@@ -1,5 +1,5 @@
-import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import type { Alliance as AllianceModel, Character as CharacterModel, Corporation as CorporationModel } from '@dariusbakunas/eve-db';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import { Alliance as AllianceModel, Character as CharacterModel, Corporation as CorporationModel } from '@dariusbakunas/eve-db';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -27,14 +27,12 @@ export type Alliance = {
 
 export type Character = {
   __typename?: 'Character';
-  accessToken: Scalars['String'];
   birthday: Scalars['DateTime'];
   corporation: Corporation;
   esiId: Scalars['String'];
   gender: Scalars['String'];
   id: Scalars['ID'];
   name: Scalars['String'];
-  refreshToken: Scalars['String'];
   scopes?: Maybe<Array<Scalars['String']>>;
   securityStatus?: Maybe<Scalars['Float']>;
   totalSp?: Maybe<Scalars['Int']>;
@@ -182,14 +180,12 @@ export type AllianceResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type CharacterResolvers<ContextType = any, ParentType extends ResolversParentTypes['Character'] = ResolversParentTypes['Character']> = ResolversObject<{
-  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   birthday?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   corporation?: Resolver<ResolversTypes['Corporation'], ParentType, ContextType>;
   esiId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   gender?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   scopes?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   securityStatus?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   totalSp?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;

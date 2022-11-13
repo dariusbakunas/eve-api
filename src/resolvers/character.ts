@@ -116,12 +116,6 @@ export const characterResolvers: Resolvers<IResolverContext> = {
     scopes: async ({ scopes }) =>{
       return scopes.split(' ');
     },
-    accessToken: async ({ accessToken: encryptedToken }, _, { dataSources: { crypt }}) => {
-      return crypt.decrypt(encryptedToken);
-    },
-    refreshToken: async ({ refreshToken: encryptedToken }, _, { dataSources: { crypt }}) => {
-      return crypt.decrypt(encryptedToken);
-    },
     corporation: async ({ corporationId }, _, { dataSources: { db } }) => {
       const corporation = await db.corporation.findUnique({
         where: {
