@@ -60,7 +60,7 @@
     "handlebars": "^4.5.3",
     "helmet": "^4.2.0",
     "jwks-rsa": "^1.6.0",
-    "knex": "^0.21.12",
+    "knex": "^2.4.0",
     "lodash.chunk": "^4.2.0",
     "lodash.merge": "^4.6.2",
     "lodash.property": "^4.4.2",
